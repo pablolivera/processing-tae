@@ -1,11 +1,14 @@
 package uy.mgcoders.tae;
 
 import processing.core.PApplet;
+import SimpleOpenNI.*;
 
 /**
  * Created by raul on 10/08/15.
  */
 public class Tarea1 extends PApplet {
+
+    SimpleOpenNI  context;
 
     // aca estan los colores de las barras
 // definidos en el colorMode RGB -> https://processing.org/reference/colorMode_.html
@@ -30,15 +33,28 @@ public class Tarea1 extends PApplet {
         // por defecto esta cargada la opcion de dibujar un contorno de color negro en las figuras
         // la queremos deshabilitar
         noStroke();
+
+        //initialize context variable
+        context = new SimpleOpenNI(this);
+
+        //asks OpenNI to initialize and start receiving depth sensor's data
+        context.enableDepth();
     };
 
     // esta funcion se ejecuta todo el tiempo en un loop constante
     public void draw(){
         // la funcion que creamos para dibujar el fondo ruidoso
-        createNoisyBackground();
+        //createNoisyBackground();
         // la funcion que dibuja las barras de colores
         // le pasamos la cantidad de barras que queremos dibujar
-        drawTv(colorsNr);
+        //drawTv(colorsNr);
+
+        //asks kinect to send new data
+        context.update();
+
+        //draws the depth map data as an image to the window
+        //at position 0(left),0(top) corner
+        image(context.depthImage(),0,0);
 
     };
 
@@ -65,6 +81,8 @@ public class Tarea1 extends PApplet {
         int bar_width = width / bars_nr +1;
         // en funcion de la posicion x del mouse definimos cual de las barras de colores no se dibujara
         int whichBar = (int)(mouseX / bar_width);
+
+
 
         // dibujamos las barras
         for (int i = 0; i < bars_nr; i ++) {
