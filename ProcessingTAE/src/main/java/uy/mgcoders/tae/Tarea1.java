@@ -2,6 +2,7 @@ package uy.mgcoders.tae;
 
 import processing.core.PApplet;
 import SimpleOpenNI.*;
+import processing.core.PVector;
 
 /**
  * Created by raul on 10/08/15.
@@ -9,10 +10,20 @@ import SimpleOpenNI.*;
 public class Tarea1 extends PApplet {
 
     SimpleOpenNI  context;
+    int[] userClr = { color(255,0,0),
+            color(0,255,0),
+            color(0,0,255),
+            color(255,255,0),
+            color(255,0,255),
+            color(0,255,255)
+    };
+
+    PVector com = new PVector();
+    PVector com2d = new PVector();
 
     // aca estan los colores de las barras
-// definidos en el colorMode RGB -> https://processing.org/reference/colorMode_.html
-// color( R, G, B)
+    // definidos en el colorMode RGB -> https://processing.org/reference/colorMode_.html
+    // color( R, G, B)
     int [] color_bars={
             color(192,192,192),
             color(192,192,0),
@@ -28,37 +39,135 @@ public class Tarea1 extends PApplet {
 
     // esta funcion se ejecuta una vez sola, al principio
     public void setup(){
-        // size define el tamano de nuestro sketch
         size(1024,768);
-        // por defecto esta cargada la opcion de dibujar un contorno de color negro en las figuras
-        // la queremos deshabilitar
-        noStroke();
 
-        //initialize context variable
         context = new SimpleOpenNI(this);
+        if(context.isInit() == false)
+        {
+            println("Can't init SimpleOpenNI, maybe the camera is not connected!");
+            exit();
+            return;
+        }
 
-        //asks OpenNI to initialize and start receiving depth sensor's data
+        // enable depthMap generation
         context.enableDepth();
-    };
+
+        // enable skeleton generation for all joints
+        context.enableUser();
+
+        background(200, 0, 0);
+
+        stroke(0);
+        strokeWeight(0);
+        smooth();
+    }
 
     // esta funcion se ejecuta todo el tiempo en un loop constante
-    public void draw(){
-        // la funcion que creamos para dibujar el fondo ruidoso
-        //createNoisyBackground();
-        // la funcion que dibuja las barras de colores
-        // le pasamos la cantidad de barras que queremos dibujar
-        //drawTv(colorsNr);
+    public void draw() {
 
-        //asks kinect to send new data
+        // update the cam
         context.update();
 
-        //draws the depth map data as an image to the window
-        //at position 0(left),0(top) corner
-        image(context.depthImage(),0,0);
+        // la funcion que creamos para dibujar el fondo ruidoso
+        createNoisyBackground();
+        // la funcion que dibuja las barras de colores
+        // le pasamos la cantidad de barras que queremos dibujar
+        drawTv(colorsNr);
 
-    };
+        scale(1,6);
+        // draw depthImageMap
+        //image(context.depthImage(),0,0);
+        //image(context.userImage(),0,0);
 
-    void createNoisyBackground(){
+        // draw the skeleton if it's available
+        int[] userList = context.getUsers();
+        for(int i=0;i<userList.length;i++) {
+            if(context.isTrackingSkeleton(userList[i])) {
+                stroke(userClr[ (userList[i] - 1) % userClr.length ] );
+                drawSkeleton(userList[i]);
+            }
+
+            // draw the center of mass
+            if(context.getCoM(userList[i],com)) {
+                context.convertRealWorldToProjective(com,com2d);
+                stroke(100,255,0);
+                strokeWeight(0);
+                beginShape(LINES);
+                vertex(com2d.x,com2d.y - 5);
+                vertex(com2d.x,com2d.y + 5);
+
+                vertex(com2d.x - 5,com2d.y);
+                vertex(com2d.x + 5,com2d.y);
+                endShape();
+
+                fill(0,255,100);
+                text(Integer.toString(userList[i]), com2d.x, com2d.y);
+            }
+        }
+    }
+
+
+    // draw the skeleton with the selected joints
+    void drawSkeleton(int userId) {
+            // to get the 3d joint data
+      /*
+      PVector jointPos = new PVector();
+      context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_NECK,jointPos);
+      println(jointPos);
+      */
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
+    }
+
+    // -----------------------------------------------------------------
+    // SimpleOpenNI events
+
+    public void onNewUser(SimpleOpenNI curContext, int userId) {
+        System.out.println("onNewUser - userId: " + userId);
+        System.out.println("\tstart tracking skeleton");
+
+        curContext.startTrackingSkeleton(userId);
+    }
+
+    public void onLostUser(SimpleOpenNI curContext, int userId) {
+        System.out.println("onLostUser - userId: " + userId);
+    }
+
+    public void onVisibleUser(SimpleOpenNI curContext, int userId) {
+        //println("onVisibleUser - userId: " + userId);
+    }
+
+
+    public void keyPressed() {
+        switch(key)
+        {
+            case ' ':
+                context.setMirror(!context.mirror());
+                break;
+        }
+    }
+
+
+     void createNoisyBackground() {
         // una función ya dada que carga los datos de los píxeles de la pantalla de visualización en el pixels [] array
         // siempre debe ser llamada antes de leer o escribir en pixels [].
         loadPixels();
@@ -74,15 +183,19 @@ public class Tarea1 extends PApplet {
         updatePixels();
     }
 
-
     void drawTv( int bars_nr) {
         // definimos el ancho de las barras
         // por el tema del redondeo hacemos +1 para cubrir toda la pantalla
         int bar_width = width / bars_nr +1;
         // en funcion de la posicion x del mouse definimos cual de las barras de colores no se dibujara
-        int whichBar = (int)(mouseX / bar_width);
 
+        double posX = com2d.x;
+        if(Double.isNaN(posX) || posX < 0 || posX > 640) {
+            posX = 0.0;
+            //System.out.println("com: " + );
+        }
 
+        int whichBar = (int)((posX * 1.6) / bar_width);
 
         // dibujamos las barras
         for (int i = 0; i < bars_nr; i ++) {
