@@ -9,11 +9,14 @@ public class Main {
 
     public static void main(String args[]) {
 
+        String[] tarea1 = new String[] {"uy.mgcoders.tae.Tarea1"};
+
         String[] example1 = new String[] {"uy.mgcoders.tae.ProcessingExample"};
         String[] example2 = new String[] {"uy.mgcoders.tae.Tarea1"};
+        String[] example3 = new String[] {"uy.mgcoders.tae.GettingStarted"};
 
 
         // Run
-        PApplet.main(example2);
+        PApplet.main(example3);
     }
 }
