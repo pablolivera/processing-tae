@@ -14,9 +14,10 @@ public class Main {
         String[] example1 = new String[] {"uy.mgcoders.tae.ProcessingExample"};
         String[] example2 = new String[] {"uy.mgcoders.tae.Tarea1"};
         String[] example3 = new String[] {"uy.mgcoders.tae.GettingStarted"};
+        String[] example4 = new String[] {"uy.mgcoders.tae.Caleidoscopio"};
 
 
         // Run
-        PApplet.main(example3);
+        PApplet.main(example4);
     }
 }

@@ -1,15 +1,27 @@
 package uy.mgcoders.tae;
 
+import controlP5.ControlP5;
 import processing.core.PApplet;
 import SimpleOpenNI.*;
 import processing.core.PVector;
+
+import java.awt.*;
 
 /**
  * Created by raul on 10/08/15.
  */
 public class Tarea1 extends PApplet {
 
+    // dimensiones de la pantalla del sketch
+    int sizeW = 1024;
+    int sizeH = 768;
+
     SimpleOpenNI  context;
+    PVector com = new PVector();
+    PVector com2d = new PVector();
+    ControlP5 cp5;
+    Tarea1Control tarea1Control;
+
     int[] userClr = { color(255,0,0),
             color(0,255,0),
             color(0,0,255),
@@ -18,8 +30,7 @@ public class Tarea1 extends PApplet {
             color(0,255,255)
     };
 
-    PVector com = new PVector();
-    PVector com2d = new PVector();
+
 
     // aca estan los colores de las barras
     // definidos en el colorMode RGB -> https://processing.org/reference/colorMode_.html
@@ -39,7 +50,10 @@ public class Tarea1 extends PApplet {
 
     // esta funcion se ejecuta una vez sola, al principio
     public void setup(){
-        size(1024,768);
+        size(sizeW, sizeH);
+
+        cp5 = new ControlP5(this);
+        tarea1Control = addControlFrame("Controladores", 250,200);
 
         context = new SimpleOpenNI(this);
         if(context.isInit() == false)
@@ -106,7 +120,6 @@ public class Tarea1 extends PApplet {
         }
     }
 
-
     // draw the skeleton with the selected joints
     void drawSkeleton(int userId) {
             // to get the 3d joint data
@@ -166,7 +179,6 @@ public class Tarea1 extends PApplet {
         }
     }
 
-
      void createNoisyBackground() {
         // una función ya dada que carga los datos de los píxeles de la pantalla de visualización en el pixels [] array
         // siempre debe ser llamada antes de leer o escribir en pixels [].
@@ -186,13 +198,10 @@ public class Tarea1 extends PApplet {
     void drawTv( int bars_nr) {
         // definimos el ancho de las barras
         // por el tema del redondeo hacemos +1 para cubrir toda la pantalla
-        int bar_width = width / bars_nr +1;
-        // en funcion de la posicion x del mouse definimos cual de las barras de colores no se dibujara
-
+        int bar_width = width / bars_nr + 1;
         double posX = com2d.x;
         if(Double.isNaN(posX) || posX < 0 || posX > 640) {
             posX = 0.0;
-            //System.out.println("com: " + );
         }
 
         int whichBar = (int)((posX * 1.6) / bar_width);
@@ -207,6 +216,19 @@ public class Tarea1 extends PApplet {
                 rect(i * bar_width, 0, bar_width, height);
             }
         }
+    }
+
+    Tarea1Control addControlFrame(String name, int width, int height) {
+        Frame frame = new Frame(name);
+        Tarea1Control control = new Tarea1Control(this, width, height);
+        frame.add(control);
+        control.init();
+        frame.setTitle(name);
+        frame.setSize(control.sizeW, control.sizeW);
+        frame.setLocation(100, 100);
+        frame.setResizable(false);
+        frame.setVisible(true);
+        return control;
     }
 
 }
