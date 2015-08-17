@@ -16,6 +16,10 @@ public class Tarea1 extends PApplet {
     int sizeW = 1024;
     int sizeH = 768;
 
+    // dimensiones de la pantalla del sketch de los controles
+    int sizeCW = 250;
+    int sizeCH = 400;
+
     SimpleOpenNI  context;
     PVector com = new PVector();
     PVector com2d = new PVector();
@@ -29,8 +33,6 @@ public class Tarea1 extends PApplet {
             color(255,0,255),
             color(0,255,255)
     };
-
-
 
     // aca estan los colores de las barras
     // definidos en el colorMode RGB -> https://processing.org/reference/colorMode_.html
@@ -48,12 +50,15 @@ public class Tarea1 extends PApplet {
     // aca se guarda el nro total de los colores definidos
     int colorsNr = color_bars.length;
 
+    boolean toSwitch = false;
+    int index = 1;
+
     // esta funcion se ejecuta una vez sola, al principio
     public void setup(){
         size(sizeW, sizeH);
 
         cp5 = new ControlP5(this);
-        tarea1Control = addControlFrame("Controladores", 250,200);
+        tarea1Control = addControlFrame("Controladores", sizeCW, sizeCH, colorsNr);
 
         context = new SimpleOpenNI(this);
         if(context.isInit() == false)
@@ -71,13 +76,13 @@ public class Tarea1 extends PApplet {
 
         background(200, 0, 0);
 
-        stroke(0);
-        strokeWeight(0);
+        noStroke();
         smooth();
     }
 
     // esta funcion se ejecuta todo el tiempo en un loop constante
     public void draw() {
+        //System.out.println(index);
 
         // update the cam
         context.update();
@@ -103,9 +108,10 @@ public class Tarea1 extends PApplet {
 
             // draw the center of mass
             if(context.getCoM(userList[i],com)) {
-                context.convertRealWorldToProjective(com,com2d);
+                context.convertRealWorldToProjective(com, com2d);
                 stroke(100,255,0);
-                strokeWeight(0);
+                //strokeWeight(1);
+                noStroke();
                 beginShape(LINES);
                 vertex(com2d.x,com2d.y - 5);
                 vertex(com2d.x,com2d.y + 5);
@@ -199,6 +205,7 @@ public class Tarea1 extends PApplet {
         // definimos el ancho de las barras
         // por el tema del redondeo hacemos +1 para cubrir toda la pantalla
         int bar_width = width / bars_nr + 1;
+
         double posX = com2d.x;
         if(Double.isNaN(posX) || posX < 0 || posX > 640) {
             posX = 0.0;
@@ -208,23 +215,20 @@ public class Tarea1 extends PApplet {
 
         // dibujamos las barras
         for (int i = 0; i < bars_nr; i ++) {
-            // dibujamos solo si el mouse no esta parado en esta barra
-            if(whichBar != i) {
-                // el color de la barra se corresponde a un color definido en el array color_bars[]
+            if( (!toSwitch && whichBar != i) || (toSwitch && whichBar == i) ) {
                 fill(color_bars[i%colorsNr]);
-                // dibujamos el rectangulo
                 rect(i * bar_width, 0, bar_width, height);
             }
         }
     }
 
-    Tarea1Control addControlFrame(String name, int width, int height) {
+    Tarea1Control addControlFrame(String name, int width, int height, int colorsLength) {
         Frame frame = new Frame(name);
-        Tarea1Control control = new Tarea1Control(this, width, height);
+        Tarea1Control control = new Tarea1Control(this, width, height, colorsLength);
         frame.add(control);
         control.init();
         frame.setTitle(name);
-        frame.setSize(control.sizeW, control.sizeW);
+        frame.setSize(control.sizeW, control.sizeH);
         frame.setLocation(100, 100);
         frame.setResizable(false);
         frame.setVisible(true);

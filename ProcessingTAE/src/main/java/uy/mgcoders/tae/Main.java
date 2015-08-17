@@ -18,6 +18,6 @@ public class Main {
 
 
         // Run
-        PApplet.main(example4);
+        PApplet.main(tarea1);
     }
 }
