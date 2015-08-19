@@ -15,7 +15,7 @@ public class Tarea1 extends PApplet {
     // dimensiones de la pantalla del sketch
     int sizeW = 800;
     int sizeH = 600;
-    double scale = 1.25;
+    double scale = sizeW / 640;
     double barraAnterior = 0;
 
     // dimensiones de la pantalla del sketch de los controles
@@ -65,13 +65,6 @@ public class Tarea1 extends PApplet {
     boolean toSwitch = false;
     int index = 1;
 
-
-    int circleX;
-    int circleY;
-    int directionX = 4; // "velocidad" pixeles que se mueve en cada pasada de draw
-    int myWidth = 640;
-
-
     // esta funcion se ejecuta una vez sola, al principio
     public void setup(){
         size(sizeW, sizeH);
@@ -97,147 +90,34 @@ public class Tarea1 extends PApplet {
 
         noStroke();
         smooth();
-
-
-        circleX = width/2;
-        circleY = height/2;
-/*
-        stroke(100, 255, 0);
-        strokeWeight(3);
-        //noStroke();
-        beginShape(LINES);
-        vertex(320, 240 - 5);
-        vertex(320, 240 + 5);
-
-        vertex(320 - 5, 240);
-        vertex(320 + 5, 240);
-        endShape();*/
     }
 
-    // esta funcion se ejecuta todo el tiempo en un loop constante
     public void draw() {
-        //System.out.println(index);
-
         // update the cam
         context.update();
+
+        // draw the skeleton if it's available
+        int[] userList = context.getUsers();
+        for(int i = 0; i < userList.length; i++) {
+            /*if(context.isTrackingSkeleton(userList[i])) {
+                stroke(userClr[ (userList[i] - 1) % userClr.length ] ); // Dibuja lineas
+                drawSkeleton(userList[i]);
+            }*/
+
+            if(context.getCoM(userList[i], com)) {
+                context.convertRealWorldToProjective(com, com2d);
+                //drawCenterOfMass(userList, i);
+            }
+        }
 
         // la funcion que creamos para dibujar el fondo ruidoso
         createNoisyBackground();
         // la funcion que dibuja las barras de colores
         // le pasamos la cantidad de barras que queremos dibujar
         drawTv(colorsNr);
-
-        scale((float)scale);
-        // draw depthImageMap
-        //image(context.depthImage(),0,0);
-        //image(context.userImage(),0,0);
-
-        // draw the skeleton if it's available
-        int[] userList = context.getUsers();
-        for(int i=0;i<userList.length;i++) {
-            if(context.isTrackingSkeleton(userList[i])) {
-                //stroke(userClr[ (userList[i] - 1) % userClr.length ] ); // Dibuja lineas
-                drawSkeleton(userList[i]);
-            }
-
-            // draw the center of mass
-            if(context.getCoM(userList[i],com)) {
-                context.convertRealWorldToProjective(com, com2d);
-                if(Double.isNaN(com2d.x) || com2d.x < 0 || com2d.x > 640) {
-                    myWidth = 800;
-                }
-                else
-                    myWidth = (int)(com2d.x * (float)scale);
-                /*stroke(100, 255, 0);
-                strokeWeight(1);
-                //noStroke();
-                beginShape(LINES);
-                float posx = com2d.x * (float)scale;
-                float posy = com2d.y * (float)scale;
-                vertex(posx, posy - 5);
-                vertex(posx, posy + 5);
-
-                vertex(posx - 5, posy);
-                vertex(posx + 5, posy);
-                endShape();*/
-                //System.out.println("2d " + posx + "  ####  " + posy);
-
-                //fill(0, 255,100);
-                //text(Integer.toString(userList[i]), com2d.x, com2d.y);
-            }
-        }
-        // Para el circulo que se mueve
-        fill(200, 0, 150);
-        ellipse(circleX, circleY, 100, 100);
-
-        if( circleX > myWidth || circleX < 0){
-            directionX = -1 * directionX;
-        }
-        circleX = circleX + directionX;
-
-
     }
 
-    // draw the skeleton with the selected joints
-    void drawSkeleton(int userId) {
-            // to get the 3d joint data
-      /*
-      PVector jointPos = new PVector();
-      context.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_NECK,jointPos);
-      println(jointPos);
-      */
-
-        context.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
-
-        context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
-
-        context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
-
-        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-
-        context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
-
-        context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
-        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
-    }
-
-    // -----------------------------------------------------------------
-    // SimpleOpenNI events
-
-    public void onNewUser(SimpleOpenNI curContext, int userId) {
-        System.out.println("onNewUser - userId: " + userId);
-        System.out.println("\tstart tracking skeleton");
-
-        curContext.startTrackingSkeleton(userId);
-    }
-
-    public void onLostUser(SimpleOpenNI curContext, int userId) {
-        System.out.println("onLostUser - userId: " + userId);
-    }
-
-    public void onVisibleUser(SimpleOpenNI curContext, int userId) {
-        //println("onVisibleUser - userId: " + userId);
-    }
-
-
-    public void keyPressed() {
-        switch(key)
-        {
-            case ' ':
-                context.setMirror(!context.mirror());
-                break;
-        }
-    }
-
-     void createNoisyBackground() {
+    void createNoisyBackground() {
         // una función ya dada que carga los datos de los píxeles de la pantalla de visualización en el pixels [] array
         // siempre debe ser llamada antes de leer o escribir en pixels [].
         loadPixels();
@@ -270,13 +150,11 @@ public class Tarea1 extends PApplet {
 
         // dibujamos las barras
         for (int i = 0; i < bars_nr; i ++) {
-            if(whichBar != i) { //(!toSwitch && whichBar != i) || (toSwitch && whichBar == i)
-                if(toSwitch)
-                    fill(color_bars_in[i%colorsNr]);
-                else
-                    fill(color_bars[i%colorsNr]);
+            if((!toSwitch && whichBar != i) || (toSwitch && whichBar == i)) {
+                fill(color_bars[i % colorsNr]);
                 rect(i * bar_width, 0, bar_width, height);
             }
+
         }
     }
 
@@ -291,6 +169,83 @@ public class Tarea1 extends PApplet {
         frame.setResizable(false);
         frame.setVisible(true);
         return control;
+    }
+
+
+    /**********************
+     *
+     * FUNCIONES AUXILIARES
+     *
+     **********************/
+
+    void drawCenterOfMass(int[] userList, int i) {
+        stroke(100, 255, 0);
+        strokeWeight(1);
+        beginShape(LINES);
+        float posx = com2d.x * (float)scale;
+        float posy = com2d.y * (float)scale;
+        vertex(posx, posy - 5);
+        vertex(posx, posy + 5);
+
+        vertex(posx - 5, posy);
+        vertex(posx + 5, posy);
+        endShape();
+
+        System.out.println("x: " + posx + " ###  y: " + posy);
+
+        fill(0, 255, 100);
+        text(Integer.toString(userList[i]), com2d.x, com2d.y);
+    }
+
+    // draw the skeleton with the selected joints
+    void drawSkeleton(int userId) {
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
+
+        context.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
+        context.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
+    }
+
+    // -----------------------------------------------------------------
+    // SimpleOpenNI events
+
+    public void onNewUser(SimpleOpenNI curContext, int userId) {
+        System.out.println("onNewUser - userId: " + userId);
+        System.out.println("\tstart tracking skeleton");
+        curContext.startTrackingSkeleton(userId);
+    }
+
+    public void onLostUser(SimpleOpenNI curContext, int userId) {
+        System.out.println("onLostUser - userId: " + userId);
+    }
+
+    public void onVisibleUser(SimpleOpenNI curContext, int userId) {
+        //System.out.println("onVisibleUser - userId: " + userId);
+    }
+
+    public void keyPressed() {
+        switch(key)
+        {
+            case ' ':
+                context.setMirror(!context.mirror());
+                break;
+        }
     }
 
 }
