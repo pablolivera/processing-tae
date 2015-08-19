@@ -15,7 +15,7 @@ public class Tarea1 extends PApplet {
     // dimensiones de la pantalla del sketch
     int sizeW = 800;
     int sizeH = 600;
-    double scale = sizeW / 640;
+    double scale = 1.25;//sizeW / 640;
     double barraAnterior = 0;
 
     // dimensiones de la pantalla del sketch de los controles
@@ -93,6 +93,7 @@ public class Tarea1 extends PApplet {
     }
 
     public void draw() {
+        //background(255);
         // update the cam
         context.update();
 
@@ -107,6 +108,8 @@ public class Tarea1 extends PApplet {
             if(context.getCoM(userList[i], com)) {
                 context.convertRealWorldToProjective(com, com2d);
                 //drawCenterOfMass(userList, i);
+                //ajuste
+                //drawLineasAjuste(userList,i);
             }
         }
 
@@ -115,6 +118,8 @@ public class Tarea1 extends PApplet {
         // la funcion que dibuja las barras de colores
         // le pasamos la cantidad de barras que queremos dibujar
         drawTv(colorsNr);
+
+
     }
 
     void createNoisyBackground() {
@@ -178,7 +183,23 @@ public class Tarea1 extends PApplet {
      *
      **********************/
 
+    void drawLineasAjuste(int[] userList, int i){
+        stroke(100, 255, 0);
+        strokeWeight(1);
+        beginShape(LINES);
+        float posx = com2d.x * (float)scale;
+        //float posy = com * (float)scale;
+
+        vertex(posx, 30*(float)scale);
+        vertex(posx, 450*(float)scale);
+
+        //vertex(posy, 30);
+        //vertex(posy,450);
+        endShape();
+    }
+
     void drawCenterOfMass(int[] userList, int i) {
+        //background(255);
         stroke(100, 255, 0);
         strokeWeight(1);
         beginShape(LINES);
@@ -191,7 +212,8 @@ public class Tarea1 extends PApplet {
         vertex(posx + 5, posy);
         endShape();
 
-        System.out.println("x: " + posx + " ###  y: " + posy);
+        System.out.println("x: " + com2d.x + " ###  y: " + com2d.y);
+        //System.out.println("x: " + posx + " ###  y: " + posy);
 
         fill(0, 255, 100);
         text(Integer.toString(userList[i]), com2d.x, com2d.y);

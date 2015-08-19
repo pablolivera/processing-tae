@@ -15,10 +15,10 @@ public class Main {
         String[] example2 = new String[] {"uy.mgcoders.tae.Tarea1"};
         String[] example3 = new String[] {"uy.mgcoders.tae.GettingStarted"};
         String[] example4 = new String[] {"uy.mgcoders.tae.Caleidoscopio"};
-        String[] example5 = new String[] {"uy.mgcoders.tae.BasicPong"};
+        String[] example5 = new String[] {"--present","uy.mgcoders.tae.BasicPong"};
 
 
         // Run
-        PApplet.main(example5);
+        PApplet.main(example2);
     }
 }
