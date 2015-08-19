@@ -1,11 +1,9 @@
 package uy.mgcoders.tae;
 
 import controlP5.ControlP5;
-import controlP5.ScrollableList;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,7 +49,7 @@ public class Tarea1Control extends PApplet {
                 .setValue(false);
 
         // Controles para cambiar colores de las barras
-        List l = new ArrayList();
+        /*List l = new ArrayList();
         for(int i = 1; i <= colorsNr; i++) {
             l.add(String.valueOf(i));
         }
@@ -66,7 +64,7 @@ public class Tarea1Control extends PApplet {
                 .close();
 
         cp5.addColorWheel("color", 10, 140, 200)
-                .setRGB(color(128, 0, 255));
+                .setRGB(color(128, 0, 255));*/
 
         noStroke();
     }

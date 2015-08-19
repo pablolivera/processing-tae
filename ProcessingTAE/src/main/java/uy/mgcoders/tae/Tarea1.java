@@ -13,8 +13,10 @@ import java.awt.*;
 public class Tarea1 extends PApplet {
 
     // dimensiones de la pantalla del sketch
-    int sizeW = 1024;
-    int sizeH = 768;
+    int sizeW = 800;
+    int sizeH = 600;
+    double scale = 1.25;
+    double barraAnterior = 0;
 
     // dimensiones de la pantalla del sketch de los controles
     int sizeCW = 250;
@@ -37,7 +39,7 @@ public class Tarea1 extends PApplet {
     // aca estan los colores de las barras
     // definidos en el colorMode RGB -> https://processing.org/reference/colorMode_.html
     // color( R, G, B)
-    int [] color_bars={
+    int[] color_bars = {
             color(192,192,192),
             color(192,192,0),
             color(0,192,192),
@@ -47,11 +49,28 @@ public class Tarea1 extends PApplet {
             color(0,0,192)
     };
 
+    int[] color_bars_in = {
+            color(255 - 192,255 - 192,255 - 192),
+            color(255 - 192,255 - 192,255 - 0),
+            color(255 - 0,255 - 192,255 - 192),
+            color(255 - 0,255 - 192,255 - 0),
+            color(255 - 192,255 - 0,255 - 192),
+            color(255 - 192,255 - 0,255 - 0),
+            color(255 - 0,255 - 0,255 - 192)
+    };
+
     // aca se guarda el nro total de los colores definidos
     int colorsNr = color_bars.length;
 
     boolean toSwitch = false;
     int index = 1;
+
+
+    int circleX;
+    int circleY;
+    int directionX = 4; // "velocidad" pixeles que se mueve en cada pasada de draw
+    int myWidth = 640;
+
 
     // esta funcion se ejecuta una vez sola, al principio
     public void setup(){
@@ -74,10 +93,25 @@ public class Tarea1 extends PApplet {
         // enable skeleton generation for all joints
         context.enableUser();
 
-        background(200, 0, 0);
+        background(255);
 
         noStroke();
         smooth();
+
+
+        circleX = width/2;
+        circleY = height/2;
+/*
+        stroke(100, 255, 0);
+        strokeWeight(3);
+        //noStroke();
+        beginShape(LINES);
+        vertex(320, 240 - 5);
+        vertex(320, 240 + 5);
+
+        vertex(320 - 5, 240);
+        vertex(320 + 5, 240);
+        endShape();*/
     }
 
     // esta funcion se ejecuta todo el tiempo en un loop constante
@@ -93,7 +127,7 @@ public class Tarea1 extends PApplet {
         // le pasamos la cantidad de barras que queremos dibujar
         drawTv(colorsNr);
 
-        scale(1,6);
+        scale((float)scale);
         // draw depthImageMap
         //image(context.depthImage(),0,0);
         //image(context.userImage(),0,0);
@@ -102,28 +136,46 @@ public class Tarea1 extends PApplet {
         int[] userList = context.getUsers();
         for(int i=0;i<userList.length;i++) {
             if(context.isTrackingSkeleton(userList[i])) {
-                stroke(userClr[ (userList[i] - 1) % userClr.length ] );
+                //stroke(userClr[ (userList[i] - 1) % userClr.length ] ); // Dibuja lineas
                 drawSkeleton(userList[i]);
             }
 
             // draw the center of mass
             if(context.getCoM(userList[i],com)) {
                 context.convertRealWorldToProjective(com, com2d);
-                stroke(100,255,0);
-                //strokeWeight(1);
-                noStroke();
+                if(Double.isNaN(com2d.x) || com2d.x < 0 || com2d.x > 640) {
+                    myWidth = 800;
+                }
+                else
+                    myWidth = (int)(com2d.x * (float)scale);
+                /*stroke(100, 255, 0);
+                strokeWeight(1);
+                //noStroke();
                 beginShape(LINES);
-                vertex(com2d.x,com2d.y - 5);
-                vertex(com2d.x,com2d.y + 5);
+                float posx = com2d.x * (float)scale;
+                float posy = com2d.y * (float)scale;
+                vertex(posx, posy - 5);
+                vertex(posx, posy + 5);
 
-                vertex(com2d.x - 5,com2d.y);
-                vertex(com2d.x + 5,com2d.y);
-                endShape();
+                vertex(posx - 5, posy);
+                vertex(posx + 5, posy);
+                endShape();*/
+                //System.out.println("2d " + posx + "  ####  " + posy);
 
-                fill(0,255,100);
-                text(Integer.toString(userList[i]), com2d.x, com2d.y);
+                //fill(0, 255,100);
+                //text(Integer.toString(userList[i]), com2d.x, com2d.y);
             }
         }
+        // Para el circulo que se mueve
+        fill(200, 0, 150);
+        ellipse(circleX, circleY, 100, 100);
+
+        if( circleX > myWidth || circleX < 0){
+            directionX = -1 * directionX;
+        }
+        circleX = circleX + directionX;
+
+
     }
 
     // draw the skeleton with the selected joints
@@ -208,15 +260,21 @@ public class Tarea1 extends PApplet {
 
         double posX = com2d.x;
         if(Double.isNaN(posX) || posX < 0 || posX > 640) {
-            posX = 0.0;
+            posX = barraAnterior;
+        }
+        else {
+            barraAnterior = posX;
         }
 
-        int whichBar = (int)((posX * 1.6) / bar_width);
+        int whichBar = (int)((posX * scale) / bar_width);
 
         // dibujamos las barras
         for (int i = 0; i < bars_nr; i ++) {
-            if( (!toSwitch && whichBar != i) || (toSwitch && whichBar == i) ) {
-                fill(color_bars[i%colorsNr]);
+            if(whichBar != i) { //(!toSwitch && whichBar != i) || (toSwitch && whichBar == i)
+                if(toSwitch)
+                    fill(color_bars_in[i%colorsNr]);
+                else
+                    fill(color_bars[i%colorsNr]);
                 rect(i * bar_width, 0, bar_width, height);
             }
         }
