@@ -48,6 +48,13 @@ public class Tarea1Control extends PApplet {
                 .setSize(50, 20)
                 .setValue(false);
 
+        // Invierte la forma de pintar
+        cp5.addToggle("Convulsiones")
+                .plugTo(parent, "activarConvulciones")
+                .setPosition(10, 80)
+                .setSize(50, 20)
+                .setValue(false);
+
         // Controles para cambiar colores de las barras
         /*List l = new ArrayList();
         for(int i = 1; i <= colorsNr; i++) {

@@ -13,9 +13,9 @@ import java.awt.*;
 public class Tarea1 extends PApplet {
 
     // dimensiones de la pantalla del sketch
-    int sizeW = 800;
-    int sizeH = 600;
-    double scale = 1.25;//sizeW / 640;
+    int sizeW = 1024;
+    int sizeH = 700;
+    double scale = (double)sizeW / (double)640;
     double barraAnterior = 0;
 
     // dimensiones de la pantalla del sketch de los controles
@@ -63,6 +63,8 @@ public class Tarea1 extends PApplet {
     int colorsNr = color_bars.length;
 
     boolean toSwitch = false;
+    boolean activarConvulciones = false;
+    int contTiempoConvulciones = 0;
     int index = 1;
 
     // esta funcion se ejecuta una vez sola, al principio
@@ -112,6 +114,17 @@ public class Tarea1 extends PApplet {
                 //drawLineasAjuste(userList,i);
             }
         }
+
+        //Convulciones
+        if (activarConvulciones && contTiempoConvulciones % 4 == 0) {
+                int[] aux = color_bars;
+                color_bars = color_bars_in;
+                color_bars_in = aux;
+                contTiempoConvulciones = 0;
+        }
+        contTiempoConvulciones++;
+
+
 
         // la funcion que creamos para dibujar el fondo ruidoso
         createNoisyBackground();
