@@ -1,13 +1,7 @@
-package uy.mgcoders.tae;
 
-import controlP5.CheckBox;
-import controlP5.ControlEvent;
-import controlP5.ControlP5;
+import controlP5.*;
 import processing.core.PApplet;
 
-/**
- * Created by pablo on 15/08/15.
- */
 public class Tarea1Control extends PApplet {
 
     ControlP5 cp5;
@@ -64,25 +58,6 @@ public class Tarea1Control extends PApplet {
                 .addItem("4", 4)
                 .addItem("6", 6)
                 .addItem("8", 8);
-
-        // Controles para cambiar colores de las barras
-        /*List l = new ArrayList();
-        for(int i = 1; i <= colorsNr; i++) {
-            l.add(String.valueOf(i));
-        }
-
-        cp5.addScrollableList("colores")
-                .setPosition(10, 90)
-                .plugTo(parent,"index")
-                .setSize(200, 100)
-                .setBarHeight(20)
-                .setItemHeight(20)
-                .addItems(l)
-                .close();
-
-        cp5.addColorWheel("color", 10, 140, 200)
-                .setRGB(color(128, 0, 255));*/
-
         noStroke();
     }
 
@@ -116,3 +91,4 @@ public class Tarea1Control extends PApplet {
         return velocidad;
     }
 }
+

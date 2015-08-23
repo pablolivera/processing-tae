@@ -1,8 +1,9 @@
 package uy.mgcoders.tae;
 
+import SimpleOpenNI.SimpleOpenNI;
 import controlP5.ControlP5;
 import processing.core.PApplet;
-import SimpleOpenNI.*;
+import processing.core.PImage;
 import processing.core.PVector;
 
 import java.awt.*;
@@ -14,7 +15,7 @@ public class Tarea1 extends PApplet {
 
     // dimensiones de la pantalla del sketch
     int sizeW = 1024;
-    int sizeH = 700;
+    int sizeH = 768;
     double scale = (double)sizeW / (double)640;
     double barraAnterior = 0;
 
@@ -27,6 +28,7 @@ public class Tarea1 extends PApplet {
     PVector com2d = new PVector();
     ControlP5 cp5;
     Tarea1Control tarea1Control;
+    PImage img;
 
     int[] userClr = { color(255,0,0),
             color(0,255,0),
@@ -63,13 +65,15 @@ public class Tarea1 extends PApplet {
     int colorsNr = color_bars.length;
 
     boolean toSwitch = false;
-    boolean activarConvulciones = false;
-    int contTiempoConvulciones = 0;
-    int index = 1;
+    int contTiempoConvulsiones = 0;
+    boolean cambiarFondo = false;
 
     // esta funcion se ejecuta una vez sola, al principio
     public void setup(){
         size(sizeW, sizeH);
+
+        String nombreImagen = "fondo" + sizeW + "x" + sizeH + ".jpg";
+        img = loadImage(nombreImagen);
 
         cp5 = new ControlP5(this);
         tarea1Control = addControlFrame("Controladores", sizeCW, sizeCH, colorsNr);
@@ -102,11 +106,6 @@ public class Tarea1 extends PApplet {
         // draw the skeleton if it's available
         int[] userList = context.getUsers();
         for(int i = 0; i < userList.length; i++) {
-            /*if(context.isTrackingSkeleton(userList[i])) {
-                stroke(userClr[ (userList[i] - 1) % userClr.length ] ); // Dibuja lineas
-                drawSkeleton(userList[i]);
-            }*/
-
             if(context.getCoM(userList[i], com)) {
                 context.convertRealWorldToProjective(com, com2d);
                 //drawCenterOfMass(userList, i);
@@ -115,23 +114,28 @@ public class Tarea1 extends PApplet {
             }
         }
 
-        //Convulciones
-        if (activarConvulciones && contTiempoConvulciones % 4 == 0) {
+        //Convulsiones
+        if (tarea1Control.velocidad != 0 && contTiempoConvulsiones % tarea1Control.velocidad == 0) {
                 int[] aux = color_bars;
                 color_bars = color_bars_in;
                 color_bars_in = aux;
-                contTiempoConvulciones = 0;
+                contTiempoConvulsiones = 0;
         }
-        contTiempoConvulciones++;
+        else if(contTiempoConvulsiones > 50000000) {
+            contTiempoConvulsiones = 0;
+        }
+        contTiempoConvulsiones++;
 
-
-
-        // la funcion que creamos para dibujar el fondo ruidoso
-        createNoisyBackground();
+        if(cambiarFondo) {
+            image(img, 0, 0);
+        }
+        else {
+            // la funcion que creamos para dibujar el fondo ruidoso
+            createNoisyBackground();
+        }
         // la funcion que dibuja las barras de colores
         // le pasamos la cantidad de barras que queremos dibujar
         drawTv(colorsNr);
-
 
     }
 
@@ -172,7 +176,6 @@ public class Tarea1 extends PApplet {
                 fill(color_bars[i % colorsNr]);
                 rect(i * bar_width, 0, bar_width, height);
             }
-
         }
     }
 
@@ -203,8 +206,8 @@ public class Tarea1 extends PApplet {
         float posx = com2d.x * (float)scale;
         //float posy = com * (float)scale;
 
-        vertex(posx, 30*(float)scale);
-        vertex(posx, 450*(float)scale);
+        vertex(posx, 30 * (float) scale);
+        vertex(posx, 450 * (float) scale);
 
         //vertex(posy, 30);
         //vertex(posy,450);
