@@ -221,7 +221,7 @@ class Branch {
       if (length+random(length*10) > 30)
         branchA = new Branch(this, xB, yB, -0.1-random(0.4) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.6+random(0.3)));
       if (length+random(length*10) > 30)
-        branchB = new Branch(this, xB, yB, 0.1+random(0.4) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.6+random(0.3)));
+        branchB = new Branch(this, xB, yB, 0.05+random(0.2) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.6+random(0.3)));
       if (branchB != null && branchA == null) {
         branchA = branchB;
         branchB = null;
