@@ -40,6 +40,9 @@ SimpleOpenNI  context = null;
 
 //CONTROLES
 boolean mostrarSilueta = false;
+// Vectores para las manos.
+PVector convertedRightHand;
+PVector convertedLeftHand;
 
 // variable que define el factor para escalar la imagen que nos da la kinect
 float fact;
@@ -233,38 +236,42 @@ void draw() {
 
   //FISICA
   //if (frameCount%1==0) {
-  //List<FBody> bodies = world.getBodies(mouseX, mouseY);
-  handIzq = pelota(mouseX, mouseY);
-  handDer = null;
-  world.add(handIzq);
+
+  findHands();
 
 
-  /*for (FBody b : bodies) {
-   float xmin = mouseX - 50;
-   float xmax = mouseX + 50;
-   float ymin = mouseY - 50;
-   float ymax = mouseY + 50;
-   if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-   b.setStatic(false);
-   b.wakeUp();
-   }
-   //}
-   }*/
+
+  List<FBody> bodies = world.getBodies();
+  for (FBody b : bodies) {
+    //println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>A bu");
+    if (handIzq !=null) {
+      float xmin = handIzq.getX() - 50;
+      float xmax = handIzq.getX() + 50;
+      float ymin = handIzq.getY() - 50;
+      float ymax = handIzq.getY() + 50;
+      if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+        b.setStatic(false);
+        b.wakeUp();
+      }
+    }
+    if (handDer !=null) {
+      float xmin = handDer.getX() - 50;
+      float xmax = handDer.getX() + 50;
+      float ymin = handDer.getY() - 50;
+      float ymax = handDer.getY() + 50;
+      if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+        b.setStatic(false);
+        b.wakeUp();
+      }
+    }
+  }
+
+
+
 
   if (tracking && context.isInit()) {
-
     actualizarVectorBordes();
-
     crearObstaculo();
-
-    strokeWeight(1);
-    stroke(255);
-    ArrayList contacts = obstacle.getContacts();
-    System.out.println("Esto es el tamanio de contacts" + contacts.size());
-    for (int i=0; i<contacts.size (); i++) {
-      FContact c = (FContact)contacts.get(i);
-      //line(c.getBody1().getX(), c.getBody1().getY(), c.getBody2().getX(), c.getBody2().getY());
-    }
   }
 
 
@@ -273,6 +280,44 @@ void draw() {
   world.step();
   world.removeBody(obstacle);
   world.removeBody(handIzq);
+  world.removeBody(handDer);
+}
+
+void findHands() {
+  // Dibujar manos si están disponibles
+  int[] userList = context.getUsers();
+  for (int i = 0; i < userList.length; i++) {
+    if (context.isTrackingSkeleton(userList[i])) {
+      stroke(230);
+      drawHand(userList[i]);
+    }
+  }
+}
+
+void drawHand(int userId) {
+
+  PVector rightHand = new PVector(); 
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, rightHand);  
+  convertedRightHand = new PVector();
+  context.convertRealWorldToProjective(rightHand, convertedRightHand);
+  // Se escala la coordenada.
+  convertedRightHand.x = convertedRightHand.x * fact;
+  convertedRightHand.y = convertedRightHand.y  * fact;
+  ellipse( convertedRightHand.x, convertedRightHand.y, 40, 40);
+
+  PVector leftHand = new PVector(); 
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, leftHand);
+  convertedLeftHand = new PVector();
+  context.convertRealWorldToProjective(leftHand, convertedLeftHand);
+  convertedLeftHand.x = convertedLeftHand.x  * fact;
+  convertedLeftHand.y = convertedLeftHand.y * fact;
+  ellipse(convertedLeftHand.x, convertedLeftHand.y, 40, 40); // Se escala la coordenada.
+
+  handIzq = pelota(convertedLeftHand.x, convertedLeftHand.y);
+  handDer = pelota(convertedRightHand.x, convertedRightHand.y);
+
+  world.add(handIzq);
+  world.add(handDer);
 }
 
 void crearObstaculo() {
@@ -331,7 +376,7 @@ void actualizarVectorBordes() {
 void onNewUser(SimpleOpenNI curContext, int userId) { 
   tracking = true;
   //println("tracking" + userId);
-  //curContext.startTrackingSkeleton(userId);
+  context.startTrackingSkeleton(userId);
 }
 
 void onLostUser(SimpleOpenNI curContext, int userId) {
@@ -341,6 +386,7 @@ void onLostUser(SimpleOpenNI curContext, int userId) {
 
 
 void contactStarted(FContact c) {
+
   FBody ball = null;
   if (c.getBody1() == obstacle) {
     ball = c.getBody2();
@@ -375,18 +421,18 @@ void contactPersisted(FContact c) {
 }
 
 void contactEnded(FContact c) {
-  FBody ball = null;
-  if (c.getBody1() == obstacle) {
-    ball = c.getBody2();
-  } else if (c.getBody2() == obstacle) {
-    ball = c.getBody1();
-  }
-
-  if (ball == null) {
-    return;
-  }
-
-  ball.setFill(200, 30, 90);
+  /*FBody ball = null;
+   if (c.getBody1() == obstacle) {
+   ball = c.getBody2();
+   } else if (c.getBody2() == obstacle) {
+   ball = c.getBody1();
+   }
+   
+   if (ball == null) {
+   return;
+   }
+   
+   ball.setFill(200, 30, 90);*/
 }
 
 
