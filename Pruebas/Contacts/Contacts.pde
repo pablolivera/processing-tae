@@ -15,8 +15,11 @@ FPoly obstacle;
 
 
 void setup() {
+  
   size(400, 400);
   smooth();
+
+  background(255);
 
   Fisica.init(this);
 
@@ -33,7 +36,9 @@ void setup() {
   obstacle.vertex(280,height-0);   
   obstacle.vertex(0,height-0);
   obstacle.setStatic(true);
-  obstacle.setFill(0);
+  //obstacle.setFill(0);
+  obstacle.setNoFill();
+  obstacle.setNoStroke();
   obstacle.setRestitution(0);
   
   world.add(obstacle);
