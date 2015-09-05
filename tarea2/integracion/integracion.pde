@@ -20,20 +20,23 @@ String typedText;
 String lastSeed;
 PImage leaveImagePrimavera;
 PImage leaveImageOtono;
+PImage pelota;
 int cont = 0;
 //var curContext; // Javascript drawing context (for faster rendering)
 
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
-int maxHojas = 1000;
+int maxHojas = 1500;
 int cantHojas = 0;
 FWorld world;
 FBox f;
 FPoly obstacle;
+FBody handIzq;
+FBody handDer;
 
 //KINECT
-SimpleOpenNI  context;
+SimpleOpenNI  context = null;
 
 //CONTROLES
 boolean mostrarSilueta = false;
@@ -53,15 +56,16 @@ void setup() {
 
   leaveImagePrimavera = createLeaveImage();
   leaveImageOtono = createLeaveImage2();
+  pelota = crearPelota();
   createNewTree("OpenProcessing");
 
 
   context = new SimpleOpenNI(this);
   if (context.isInit() == false)
   {
-    println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
-    exit();
-    return;
+    //println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
+    //exit();
+    //return;
   }
 
   // hay que habilitar estas dos opciones para poder usar la funcion userImage()
@@ -112,6 +116,27 @@ PImage createLeaveImage() {
   buffer.stroke(#659000);
   buffer.noFill();
   buffer.bezier(6, 9, 5, 11, 5, 12, 6, 15);
+  buffer.endDraw();
+  return buffer.get();
+}
+
+PImage crearPelota() {
+  PGraphics buffer = createGraphics(12, 12);
+  buffer.beginDraw();
+
+  int n=40;
+  int size=700;
+  int x=0;
+  int y=0;
+  //Each call to drawEllipse() specifies position, size, total number of ellipses drawn
+  float vortex = 255/n; //setup fill gradient
+  float rays = size/n; //initiates size of each ellipse, size/number
+  for (int i = 0; i < n; i++) {
+
+    buffer.fill(i*vortex); //allows ellipses to appear as gradient
+    buffer.ellipse(x, y, size - i*rays, size - i*rays); //ellipse function
+  }
+
   buffer.endDraw();
   return buffer.get();
 }
@@ -179,7 +204,7 @@ void createNewTree(String seed) {
 ///////////////////////////////////////////////////////////
 void draw() {
   // actualizamos la kinect
-  context.update();
+  if (context.isInit()) context.update();
 
   background(0);
   //fill(200); 
@@ -208,20 +233,25 @@ void draw() {
 
   //FISICA
   //if (frameCount%1==0) {
-  List<FBody> bodies = world.getBodies();
-  for (FBody b : bodies) {
-    float xmin = mouseX - 50;
-    float xmax = mouseX + 50;
-    float ymin = mouseY - 50;
-    float ymax = mouseY + 50;
-    if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-      b.setStatic(false);
-      b.wakeUp();
-    }
-    //}
-  }
+  //List<FBody> bodies = world.getBodies(mouseX, mouseY);
+  handIzq = pelota(mouseX, mouseY);
+  handDer = null;
+  world.add(handIzq);
 
-  if (tracking) {
+
+  /*for (FBody b : bodies) {
+   float xmin = mouseX - 50;
+   float xmax = mouseX + 50;
+   float ymin = mouseY - 50;
+   float ymax = mouseY + 50;
+   if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+   b.setStatic(false);
+   b.wakeUp();
+   }
+   //}
+   }*/
+
+  if (tracking && context.isInit()) {
 
     actualizarVectorBordes();
 
@@ -242,6 +272,7 @@ void draw() {
   world.draw();
   world.step();
   world.removeBody(obstacle);
+  world.removeBody(handIzq);
 }
 
 void crearObstaculo() {
@@ -266,7 +297,7 @@ void crearObstaculo() {
     obstacle.setNoStroke();
     obstacle.setNoFill();
   }
-  
+
   obstacle.setRestitution(0); // ??
   world.add(obstacle);
 }
@@ -315,7 +346,7 @@ void contactStarted(FContact c) {
     ball = c.getBody2();
   } else if (c.getBody2() == obstacle) {
     ball = c.getBody1();
-  }
+  } 
 
   if (ball == null) {
     return;
@@ -373,13 +404,27 @@ FBody hoja(float x, float y, float angle) {
   return f;
 }
 
+FBody pelota(float x, float y) {
+  FCircle f = new FCircle(50);
+  f.setPosition(x, y);
+  f.setDamping(0);
+  f.setDensity(30);
+  f.setRestitution(0.5);
+  f.setFill(200);
+  f.setNoStroke();
+  return f;
+}
+
 FBody circulo(float x, float y) {
   FCircle hoja = new FCircle(10);
   hoja.setPosition(x, y);
   hoja.setVelocity(0, 200);
   hoja.setRestitution(0);
   hoja.setNoStroke();
-  hoja.setFill(200, 30, 90);
+  //Otono
+  //hoja.setFill(random(236, 255), random(118, 140), random(66), random(255));
+  //Prim
+  hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
   return hoja;
 }
 

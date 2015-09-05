@@ -223,7 +223,7 @@ FBody circulo(float x, float y) {
   hoja.setVelocity(0, 200);
   hoja.setRestitution(0);
   hoja.setNoStroke();
-  hoja.setFill(200, 30, 90);
+  hoja.setFill(200, 30, 90,0.8);
   return hoja;
 }
 
@@ -365,7 +365,7 @@ class Branch {
         rotate(-angle);
 
         if ((random(10)>9)&&(cantHojas<maxHojas)) {
-          FBody f = hoja(x, y, -angle);
+          FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
           cantHojas++;
