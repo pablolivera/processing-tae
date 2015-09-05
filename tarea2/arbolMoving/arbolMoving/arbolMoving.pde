@@ -1,7 +1,7 @@
 /* OpenProcessing Tweak of *@*http://www.openprocessing.org/sketch/90192*@* */
 /* !do not delete the line above, required for linking your tweak if you upload again */
 /* @pjs globalKeyEvents=true; */
-
+import fisica.*;
 
 ///////////////////////////////////////////////////////////
 // Variable definitions ///////////////////////////////////
@@ -20,6 +20,16 @@ PImage leaveImageOtono;
 int cont = 0;
 //var curContext; // Javascript drawing context (for faster rendering)
 
+//FISICA
+Boolean[][] hayHoja; 
+FWorld world;
+FBox f;
+//FBox obstacle;
+//FCircle obstacle;
+//FLine obstacle;
+FPoly obstacle;
+FLine obstacle1;
+
 
 ///////////////////////////////////////////////////////////
 // Init ///////////////////////////////////////////////////
@@ -32,6 +42,39 @@ void setup() {
   leaveImageOtono = createLeaveImage2();
   createNewTree("OpenProcessing");
   //curContext = externals.context; // Get javascript drawing context
+
+  //FISICA
+  hayHoja = new Boolean[width][height];
+  for (int i=0; i<width; i++) {
+    for (int j=0; j<height; j++) {
+      //println("x:"+i+" y:"+j);
+      hayHoja[i][j]=new Boolean(false);
+    }
+  }
+  Fisica.init(this);
+
+  world = new FWorld();
+
+
+  obstacle = new FPoly();
+  obstacle.vertex(0, 0);
+  obstacle.vertex(40, 40);
+  obstacle1 = new FLine(0, 50, 20, 30);
+
+
+  obstacle.setPosition(width/2, height/2);
+  obstacle.setStatic(true);
+  obstacle.setFill(0);
+  obstacle.setRestitution(0);
+
+  obstacle1.setPosition(width/2, height/2);
+  obstacle1.setStatic(true);
+  obstacle1.setFill(0);
+  obstacle1.setRestitution(0);
+
+
+  world.add(obstacle);
+  world.add(obstacle1);
 }
 
 
@@ -159,18 +202,16 @@ void draw() {
 
   if (cont > 50) cont = 0;
   cont++;
+
+  //FISICA
+  world.draw();
+  world.step();
 }
 
 
 
 
 
-///////////////////////////////////////////////////////////
-// Create new random tree /////////////////////////////////
-///////////////////////////////////////////////////////////
-void mouseClicked() {
-  createNewTree(getRandomSeed());
-}
 
 
 ///////////////////////////////////////////////////////////
@@ -305,8 +346,15 @@ class Branch {
           pushMatrix();
           translate(x, y);
           rotate(-angle);
-          if (mouseY<(height/2)) {
-            image(leaveImagePrimavera, -leaveImagePrimavera.width/2, 0);
+          if ((!hayHoja[(int)x][(int)y]) && (mouseY<(height/2))) {
+            f = new FBox(10, 10);
+            f.attachImage(leaveImagePrimavera);
+            hayHoja[(int)x][(int)y] = true;
+            f.setPosition(x, y);
+            f.setVelocity(0, 200);
+            world.add(f);
+
+            //image(leaveImagePrimavera, -leaveImagePrimavera.width/2, 0);
           } else {
             image(leaveImageOtono, -leaveImageOtono.width/2, 0);
           }
