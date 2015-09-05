@@ -3,6 +3,8 @@
 /* @pjs globalKeyEvents=true; */
 import fisica.*;
 import java.util.List;
+import SimpleOpenNI.*;
+import java.util.*;
 
 ///////////////////////////////////////////////////////////
 // Variable definitions ///////////////////////////////////
@@ -24,33 +26,55 @@ int cont = 0;
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
-int maxHojas = 15;
+int maxHojas = 1000;
 int cantHojas = 0;
 FWorld world;
 FBox f;
-//FBox obstacle;
-//FCircle obstacle;
-//FLine obstacle;
 FPoly obstacle;
-FLine obstacle1;
+
+//KINECT
+SimpleOpenNI  context;
+
+//CONTROLES
+boolean mostrarSilueta = false;
+
+// variable que define el factor para escalar la imagen que nos da la kinect
+float fact;
+int[] puntosBorde; // puntosBorde[i] < 0 : No hay user. En otro caso esta la posicion en y mas alta en la x dada del usuario. 
+List<PVector> puntosBordeList; // Lista con los puntos de borde superiores del user. Escalado por fact.
+boolean tracking = false;
 
 
 ///////////////////////////////////////////////////////////
 // Init ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void setup() {
-  size(800, 600, P2D); // Set screen size & renderer
-  textFont(createFont("Verdana", 24, true), 24); // Create font
-  PGraphics back = createGraphics(width, height, P2D);
+  size(1024, 768); // Set screen size & renderer
+
   leaveImagePrimavera = createLeaveImage();
   leaveImageOtono = createLeaveImage2();
   createNewTree("OpenProcessing");
-  //curContext = externals.context; // Get javascript drawing context
 
 
+  context = new SimpleOpenNI(this);
+  if (context.isInit() == false)
+  {
+    println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
+    exit();
+    return;
+  }
+
+  // hay que habilitar estas dos opciones para poder usar la funcion userImage()
+  context.enableDepth();
+  context.enableUser();
+
+  // el factor lo definimos dividiendo el ancho del proyector, por el ancho de la imagen de la kinect
+  fact = float(width)/640;
+
+
+  smooth();
   Fisica.init(this);
   world = new FWorld();
-  //ACA OBSTACULOS
 }
 
 
@@ -67,7 +91,7 @@ String getRandomSeed() {
 // Create leave image /////////////////////////////////////
 ///////////////////////////////////////////////////////////
 PImage createLeaveImage() {
-  PGraphics buffer = createGraphics(12, 18, P2D);
+  PGraphics buffer = createGraphics(12, 18);
   buffer.beginDraw();
   buffer.background(#000000, 0);
   buffer.stroke(#5d6800);
@@ -95,7 +119,7 @@ PImage createLeaveImage() {
 // Create leave image /////////////////////////////////////
 ///////////////////////////////////////////////////////////
 PImage createLeaveImage2() {
-  PGraphics buffer = createGraphics(12, 18, P2D);
+  PGraphics buffer = createGraphics(12, 18);
   buffer.beginDraw();
   buffer.background(#000000, 0);
   buffer.stroke(#6E4C27);
@@ -137,10 +161,10 @@ void createNewTree(String seed) {
   float scale = 1;
   if (xSize > ySize) {
     if (xSize > 500)
-      scale = 730/xSize;
+      scale = 1100/xSize;
   } else {
     if (ySize > 500)
-      scale = 730/ySize;
+      scale = 1100/ySize;
   }
   tree.setScale(scale);
   tree.x = width/5;// - xSize/2*scale + (tree.x-minX)*scale;
@@ -154,6 +178,8 @@ void createNewTree(String seed) {
 // Render /////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void draw() {
+  // actualizamos la kinect
+  context.update();
 
   background(0);
   //fill(200); 
@@ -195,12 +221,142 @@ void draw() {
     //}
   }
 
+  if (tracking) {
+
+    actualizarVectorBordes();
+
+    crearObstaculo();
+
+    strokeWeight(1);
+    stroke(255);
+    ArrayList contacts = obstacle.getContacts();
+    System.out.println("Esto es el tamanio de contacts" + contacts.size());
+    for (int i=0; i<contacts.size (); i++) {
+      FContact c = (FContact)contacts.get(i);
+      //line(c.getBody1().getX(), c.getBody1().getY(), c.getBody2().getX(), c.getBody2().getY());
+    }
+  }
+
+
 
   world.draw();
   world.step();
+  world.removeBody(obstacle);
+}
+
+void crearObstaculo() {
+  obstacle = new FPoly();
+
+  float firstX = -1; // Guardar el primer x del usuario
+  float currentX = 0;
+  for (PVector p : puntosBordeList) {
+    if (firstX < 0) {
+      firstX = p.x;
+      obstacle.vertex(p.x, height); // Primer punto del poligono contra el piso.
+    }
+    obstacle.vertex(p.x, p.y);
+    currentX = p.x;
+  }
+  obstacle.vertex(currentX, height); // La posicion mas lejana x del usuario
+  obstacle.vertex(firstX, height); // Para cerrar el poligono
+
+  obstacle.setStatic(true);
+  obstacle.setFill(255);
+  if (!mostrarSilueta) {
+    obstacle.setNoStroke();
+    obstacle.setNoFill();
+  }
+  
+  obstacle.setRestitution(0); // ??
+  world.add(obstacle);
+}
+
+void actualizarVectorBordes() {
+  puntosBordeList = new ArrayList();
+  int[]   userMap = context.userMap();
+  int[]   depthMap = context.depthMap(); 
+  puntosBorde = new int[context.depthWidth()]; 
+
+  int index;
+  for (int x = 0; x < context.depthWidth (); x++) {
+    for (int y = 0; y < context.depthHeight (); y++) {
+      index = x + (y * context.depthWidth());
+      int d = depthMap[index];
+      // si no hay usuarios se pone posicion en -1
+      puntosBorde[x] = -1;
+      if ( d > 0) {
+        int userNr = userMap[index];
+        if ( userNr > 0) {
+          // Si hay una usuario se carga la posicion en el array          
+          puntosBordeList.add(new PVector( (x * fact), (y * fact)));
+          puntosBorde[x] = y;
+          break; // Se corta para detectar solo el borde superior del usuario.
+        }
+      }
+    }
+  }
+}
+
+void onNewUser(SimpleOpenNI curContext, int userId) { 
+  tracking = true;
+  //println("tracking" + userId);
+  //curContext.startTrackingSkeleton(userId);
+}
+
+void onLostUser(SimpleOpenNI curContext, int userId) {
+  tracking = false;
+  //println("onLostUser - userId: " + userId);
 }
 
 
+void contactStarted(FContact c) {
+  FBody ball = null;
+  if (c.getBody1() == obstacle) {
+    ball = c.getBody2();
+  } else if (c.getBody2() == obstacle) {
+    ball = c.getBody1();
+  }
+
+  if (ball == null) {
+    return;
+  }
+
+  ball.setFill(30, 190, 200);
+}
+
+void contactPersisted(FContact c) {
+  FBody ball = null;
+  if (c.getBody1() == obstacle) {
+    ball = c.getBody2();
+  } else if (c.getBody2() == obstacle) {
+    ball = c.getBody1();
+  }
+
+  if (ball == null) {
+    return;
+  }
+
+  ball.setFill(30, 120, 200);
+
+  noStroke();
+  fill(255, 220, 0);
+  ellipse(c.getX(), c.getY(), 10, 10);
+}
+
+void contactEnded(FContact c) {
+  FBody ball = null;
+  if (c.getBody1() == obstacle) {
+    ball = c.getBody2();
+  } else if (c.getBody2() == obstacle) {
+    ball = c.getBody1();
+  }
+
+  if (ball == null) {
+    return;
+  }
+
+  ball.setFill(200, 30, 90);
+}
 
 
 FBody hoja(float x, float y, float angle) {
@@ -208,8 +364,8 @@ FBody hoja(float x, float y, float angle) {
   f.attachImage(leaveImageOtono);
   f.setPosition(x, y);
   //float angle = random(TWO_PI);
-  float magnitude = 500;
-  f.setVelocity(magnitude*cos(angle), magnitude*sin(angle));
+  float magnitude = 90;
+  f.setVelocity(0, magnitude);
   f.setDamping(0);
   f.setRestitution(0.5);
   f.setRotatable(true);
@@ -365,7 +521,7 @@ class Branch {
         rotate(-angle);
 
         if ((random(10)>9)&&(cantHojas<maxHojas)) {
-          FBody f = hoja(x, y, -angle);
+          FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
           cantHojas++;
