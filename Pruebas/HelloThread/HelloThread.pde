@@ -1,6 +1,6 @@
   
 String time = "";
-String mili = "";
+String time2 = "";
 
 void setup() {
   size(100, 100);
@@ -14,7 +14,7 @@ void draw() {
     thread("requestData2");
   }
   text(time, 5, 50);
-  text(mili, 0, 0);
+  text(time2, 0, 60);
 }
 
 // This happens as a separate thread and can take as long as it wants
@@ -25,6 +25,6 @@ void requestData() {
 
 void requestData2() {
   JSONObject json = loadJSONObject("http://time.jsontest.com/");
-  mili = json.getString("milliseconds_since_epoch");
+  time2 = json.getString("time");
 }
 
