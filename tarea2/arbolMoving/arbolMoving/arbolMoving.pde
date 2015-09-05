@@ -88,14 +88,14 @@ void createNewTree(String seed) {
   float scale = 1;
   if (xSize > ySize) {
     if (xSize > 500)
-      scale = 500/xSize;
+      scale = 700/xSize;
   } else {
     if (ySize > 500)
-      scale = 500/ySize;
+      scale = 700/ySize;
   }
   tree.setScale(scale);
-  tree.x = width/2 - xSize/2*scale + (tree.x-minX)*scale;
-  tree.y = height/2 + ySize/2*scale + (tree.y-maxY)*scale;
+  tree.x = width/5;// - xSize/2*scale + (tree.x-minX)*scale;
+  tree.y = height;///2 + ySize/2*scale + (tree.y-maxY)*scale;
   blinkUpdate = -1; // Set/reset variables
   typedText = "";
 }
@@ -112,7 +112,7 @@ void draw() {
   //rect(120, 120, width-240, height-240);
   noFill();
   windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
-  tree.windForce = sin(windAngle) * 0.08;
+  tree.windForce = sin(windAngle) * 0.05;
   tree.update();
   if (frameCount >= 0 && frameCount < 50)
     tree.render(80);
@@ -217,11 +217,15 @@ class Branch {
     this.length = length;
     float xB = x + sin(angle) * length;
     float yB = y + cos(angle) * length;
-    if (length > 10) {
-      if (length+random(length*10) > 30)
-        branchA = new Branch(this, xB, yB, -0.1-random(0.4) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.6+random(0.3)));
-      if (length+random(length*10) > 30)
-        branchB = new Branch(this, xB, yB, 0.05+random(0.2) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.6+random(0.3)));
+    if (length > 16) {
+      if (length+random(length) > 55) {
+        //DERECHA
+        branchA = new Branch(this, xB, yB, -0.05-random(0.2) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.95));//-random(0.02)));
+      }
+      if (length+random(length) > 29) {
+        //IZQ
+        branchB = new Branch(this, xB, yB, 0.2+random(0.1) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.7+random(0.2)));
+      }
       if (branchB != null && branchA == null) {
         branchA = branchB;
         branchB = null;
@@ -273,7 +277,7 @@ class Branch {
   ///////////////////////////////////////////////////////////
   void render(int maxLen) {
     if (length > maxLen) {
-      if (branchA != null) {
+      if (branchB != null) {
         float xB = x;
         float yB = y;
         if (parent != null) {
@@ -288,7 +292,7 @@ class Branch {
         strokeWeight(length/5);
         beginShape();
         vertex(x, y);
-        bezierVertex(xB, yB, xB, yB, branchA.x, branchA.y);
+        bezierVertex(xB, yB, xB, yB, branchB.x, branchB.y);
         endShape();
 
         /*curContext.beginPath();
@@ -298,9 +302,9 @@ class Branch {
          curContext.strokeStyle = "rgb("+branchColor+","+branchColor+","+branchColor+")";
          curContext.lineWidth = length/5;
          curContext.stroke();*/
-        branchA.render(maxLen);
-        if (branchB != null)
-          branchB.render(maxLen);
+        branchB.render(maxLen);
+        if (branchA != null)
+          branchA.render(maxLen);
       } else {
         pushMatrix();
         translate(x, y);
