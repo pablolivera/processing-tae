@@ -26,7 +26,7 @@ int cont = 0;
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
-int maxHojas = 300;
+int maxHojas = 1000;
 int cantHojas = 0;
 FWorld world;
 FBox f;
@@ -34,6 +34,9 @@ FPoly obstacle;
 
 //KINECT
 SimpleOpenNI  context;
+
+//CONTROLES
+boolean mostrarSilueta = false;
 
 // variable que define el factor para escalar la imagen que nos da la kinect
 float fact;
@@ -158,10 +161,10 @@ void createNewTree(String seed) {
   float scale = 1;
   if (xSize > ySize) {
     if (xSize > 500)
-      scale = 730/xSize;
+      scale = 1100/xSize;
   } else {
     if (ySize > 500)
-      scale = 730/ySize;
+      scale = 1100/ySize;
   }
   tree.setScale(scale);
   tree.x = width/5;// - xSize/2*scale + (tree.x-minX)*scale;
@@ -224,7 +227,6 @@ void draw() {
 
     crearObstaculo();
 
-
     strokeWeight(1);
     stroke(255);
     ArrayList contacts = obstacle.getContacts();
@@ -235,7 +237,7 @@ void draw() {
     }
   }
 
-  
+
 
   world.draw();
   world.step();
@@ -260,6 +262,11 @@ void crearObstaculo() {
 
   obstacle.setStatic(true);
   obstacle.setFill(255);
+  if (!mostrarSilueta) {
+    obstacle.setNoStroke();
+    obstacle.setNoFill();
+  }
+  
   obstacle.setRestitution(0); // ??
   world.add(obstacle);
 }
@@ -357,8 +364,8 @@ FBody hoja(float x, float y, float angle) {
   f.attachImage(leaveImageOtono);
   f.setPosition(x, y);
   //float angle = random(TWO_PI);
-  float magnitude = 500;
-  f.setVelocity(magnitude*cos(angle), magnitude*sin(angle));
+  float magnitude = 90;
+  f.setVelocity(0, magnitude);
   f.setDamping(0);
   f.setRestitution(0.5);
   f.setRotatable(true);
@@ -514,7 +521,7 @@ class Branch {
         rotate(-angle);
 
         if ((random(10)>9)&&(cantHojas<maxHojas)) {
-          FBody f = hoja(x, y, -angle);
+          FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
           cantHojas++;
