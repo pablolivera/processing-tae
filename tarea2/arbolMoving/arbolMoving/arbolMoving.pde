@@ -2,6 +2,7 @@
 /* !do not delete the line above, required for linking your tweak if you upload again */
 /* @pjs globalKeyEvents=true; */
 import fisica.*;
+import java.util.List;
 
 ///////////////////////////////////////////////////////////
 // Variable definitions ///////////////////////////////////
@@ -23,6 +24,7 @@ int cont = 0;
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
+int maxHojas = 15;
 int cantHojas = 0;
 FWorld world;
 FBox f;
@@ -45,38 +47,10 @@ void setup() {
   createNewTree("OpenProcessing");
   //curContext = externals.context; // Get javascript drawing context
 
-  //FISICA
-  hayHoja = new Boolean[width/4][height/4];
-  for (int i=0; i<width/4; i++) {
-    for (int j=0; j<height/4; j++) {
-      //println("x:"+i+" y:"+j);
-      hayHoja[i][j]=new Boolean(false);
-    }
-  }
+
   Fisica.init(this);
-
   world = new FWorld();
-
-
-  obstacle = new FPoly();
-  obstacle.vertex(0, 0);
-  obstacle.vertex(40, 40);
-  obstacle1 = new FLine(0, 50, 20, 30);
-
-
-  obstacle.setPosition(width/2, height/2);
-  obstacle.setStatic(true);
-  obstacle.setFill(0);
-  obstacle.setRestitution(0);
-
-  obstacle1.setPosition(width/2, height/2);
-  obstacle1.setStatic(true);
-  obstacle1.setFill(0);
-  obstacle1.setRestitution(0);
-
-
-  world.add(obstacle);
-  world.add(obstacle1);
+  //ACA OBSTACULOS
 }
 
 
@@ -186,8 +160,8 @@ void draw() {
   noStroke();
   //rect(120, 120, width-240, height-240);
   noFill();
-  windAngle += 0.0001; //Con 0.01 parece que se MUEREEEE
-  tree.windForce = sin(windAngle) * 0.005;
+  //windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
+  //tree.windForce = sin(windAngle) * 0.05;
   tree.update();
   if (frameCount >= 0 && frameCount < 50)
     tree.render(80);
@@ -205,11 +179,53 @@ void draw() {
   if (cont > 50) cont = 0;
   cont++;
 
+
   //FISICA
+  //if (frameCount%1==0) {
+  List<FBody> bodies = world.getBodies();
+  for (FBody b : bodies) {
+    float xmin = mouseX - 50;
+    float xmax = mouseX + 50;
+    float ymin = mouseY - 50;
+    float ymax = mouseY + 50;
+    if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+      b.setStatic(false);
+      b.wakeUp();
+    }
+    //}
+  }
+
+
   world.draw();
   world.step();
 }
 
+
+
+
+FBody hoja(float x, float y, float angle) {
+  FBox f = new FBox(5, 5);
+  f.attachImage(leaveImageOtono);
+  f.setPosition(x, y);
+  //float angle = random(TWO_PI);
+  float magnitude = 500;
+  f.setVelocity(magnitude*cos(angle), magnitude*sin(angle));
+  f.setDamping(0);
+  f.setRestitution(0.5);
+  f.setRotatable(true);
+  f.setRotation(angle);
+  return f;
+}
+
+FBody circulo(float x, float y) {
+  FCircle hoja = new FCircle(10);
+  hoja.setPosition(x, y);
+  hoja.setVelocity(0, 200);
+  hoja.setRestitution(0);
+  hoja.setNoStroke();
+  hoja.setFill(200, 30, 90);
+  return hoja;
+}
 
 
 
@@ -344,45 +360,21 @@ class Branch {
         if (branchA != null)
           branchA.render(maxLen);
       } else {
-        if (x < mouseX) {
-          pushMatrix();
-          translate(x, y);
-          rotate(-angle);
-          if ((random(10)>=5)&&(cantHojas<5500)&&(!hayHoja[(int)(x/4)][(int)(y/4)]) && (mouseY<(height/2))) {
-            f = new FBox(5, 5);
-            f.attachImage(leaveImageOtono);
-            f.setPosition(x, y);
-            float angle = random(TWO_PI);
-            float magnitude = 200;
-            f.setVelocity(magnitude*cos(angle), magnitude*sin(angle));
-            f.setDamping(0);
-            f.setRestitution(0.5);
-            f.setRotatable(true);
-            f.setRotation(random(PI/2));
-            world.add(f);
+        pushMatrix();
+        translate(x, y);
+        rotate(-angle);
 
-
-            /*hoja = new FCircle(10);
-             hoja.setPosition(x, y);
-             hayHoja[(int)(x/4)][(int)(y/4)] = true;
-             hoja.setVelocity(0, 200);
-             hoja.setRestitution(0);
-             hoja.setNoStroke();
-             hoja.setFill(200, 30, 90);
-             world.add(hoja);*/
-
-
-            //image(leaveImagePrimavera, -leaveImagePrimavera.width/2, 0);
-          } else if ((cantHojas<5500)||(hayHoja[(int)(x/4)][(int)(y/4)])) {
-            image(leaveImageOtono, -leaveImageOtono.width/2, 0);
-          }
-          hayHoja[(int)(x/4)][(int)(y/4)] = true;
+        if ((random(10)>9)&&(cantHojas<maxHojas)) {
+          FBody f = hoja(x, y, -angle);
+          f.setStatic(true);
+          world.add(f);
           cantHojas++;
-          popMatrix();
         } else {
-          hayHoja[(int)(x/4)][(int)(y/4)] = false;
-          cantHojas--;
+          //println("fin hojas.");
         }
+
+
+        popMatrix();
       }
     }
   }
