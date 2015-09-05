@@ -51,7 +51,7 @@ void draw()
   // actualizamos la kinect
   context.update();
 
-  if(traking) {
+  if(tracking) {
     
     actualizarVectorBordes();
     
@@ -154,6 +154,9 @@ void onLostUser(SimpleOpenNI curContext, int userId) {
   //println("onLostUser - userId: " + userId);
 }
 
+synchronized void setTracking(boolean value) {
+  tracking = value;
+}
 
 void contactStarted(FContact c) {
   FBody ball = null;
