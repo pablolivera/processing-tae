@@ -3,6 +3,8 @@
 /* @pjs globalKeyEvents=true; */
 import fisica.*;
 import java.util.List;
+import SimpleOpenNI.*;
+import java.util.*;
 
 ///////////////////////////////////////////////////////////
 // Variable definitions ///////////////////////////////////
@@ -18,39 +20,68 @@ String typedText;
 String lastSeed;
 PImage leaveImagePrimavera;
 PImage leaveImageOtono;
+PImage pelota;
 int cont = 0;
 //var curContext; // Javascript drawing context (for faster rendering)
 
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
-int maxHojas = 15;
+int maxHojas = 1500;
 int cantHojas = 0;
 FWorld world;
 FBox f;
-//FBox obstacle;
-//FCircle obstacle;
-//FLine obstacle;
 FPoly obstacle;
-FLine obstacle1;
+FBody handIzq;
+FBody handDer;
+
+//KINECT
+SimpleOpenNI  context = null;
+
+//CONTROLES
+boolean mostrarSilueta = false;
+// Vectores para las manos.
+PVector convertedRightHand;
+PVector convertedLeftHand;
+
+// variable que define el factor para escalar la imagen que nos da la kinect
+float fact;
+int[] puntosBorde; // puntosBorde[i] < 0 : No hay user. En otro caso esta la posicion en y mas alta en la x dada del usuario. 
+List<PVector> puntosBordeList; // Lista con los puntos de borde superiores del user. Escalado por fact.
+boolean tracking = false;
 
 
 ///////////////////////////////////////////////////////////
 // Init ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void setup() {
-  size(800, 600, P2D); // Set screen size & renderer
-  textFont(createFont("Verdana", 24, true), 24); // Create font
-  PGraphics back = createGraphics(width, height, P2D);
+  size(1024, 768); // Set screen size & renderer
+
   leaveImagePrimavera = createLeaveImage();
   leaveImageOtono = createLeaveImage2();
+  pelota = crearPelota();
   createNewTree("OpenProcessing");
-  //curContext = externals.context; // Get javascript drawing context
 
 
+  context = new SimpleOpenNI(this);
+  if (context.isInit() == false)
+  {
+    //println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
+    //exit();
+    //return;
+  }
+
+  // hay que habilitar estas dos opciones para poder usar la funcion userImage()
+  context.enableDepth();
+  context.enableUser();
+
+  // el factor lo definimos dividiendo el ancho del proyector, por el ancho de la imagen de la kinect
+  fact = float(width)/640;
+
+
+  smooth();
   Fisica.init(this);
   world = new FWorld();
-  //ACA OBSTACULOS
 }
 
 
@@ -67,7 +98,7 @@ String getRandomSeed() {
 // Create leave image /////////////////////////////////////
 ///////////////////////////////////////////////////////////
 PImage createLeaveImage() {
-  PGraphics buffer = createGraphics(12, 18, P2D);
+  PGraphics buffer = createGraphics(12, 18);
   buffer.beginDraw();
   buffer.background(#000000, 0);
   buffer.stroke(#5d6800);
@@ -92,10 +123,31 @@ PImage createLeaveImage() {
   return buffer.get();
 }
 
+PImage crearPelota() {
+  PGraphics buffer = createGraphics(12, 12);
+  buffer.beginDraw();
+
+  int n=40;
+  int size=700;
+  int x=0;
+  int y=0;
+  //Each call to drawEllipse() specifies position, size, total number of ellipses drawn
+  float vortex = 255/n; //setup fill gradient
+  float rays = size/n; //initiates size of each ellipse, size/number
+  for (int i = 0; i < n; i++) {
+
+    buffer.fill(i*vortex); //allows ellipses to appear as gradient
+    buffer.ellipse(x, y, size - i*rays, size - i*rays); //ellipse function
+  }
+
+  buffer.endDraw();
+  return buffer.get();
+}
+
 // Create leave image /////////////////////////////////////
 ///////////////////////////////////////////////////////////
 PImage createLeaveImage2() {
-  PGraphics buffer = createGraphics(12, 18, P2D);
+  PGraphics buffer = createGraphics(12, 18);
   buffer.beginDraw();
   buffer.background(#000000, 0);
   buffer.stroke(#6E4C27);
@@ -137,10 +189,10 @@ void createNewTree(String seed) {
   float scale = 1;
   if (xSize > ySize) {
     if (xSize > 500)
-      scale = 730/xSize;
+      scale = 1100/xSize;
   } else {
     if (ySize > 500)
-      scale = 730/ySize;
+      scale = 1100/ySize;
   }
   tree.setScale(scale);
   tree.x = width/5;// - xSize/2*scale + (tree.x-minX)*scale;
@@ -154,6 +206,8 @@ void createNewTree(String seed) {
 // Render /////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void draw() {
+  // actualizamos la kinect
+  if (context.isInit()) context.update();
 
   background(0);
   //fill(200); 
@@ -182,25 +236,167 @@ void draw() {
 
   //FISICA
   //if (frameCount%1==0) {
+
+  findHands();
+
+
+
   List<FBody> bodies = world.getBodies();
   for (FBody b : bodies) {
-    float xmin = mouseX - 50;
-    float xmax = mouseX + 50;
-    float ymin = mouseY - 50;
-    float ymax = mouseY + 50;
-    if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-      b.setStatic(false);
-      b.wakeUp();
+    //println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>A bu");
+    if (handIzq !=null) {
+      float xmin = handIzq.getX() - 50;
+      float xmax = handIzq.getX() + 50;
+      float ymin = handIzq.getY() - 50;
+      float ymax = handIzq.getY() + 50;
+      if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+        b.setStatic(false);
+        b.wakeUp();
+      }
     }
-    //}
+    if (handDer !=null) {
+      float xmin = handDer.getX() - 50;
+      float xmax = handDer.getX() + 50;
+      float ymin = handDer.getY() - 50;
+      float ymax = handDer.getY() + 50;
+      if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+        b.setStatic(false);
+        b.wakeUp();
+      }
+    }
   }
+
+
+
+
+  if (tracking && context.isInit()) {
+    actualizarVectorBordes();
+    crearObstaculo();
+  }
+
 
 
   world.draw();
   world.step();
+  world.removeBody(obstacle);
+  world.removeBody(handIzq);
+  world.removeBody(handDer);
+}
+
+void findHands() {
+  // Dibujar manos si están disponibles
+  int[] userList = context.getUsers();
+  for (int i = 0; i < userList.length; i++) {
+    if (context.isTrackingSkeleton(userList[i])) {
+      stroke(230);
+      drawHand(userList[i]);
+    }
+  }
+}
+
+void drawHand(int userId) {
+
+  PVector rightHand = new PVector(); 
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, rightHand);  
+  convertedRightHand = new PVector();
+  context.convertRealWorldToProjective(rightHand, convertedRightHand);
+  // Se escala la coordenada.
+  convertedRightHand.x = convertedRightHand.x * fact;
+  convertedRightHand.y = convertedRightHand.y  * fact;
+  ellipse( convertedRightHand.x, convertedRightHand.y, 40, 40);
+
+  PVector leftHand = new PVector(); 
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, leftHand);
+  convertedLeftHand = new PVector();
+  context.convertRealWorldToProjective(leftHand, convertedLeftHand);
+  convertedLeftHand.x = convertedLeftHand.x  * fact;
+  convertedLeftHand.y = convertedLeftHand.y * fact;
+  ellipse(convertedLeftHand.x, convertedLeftHand.y, 40, 40); // Se escala la coordenada.
+
+  handIzq = pelota(convertedLeftHand.x, convertedLeftHand.y);
+  handDer = pelota(convertedRightHand.x, convertedRightHand.y);
+
+  world.add(handIzq);
+  world.add(handDer);
+}
+
+void crearObstaculo() {
+  obstacle = new FPoly();
+
+  float firstX = -1; // Guardar el primer x del usuario
+  float currentX = 0;
+  for (PVector p : puntosBordeList) {
+    if (firstX < 0) {
+      firstX = p.x;
+      obstacle.vertex(p.x, height); // Primer punto del poligono contra el piso.
+    }
+    obstacle.vertex(p.x, p.y);
+    currentX = p.x;
+  }
+  obstacle.vertex(currentX, height); // La posicion mas lejana x del usuario
+  obstacle.vertex(firstX, height); // Para cerrar el poligono
+
+  obstacle.setStatic(true);
+  obstacle.setFill(255);
+  if (!mostrarSilueta) {
+    obstacle.setNoStroke();
+    obstacle.setNoFill();
+  }
+
+  obstacle.setRestitution(0); // ??
+  world.add(obstacle);
+}
+
+void actualizarVectorBordes() {
+  puntosBordeList = new ArrayList();
+  int[]   userMap = context.userMap();
+  int[]   depthMap = context.depthMap(); 
+  puntosBorde = new int[context.depthWidth()]; 
+
+  int index;
+  for (int x = 0; x < context.depthWidth (); x++) {
+    for (int y = 0; y < context.depthHeight (); y++) {
+      index = x + (y * context.depthWidth());
+      int d = depthMap[index];
+      // si no hay usuarios se pone posicion en -1
+      puntosBorde[x] = -1;
+      if ( d > 0) {
+        int userNr = userMap[index];
+        if ( userNr > 0) {
+          // Si hay una usuario se carga la posicion en el array          
+          puntosBordeList.add(new PVector( (x * fact), (y * fact)));
+          puntosBorde[x] = y;
+          break; // Se corta para detectar solo el borde superior del usuario.
+        }
+      }
+    }
+  }
+}
+
+void onNewUser(SimpleOpenNI curContext, int userId) { 
+  tracking = true;
+  //println("tracking" + userId);
+  context.startTrackingSkeleton(userId);
+}
+
+void onLostUser(SimpleOpenNI curContext, int userId) {
+  tracking = false;
+  //println("onLostUser - userId: " + userId);
 }
 
 
+void contactStarted(FContact c) {
+
+ 
+}
+
+void contactPersisted(FContact c) {
+
+}
+
+void contactEnded(FContact c) {
+ 
+}
 
 
 FBody hoja(float x, float y, float angle) {
@@ -208,12 +404,23 @@ FBody hoja(float x, float y, float angle) {
   f.attachImage(leaveImageOtono);
   f.setPosition(x, y);
   //float angle = random(TWO_PI);
-  float magnitude = 500;
-  f.setVelocity(magnitude*cos(angle), magnitude*sin(angle));
+  float magnitude = 90;
+  f.setVelocity(0, magnitude);
   f.setDamping(0);
   f.setRestitution(0.5);
   f.setRotatable(true);
   f.setRotation(angle);
+  return f;
+}
+
+FBody pelota(float x, float y) {
+  FCircle f = new FCircle(50);
+  f.setPosition(x, y);
+  f.setDamping(0);
+  f.setDensity(30);
+  f.setRestitution(0.5);
+  f.setFill(200);
+  f.setNoStroke();
   return f;
 }
 
@@ -223,7 +430,10 @@ FBody circulo(float x, float y) {
   hoja.setVelocity(0, 200);
   hoja.setRestitution(0);
   hoja.setNoStroke();
-  hoja.setFill(200, 30, 90,0.8);
+  //Otono
+  //hoja.setFill(random(236, 255), random(118, 140), random(66), random(255));
+  //Prim
+  hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
   return hoja;
 }
 
