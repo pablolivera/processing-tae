@@ -348,12 +348,17 @@ class Branch {
           pushMatrix();
           translate(x, y);
           rotate(-angle);
-          if ((random(10)>=9)&&(cantHojas<500)&&(!hayHoja[(int)(x/4)][(int)(y/4)]) && (mouseY<(height/2))) {
-            f = new FBox(10, 10);
+          if ((random(10)>=5)&&(cantHojas<5500)&&(!hayHoja[(int)(x/4)][(int)(y/4)]) && (mouseY<(height/2))) {
+            f = new FBox(5, 5);
             f.attachImage(leaveImageOtono);
-            hayHoja[(int)(x/4)][(int)(y/4)] = true;
             f.setPosition(x, y);
-            f.setVelocity(0, 200);
+            float angle = random(TWO_PI);
+            float magnitude = 200;
+            f.setVelocity(magnitude*cos(angle), magnitude*sin(angle));
+            f.setDamping(0);
+            f.setRestitution(0.5);
+            f.setRotatable(true);
+            f.setRotation(random(PI/2));
             world.add(f);
 
 
@@ -365,13 +370,18 @@ class Branch {
              hoja.setNoStroke();
              hoja.setFill(200, 30, 90);
              world.add(hoja);*/
-            cantHojas++;
+
 
             //image(leaveImagePrimavera, -leaveImagePrimavera.width/2, 0);
-          } else {
+          } else if ((cantHojas<5500)||(hayHoja[(int)(x/4)][(int)(y/4)])) {
             image(leaveImageOtono, -leaveImageOtono.width/2, 0);
           }
+          hayHoja[(int)(x/4)][(int)(y/4)] = true;
+          cantHojas++;
           popMatrix();
+        } else {
+          hayHoja[(int)(x/4)][(int)(y/4)] = false;
+          cantHojas--;
         }
       }
     }
