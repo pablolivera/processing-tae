@@ -387,52 +387,15 @@ void onLostUser(SimpleOpenNI curContext, int userId) {
 
 void contactStarted(FContact c) {
 
-  FBody ball = null;
-  if (c.getBody1() == obstacle) {
-    ball = c.getBody2();
-  } else if (c.getBody2() == obstacle) {
-    ball = c.getBody1();
-  } 
-
-  if (ball == null) {
-    return;
-  }
-
-  ball.setFill(30, 190, 200);
+ 
 }
 
 void contactPersisted(FContact c) {
-  FBody ball = null;
-  if (c.getBody1() == obstacle) {
-    ball = c.getBody2();
-  } else if (c.getBody2() == obstacle) {
-    ball = c.getBody1();
-  }
 
-  if (ball == null) {
-    return;
-  }
-
-  ball.setFill(30, 120, 200);
-
-  noStroke();
-  fill(255, 220, 0);
-  ellipse(c.getX(), c.getY(), 10, 10);
 }
 
 void contactEnded(FContact c) {
-  /*FBody ball = null;
-   if (c.getBody1() == obstacle) {
-   ball = c.getBody2();
-   } else if (c.getBody2() == obstacle) {
-   ball = c.getBody1();
-   }
-   
-   if (ball == null) {
-   return;
-   }
-   
-   ball.setFill(200, 30, 90);*/
+ 
 }
 
 
