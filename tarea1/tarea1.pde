@@ -99,7 +99,7 @@ void draw() {
     for(int i = 0; i < userList.length; i++) {
         if(context.getCoM(userList[i], com)) {
             context.convertRealWorldToProjective(com, com2d);
-            //drawCenterOfMass(userList, i);
+            drawCenterOfMass(userList, i);
             //ajuste
             //drawLineasAjuste(userList,i);
         }
@@ -183,5 +183,28 @@ Tarea1Control addControlFrame(String name, int width, int height, int colorsLeng
     return control;
 }
 
+
+/*** AUX **/
+
+ void drawCenterOfMass(int[] userList, int i) {
+        //background(255);
+        stroke(100, 255, 0);
+        strokeWeight(1);
+        beginShape(LINES);
+        float posx = com2d.x * (float)scale;
+        float posy = com2d.y * (float)scale;
+        vertex(posx, posy - 5);
+        vertex(posx, posy + 5);
+
+        vertex(posx - 5, posy);
+        vertex(posx + 5, posy);
+        endShape();
+
+        //System.out.println("x: " + com2d.x + " ###  y: " + com2d.y);
+        System.out.println("x: " + posx + " ###  y: " + posy);
+
+        fill(0, 255, 100);
+        text(Integer.toString(userList[i]), com2d.x, com2d.y);
+    }
 
 
