@@ -15,7 +15,8 @@ float maxY;
 int blinkUpdate;
 String typedText;
 String lastSeed;
-PImage leaveImage;
+PImage leaveImagePrimavera;
+PImage leaveImageOtono;
 int cont = 0;
 //var curContext; // Javascript drawing context (for faster rendering)
 
@@ -27,7 +28,8 @@ void setup() {
   size(800, 600, P2D); // Set screen size & renderer
   textFont(createFont("Verdana", 24, true), 24); // Create font
   PGraphics back = createGraphics(width, height, P2D);
-  leaveImage = createLeaveImage();
+  leaveImagePrimavera = createLeaveImage();
+  leaveImageOtono = createLeaveImage2();
   createNewTree("OpenProcessing");
   //curContext = externals.context; // Get javascript drawing context
 }
@@ -71,6 +73,34 @@ PImage createLeaveImage() {
   return buffer.get();
 }
 
+// Create leave image /////////////////////////////////////
+///////////////////////////////////////////////////////////
+PImage createLeaveImage2() {
+  PGraphics buffer = createGraphics(12, 18, P2D);
+  buffer.beginDraw();
+  buffer.background(#000000, 0);
+  buffer.stroke(#6E4C27);
+  buffer.line(6, 0, 6, 6);
+  buffer.noStroke();
+  buffer.fill(#A13012);
+  buffer.beginShape();
+  buffer.vertex(6, 6);
+  buffer.bezierVertex(0, 12, 0, 12, 6, 18);
+  buffer.bezierVertex(12, 12, 12, 12, 6, 6);
+  buffer.endShape();
+  buffer.fill(#CC7526);
+  buffer.beginShape();
+  buffer.vertex(6, 9);
+  buffer.bezierVertex(0, 13, 0, 13, 6, 18);
+  buffer.bezierVertex(12, 13, 12, 13, 6, 9);
+  buffer.endShape();
+  buffer.stroke(#6E4C27);
+  buffer.noFill();
+  buffer.bezier(6, 9, 5, 11, 5, 12, 6, 15);
+  buffer.endDraw();
+  return buffer.get();
+}
+
 
 ///////////////////////////////////////////////////////////
 // Create new tree ////////////////////////////////////////
@@ -88,10 +118,10 @@ void createNewTree(String seed) {
   float scale = 1;
   if (xSize > ySize) {
     if (xSize > 500)
-      scale = 700/xSize;
+      scale = 730/xSize;
   } else {
     if (ySize > 500)
-      scale = 700/ySize;
+      scale = 730/ySize;
   }
   tree.setScale(scale);
   tree.x = width/5;// - xSize/2*scale + (tree.x-minX)*scale;
@@ -111,8 +141,8 @@ void draw() {
   noStroke();
   //rect(120, 120, width-240, height-240);
   noFill();
-  windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
-  tree.windForce = sin(windAngle) * 0.05;
+  windAngle += 0.0001; //Con 0.01 parece que se MUEREEEE
+  tree.windForce = sin(windAngle) * 0.005;
   tree.update();
   if (frameCount >= 0 && frameCount < 50)
     tree.render(80);
@@ -132,42 +162,7 @@ void draw() {
 }
 
 
-///////////////////////////////////////////////////////////
-// Compute text input /////////////////////////////////////
-///////////////////////////////////////////////////////////
-void keyReleased() {
-  blinkUpdate = millis();
-  if (key != CODED) { // Compute ASCII key input
-    switch(key) {
-    case BACKSPACE: 
-    case DELETE:
-      typedText = typedText.substring(0, max(0, typedText.length()-1));
-      break;
-    case TAB:
-      typedText += "   ";
-      break;
-    case ENTER: 
-    case RETURN:
-      createNewTree(typedText);
-      break;
-    default:
-      //typedText += (int)key > 31 ? String.fromCharCode(key) : "";
-    }
-  }
-  switch(keyCode) { // Compute Non-ASCII key input
-  case 127: // Workaround: If BACKSPACE/DELETE do not work on your browser
-    typedText = typedText.substring(0, max(0, typedText.length()-2));
-    break;
-  case 17: // Workaround: If RETURN/ENTER do not work on your browser
-    createNewTree(typedText);
-    break;
-  case 18: // Save tree
-    if (typedText.length() == 0) {
-      saveFrame("YourTree.png");
-      blinkUpdate = -1;
-    }
-  }
-}
+
 
 
 ///////////////////////////////////////////////////////////
@@ -306,11 +301,17 @@ class Branch {
         if (branchA != null)
           branchA.render(maxLen);
       } else {
-        pushMatrix();
-        translate(x, y);
-        rotate(-angle);
-        image(leaveImage, -leaveImage.width/2, 0);
-        popMatrix();
+        if (x < mouseX) {
+          pushMatrix();
+          translate(x, y);
+          rotate(-angle);
+          if (mouseY<(height/2)) {
+            image(leaveImagePrimavera, -leaveImagePrimavera.width/2, 0);
+          } else {
+            image(leaveImageOtono, -leaveImageOtono.width/2, 0);
+          }
+          popMatrix();
+        }
       }
     }
   }
