@@ -22,6 +22,8 @@ int cont = 0;
 
 //FISICA
 Boolean[][] hayHoja; 
+FCircle hoja;
+int cantHojas = 0;
 FWorld world;
 FBox f;
 //FBox obstacle;
@@ -44,9 +46,9 @@ void setup() {
   //curContext = externals.context; // Get javascript drawing context
 
   //FISICA
-  hayHoja = new Boolean[width][height];
-  for (int i=0; i<width; i++) {
-    for (int j=0; j<height; j++) {
+  hayHoja = new Boolean[width/4][height/4];
+  for (int i=0; i<width/4; i++) {
+    for (int j=0; j<height/4; j++) {
       //println("x:"+i+" y:"+j);
       hayHoja[i][j]=new Boolean(false);
     }
@@ -346,13 +348,24 @@ class Branch {
           pushMatrix();
           translate(x, y);
           rotate(-angle);
-          if ((!hayHoja[(int)x][(int)y]) && (mouseY<(height/2))) {
+          if ((random(10)>=9)&&(cantHojas<500)&&(!hayHoja[(int)(x/4)][(int)(y/4)]) && (mouseY<(height/2))) {
             f = new FBox(10, 10);
-            f.attachImage(leaveImagePrimavera);
-            hayHoja[(int)x][(int)y] = true;
+            f.attachImage(leaveImageOtono);
+            hayHoja[(int)(x/4)][(int)(y/4)] = true;
             f.setPosition(x, y);
             f.setVelocity(0, 200);
             world.add(f);
+
+
+            /*hoja = new FCircle(10);
+             hoja.setPosition(x, y);
+             hayHoja[(int)(x/4)][(int)(y/4)] = true;
+             hoja.setVelocity(0, 200);
+             hoja.setRestitution(0);
+             hoja.setNoStroke();
+             hoja.setFill(200, 30, 90);
+             world.add(hoja);*/
+            cantHojas++;
 
             //image(leaveImagePrimavera, -leaveImagePrimavera.width/2, 0);
           } else {
