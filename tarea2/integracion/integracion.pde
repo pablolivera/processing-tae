@@ -68,7 +68,7 @@ boolean tracking = false;
 // Init ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void setup() {
-  
+
   background(0);
 
 
@@ -242,33 +242,19 @@ void draw() {
     if (context.isInit()) context.update();
 
     background(0);
-    //fill(200); 
     noStroke();
-    //rect(120, 120, width-240, height-240);
     noFill();
     //windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
     //tree.windForce = sin(windAngle) * 0.05;
     tree.update();
     segundos = millis()/1000;
-    /*if (segundos >= 0 && segundos < 5)
-     tree.render(80);
-     else if (segundos >= 5 && segundos < 10)
-     tree.render(70);
-     else if (segundos >= 10 && segundos < 20)
-     tree.render(60);
-     else if (segundos >= 20 && segundos < 30)
-     tree.render(50);
-     else*/    tree.render(1);
-    //fill(#d7d7d7); 
-    //noStroke();
-    //rect(tree.x-80, height-120, 160, 120);
+    tree.render(1);
+
 
     if (cont > 50) cont = 0;
     cont++;
 
 
-    //FISICA
-    //if (frameCount%1==0) {
 
     if (context.isInit())
       findHands();
@@ -283,7 +269,7 @@ void draw() {
     for (FBody b : bodies) {
 
       //Color segun Controles
-      if (toSwitch)
+      if (toSwitch &&(random(10)>9))
         b.setFill(random(236, 255), random(118, 140), random(66), random(255));
       else 
         b.setFill(random(48, 181), random(202, 255), random(135), random(255));
@@ -328,7 +314,6 @@ void draw() {
     world.removeBody(obstacle);
     world.removeBody(handIzq);
     world.removeBody(handDer);
-
   } else {
     //Estaba andando
     if (segundos > 0) {
@@ -629,7 +614,7 @@ class Branch {
         translate(x, y);
         rotate(-angle);
 
-        if ((segundos>77)&&(random(100)>99)&&(cantHojas<maxHojas)) {
+        if ((segundos>77)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
           FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
