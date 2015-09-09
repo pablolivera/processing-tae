@@ -45,6 +45,8 @@ Boolean[][] hayHoja;
 FCircle hoja;
 int maxHojas = 1500;
 int cantHojas = 0;
+int probHoja = 100000;
+int maxProb = 99999; //valor que encara mucho
 FWorld world;
 FBox f;
 FPoly obstacle;
@@ -59,6 +61,7 @@ boolean mostrarSilueta = false;
 // Vectores para las manos.
 PVector convertedRightHand;
 PVector convertedLeftHand;
+boolean backToSwitch = false;
 
 // variable que define el factor para escalar la imagen que nos da la kinect
 float fact;
@@ -282,10 +285,26 @@ void draw() {
     for (FBody b : bodies) {
 
       //Color segun Controles
-      if (toSwitch &&(random(10)>9))
-        b.setFill(random(236, 255), random(118, 140), random(66), random(255));
-      else 
-        b.setFill(random(48, 181), random(202, 255), random(135), random(255));
+      if (toSwitch) {        
+        if ((random(maxProb) >= probHoja)) {
+          b.setFill(random(48, 181), random(202, 255), random(135), random(255));
+        } else {
+          b.setFill(random(236, 255), random(118, 140), random(66), random(255));
+        }
+      } else {        
+        if ((random(maxProb) >= probHoja)) {
+          b.setFill(random(236, 255), random(118, 140), random(66), random(255));
+        } else {
+          b.setFill(random(48, 181), random(202, 255), random(135), random(255));
+        }
+      }
+      if (probHoja <= maxProb)
+        probHoja++;
+
+
+      if (toSwitch != backToSwitch)
+        probHoja = 0;
+      backToSwitch = toSwitch;
 
 
       //println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>A bu");
