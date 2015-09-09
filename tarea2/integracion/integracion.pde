@@ -33,10 +33,6 @@ float maxY;
 int blinkUpdate;
 String typedText;
 String lastSeed;
-PImage leaveImagePrimavera;
-PImage leaveImageOtono;
-PImage pelota;
-int cont = 0;
 float segundos; // Variable que indicara en que segundo de la cancion estamos
 
 
@@ -79,8 +75,8 @@ int aumento = 0;
 ///////////////////////////////////////////////////////////
 void setup() {
 
+  //FONDO INICIAL NEGRO
   background(0);
-
 
   //SONIDO
   soundengine = new Minim(this);
@@ -88,9 +84,7 @@ void setup() {
 
   size(1024, 768); // Set screen size & renderer
 
-  leaveImagePrimavera = createLeaveImage();
-  leaveImageOtono = createLeaveImage2();
-  pelota = crearPelota();
+  //CREAMOS EL ARBOL
   createNewTree("OpenProcessing");
 
   // Controlo que este conectada la camara
@@ -113,6 +107,8 @@ void setup() {
 
 
   smooth();
+  
+  //LIBRERIA FISICA
   Fisica.init(this);
   world = new FWorld();
   obstacleList = new ArrayList(); // Iniciar la lista de obstaculos.
@@ -133,87 +129,7 @@ String getRandomSeed() {
 
 
 ///////////////////////////////////////////////////////////
-// Create leave image /////////////////////////////////////
-///////////////////////////////////////////////////////////
-PImage createLeaveImage() {
-  PGraphics buffer = createGraphics(12, 18);
-  buffer.beginDraw();
-  buffer.background(#000000, 0);
-  buffer.stroke(#5d6800);
-  buffer.line(6, 0, 6, 6);
-  buffer.noStroke();
-  buffer.fill(#749600);
-  buffer.beginShape();
-  buffer.vertex(6, 6);
-  buffer.bezierVertex(0, 12, 0, 12, 6, 18);
-  buffer.bezierVertex(12, 12, 12, 12, 6, 6);
-  buffer.endShape();
-  buffer.fill(#8bb800);
-  buffer.beginShape();
-  buffer.vertex(6, 9);
-  buffer.bezierVertex(0, 13, 0, 13, 6, 18);
-  buffer.bezierVertex(12, 13, 12, 13, 6, 9);
-  buffer.endShape();
-  buffer.stroke(#659000);
-  buffer.noFill();
-  buffer.bezier(6, 9, 5, 11, 5, 12, 6, 15);
-  buffer.endDraw();
-  return buffer.get();
-}
-
-PImage crearPelota() {
-  PGraphics buffer = createGraphics(12, 12);
-  buffer.beginDraw();
-
-  int n=40;
-  int size=700;
-  int x=0;
-  int y=0;
-  //Each call to drawEllipse() specifies position, size, total number of ellipses drawn
-  float vortex = 255/n; //setup fill gradient
-  float rays = size/n; //initiates size of each ellipse, size/number
-  for (int i = 0; i < n; i++) {
-
-    buffer.fill(i*vortex); //allows ellipses to appear as gradient
-    buffer.ellipse(x, y, size - i*rays, size - i*rays); //ellipse function
-  }
-
-  buffer.endDraw();
-  return buffer.get();
-}
-
-///////////////////////////////////////////////////////////
-// Create leave image /////////////////////////////////////
-///////////////////////////////////////////////////////////
-PImage createLeaveImage2() {
-  PGraphics buffer = createGraphics(12, 18);
-  buffer.beginDraw();
-  buffer.background(#000000, 0);
-  buffer.stroke(#6E4C27);
-  buffer.line(6, 0, 6, 6);
-  buffer.noStroke();
-  buffer.fill(#A13012);
-  buffer.beginShape();
-  buffer.vertex(6, 6);
-  buffer.bezierVertex(0, 12, 0, 12, 6, 18);
-  buffer.bezierVertex(12, 12, 12, 12, 6, 6);
-  buffer.endShape();
-  buffer.fill(#CC7526);
-  buffer.beginShape();
-  buffer.vertex(6, 9);
-  buffer.bezierVertex(0, 13, 0, 13, 6, 18);
-  buffer.bezierVertex(12, 13, 12, 13, 6, 9);
-  buffer.endShape();
-  buffer.stroke(#6E4C27);
-  buffer.noFill();
-  buffer.bezier(6, 9, 5, 11, 5, 12, 6, 15);
-  buffer.endDraw();
-  return buffer.get();
-}
-
-
-///////////////////////////////////////////////////////////
-// Create new tree ////////////////////////////////////////
+// CREAMOS EL ARBOL ///////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void createNewTree(String seed) {
   lastSeed = seed;
@@ -261,19 +177,12 @@ void draw() {
     background(0);
     noStroke();
     noFill();
-    
-    //windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
-    //tree.windForce = sin(windAngle) * 0.05;
-    
+
+    //ACTUALIZAMOS Y MOSTRAMOS EL ARBOL
     tree.update();
     segundos = millis()/1000;
     tree.render(1);
 
-
-    if (cont > 50) { 
-      cont = 0;
-    }
-    cont++;
 
     // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
     if (kinectConectado && context.isInit()) {
@@ -284,7 +193,7 @@ void draw() {
       world.add(handIzq);
     }
 
-    // Creamos las "hojas"
+    // Actualizamos las "hojas"
     List<FBody> bodies = world.getBodies();
     for (FBody b : bodies) {
 
@@ -338,7 +247,7 @@ void draw() {
       //crearObstaculo();
     }
 
-
+    //MUESTRO LOS ELEMENTOS DEL MUNDO FISICO
     world.draw();
     world.step();
     
@@ -352,7 +261,7 @@ void draw() {
     world.removeBody(handDer);
 
   } else {
-    //Estaba andando
+    //STOP DE LA ESCENA CON EL CONTROL
     if (segundos > 0) {
       //RESETEO TODO COMO AL INICIO
       segundos = 0;
@@ -549,20 +458,7 @@ int obtenerSegundoEscena(int escenaId) {
 
 
 
-FBody hoja(float x, float y, float angle) {
-  FBox f = new FBox(5, 5);
-  f.attachImage(leaveImageOtono);
-  f.setPosition(x, y);
-  //float angle = random(TWO_PI);
-  float magnitude = 90;
-  f.setVelocity(0, magnitude);
-  f.setDamping(0);
-  f.setRestitution(0.5);
-  f.setRotatable(true);
-  f.setRotation(angle);
-  return f;
-}
-
+//CIRCULO PARA LAS MANOS O EL MOUSE
 FBody pelota(float x, float y) {
   FCircle f = new FCircle(50);
   f.setPosition(x, y);
@@ -574,6 +470,7 @@ FBody pelota(float x, float y) {
   return f;
 }
 
+//CIRCULO PARA LAS HOJAS
 FBody circulo(float x, float y) {
   FCircle hoja = new FCircle(10);
   hoja.setPosition(x, y);
@@ -592,152 +489,6 @@ FBody circulo(float x, float y) {
 
 
 
-///////////////////////////////////////////////////////////
-// Class that handles the branches ////////////////////////
-///////////////////////////////////////////////////////////
-class Branch {
 
-
-  ///////////////////////////////////////////////////////////
-  // Variable definitions ///////////////////////////////////
-  ///////////////////////////////////////////////////////////
-  float x;
-  float y;
-  float angle;
-  float angleOffset;
-  float length;
-  float growth = 0;
-  float windForce = 0;
-  float blastForce = 0;
-  Branch branchA;
-  Branch branchB;
-  Branch parent;
-
-
-  ///////////////////////////////////////////////////////////
-  // Constructor ////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
-  Branch(Branch parent, float x, float y, float angleOffset, float length) {
-    this.parent = parent;
-    this.x = x;
-    this.y = y;
-    if (parent != null) {
-      angle = parent.angle+angleOffset;
-      this.angleOffset = angleOffset;
-    } else {
-      angle = angleOffset;
-      this.angleOffset = -0.2+random(0.4);
-    }
-    this.length = length;
-    float xB = x + sin(angle) * length;
-    float yB = y + cos(angle) * length;
-    if (length > 16) {
-      if (length+random(length) > 55) {
-        //DERECHA
-        branchA = new Branch(this, xB, yB, -0.05-random(0.2) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.95));//-random(0.02)));
-      }
-      if (length+random(length) > 29) {
-        //IZQ
-        branchB = new Branch(this, xB, yB, 0.2+random(0.1) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.7+random(0.2)));
-      }
-      if (branchB != null && branchA == null) {
-        branchA = branchB;
-        branchB = null;
-      }
-    }
-    minX = min(xB, minX);
-    maxX = max(xB, maxX);
-    minY = min(yB, minY);
-    maxY = max(yB, maxY);
-  }
-
-
-  ///////////////////////////////////////////////////////////
-  // Set scale //////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
-  void setScale(float scale) {
-    length *= scale;
-    if (branchA != null) {
-      branchA.setScale(scale);
-      if (branchB != null)
-        branchB.setScale(scale);
-    }
-  }
-
-
-  ///////////////////////////////////////////////////////////
-  // Update /////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
-  void update() {
-    if (parent != null) {
-      x = parent.x + sin(parent.angle) * parent.length * parent.growth;
-      y = parent.y + cos(parent.angle) * parent.length * parent.growth;
-      windForce = parent.windForce * (1.0+5.0/length) + blastForce;
-      blastForce = (blastForce + sin(x/2+windAngle)*0.005/length) * 0.98;
-      angle = parent.angle + angleOffset + windForce + blastForce;
-      growth = min(growth + 0.01*parent.growth, 1);
-    } else
-      growth = min(growth + 0.001, 1);
-    if (branchA != null) {
-      branchA.update();
-      if (branchB != null)
-        branchB.update();
-    }
-  }
-
-
-  ///////////////////////////////////////////////////////////
-  // Render /////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
-  void render(int maxLen) {
-    if (length > maxLen) {
-      if (branchB != null) {
-        float xB = x;
-        float yB = y;
-        if (parent != null) {
-          xB += (x-parent.x) * 0.4;
-          yB += (y-parent.y) * 0.4;
-        } else {
-          xB += sin(angle+angleOffset) * length * 0.3;
-          yB += cos(angle+angleOffset) * length * 0.3;
-        }
-        // PROCESSING WAY (slow)
-        stroke(floor(1100/length));
-        strokeWeight(length/5);
-        beginShape();
-        vertex(x, y);
-        bezierVertex(xB, yB, xB, yB, branchB.x, branchB.y);
-        endShape();
-
-        /*curContext.beginPath();
-         curContext.moveTo(x, y);
-         curContext.bezierCurveTo(xB, yB, xB, yB, branchA.x, branchA.y);
-         int branchColor = floor(1100/length);
-         curContext.strokeStyle = "rgb("+branchColor+","+branchColor+","+branchColor+")";
-         curContext.lineWidth = length/5;
-         curContext.stroke();*/
-        branchB.render(maxLen);
-        if (branchA != null)
-          branchA.render(maxLen);
-      } else {
-        pushMatrix();
-        translate(x, y);
-        rotate(-angle);
-
-        if ((segundos>77)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
-          FBody f = circulo(x, y);
-          f.setStatic(true);
-          world.add(f);
-          cantHojas++;
-        } else {
-          //println("fin hojas.");
-        }
-
-
-        popMatrix();
-      }
-    }
-  }
-}
 
 
