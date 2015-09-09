@@ -5,6 +5,18 @@ import fisica.*;
 import java.util.List;
 import SimpleOpenNI.*;
 import java.util.*;
+import controlP5.*;
+import ddf.minim.*;
+
+//CONTROLS
+private ControlP5 cp5;
+ControlFrame cf;
+boolean toSwitch = false;
+boolean startEscena = false;
+
+//SONIDO
+Minim soundengine;
+AudioSample sonido1;
 
 ///////////////////////////////////////////////////////////
 // Variable definitions ///////////////////////////////////
@@ -22,6 +34,7 @@ PImage leaveImagePrimavera;
 PImage leaveImageOtono;
 PImage pelota;
 int cont = 0;
+float segundos;
 //var curContext; // Javascript drawing context (for faster rendering)
 
 //FISICA
@@ -55,6 +68,14 @@ boolean tracking = false;
 // Init ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void setup() {
+
+  background(0);
+
+
+  //SONIDO
+  soundengine = new Minim(this);
+  sonido1 = soundengine.loadSample("vivalavida.mp3", 1024);
+
   size(1024, 768); // Set screen size & renderer
 
   leaveImagePrimavera = createLeaveImage();
@@ -82,6 +103,10 @@ void setup() {
   smooth();
   Fisica.init(this);
   world = new FWorld();
+
+  //CONTROLES
+  cp5 = new ControlP5(this);
+  cf = addControlFrame("Controladores", 250, 200);
 }
 
 
@@ -206,81 +231,100 @@ void createNewTree(String seed) {
 // Render /////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void draw() {
-  // actualizamos la kinect
-  if (context.isInit()) context.update();
+  //Esto es con el control.
+  if (startEscena) {
+    if (segundos == 0) {
+      //Esto se ejecuta solo al principio.
+      sonido1.trigger();
+    }
 
-  background(0);
-  //fill(200); 
-  noStroke();
-  //rect(120, 120, width-240, height-240);
-  noFill();
-  //windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
-  //tree.windForce = sin(windAngle) * 0.05;
-  tree.update();
-  if (frameCount >= 0 && frameCount < 50)
-    tree.render(80);
-  else if (frameCount >= 50 && frameCount < 100)
-    tree.render(60);
-  else if (frameCount >= 100 && frameCount < 150)
-    tree.render(40);
-  else if (frameCount >= 150 && frameCount < 200)
-    tree.render(30);
-  else tree.render(0);
-  //fill(#d7d7d7); 
-  //noStroke();
-  //rect(tree.x-80, height-120, 160, 120);
+    // actualizamos la kinect
+    if (context.isInit()) context.update();
 
-  if (cont > 50) cont = 0;
-  cont++;
+    background(0);
+    noStroke();
+    noFill();
+    //windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
+    //tree.windForce = sin(windAngle) * 0.05;
+    tree.update();
+    segundos = millis()/1000;
+    tree.render(1);
 
 
-  //FISICA
-  //if (frameCount%1==0) {
-
-  findHands();
+    if (cont > 50) cont = 0;
+    cont++;
 
 
 
-  List<FBody> bodies = world.getBodies();
-  for (FBody b : bodies) {
-    //println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>A bu");
-    if (handIzq !=null) {
-      float xmin = handIzq.getX() - 50;
-      float xmax = handIzq.getX() + 50;
-      float ymin = handIzq.getY() - 50;
-      float ymax = handIzq.getY() + 50;
-      if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-        b.setStatic(false);
-        b.wakeUp();
+    if (context.isInit())
+      findHands();
+    else {
+      handIzq = pelota(mouseX, mouseY);
+      world.add(handIzq);
+    }
+
+
+
+    List<FBody> bodies = world.getBodies();
+    for (FBody b : bodies) {
+
+      //Color segun Controles
+      if (toSwitch &&(random(10)>9))
+        b.setFill(random(236, 255), random(118, 140), random(66), random(255));
+      else 
+        b.setFill(random(48, 181), random(202, 255), random(135), random(255));
+
+
+      //println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>A bu");
+      if (handIzq !=null) {
+        float xmin = handIzq.getX() - 50;
+        float xmax = handIzq.getX() + 50;
+        float ymin = handIzq.getY() - 50;
+        float ymax = handIzq.getY() + 50;
+        if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+          b.setStatic(false);
+          b.wakeUp();
+        }
+      }
+      if (handDer !=null) {
+        float xmin = handDer.getX() - 50;
+        float xmax = handDer.getX() + 50;
+        float ymin = handDer.getY() - 50;
+        float ymax = handDer.getY() + 50;
+        if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+          b.setStatic(false);
+          b.wakeUp();
+        }
       }
     }
-    if (handDer !=null) {
-      float xmin = handDer.getX() - 50;
-      float xmax = handDer.getX() + 50;
-      float ymin = handDer.getY() - 50;
-      float ymax = handDer.getY() + 50;
-      if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-        b.setStatic(false);
-        b.wakeUp();
-      }
+
+
+
+
+
+    if (tracking && context.isInit()) {
+      actualizarVectorBordes();
+      crearObstaculo();
+    }
+
+
+
+    world.draw();
+    world.step();
+    world.removeBody(obstacle);
+    world.removeBody(handIzq);
+    world.removeBody(handDer);
+  } else {
+    //Estaba andando
+    if (segundos > 0) {
+      //RESETEO TODO COMO AL INICIO
+      segundos = 0;
+      createNewTree("OpenProcessing");
+      world.clear();
+      sonido1.stop();
+      background(0);
     }
   }
-
-
-
-
-  if (tracking && context.isInit()) {
-    actualizarVectorBordes();
-    crearObstaculo();
-  }
-
-
-
-  world.draw();
-  world.step();
-  world.removeBody(obstacle);
-  world.removeBody(handIzq);
-  world.removeBody(handDer);
 }
 
 void findHands() {
@@ -386,16 +430,12 @@ void onLostUser(SimpleOpenNI curContext, int userId) {
 
 
 void contactStarted(FContact c) {
-
- 
 }
 
 void contactPersisted(FContact c) {
-
 }
 
 void contactEnded(FContact c) {
- 
 }
 
 
@@ -431,12 +471,12 @@ FBody circulo(float x, float y) {
   hoja.setRestitution(0);
   hoja.setNoStroke();
   //Otono
-  //hoja.setFill(random(236, 255), random(118, 140), random(66), random(255));
-  //Prim
-  hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
+  if (toSwitch)
+    hoja.setFill(random(236, 255), random(118, 140), random(66), random(255));
+  else 
+    hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
   return hoja;
 }
-
 
 
 
@@ -525,9 +565,9 @@ class Branch {
       windForce = parent.windForce * (1.0+5.0/length) + blastForce;
       blastForce = (blastForce + sin(x/2+windAngle)*0.005/length) * 0.98;
       angle = parent.angle + angleOffset + windForce + blastForce;
-      growth = min(growth + 0.1*parent.growth, 1);
+      growth = min(growth + 0.01*parent.growth, 1);
     } else
-      growth = min(growth + 0.1, 1);
+      growth = min(growth + 0.001, 1);
     if (branchA != null) {
       branchA.update();
       if (branchB != null)
@@ -574,7 +614,7 @@ class Branch {
         translate(x, y);
         rotate(-angle);
 
-        if ((random(10)>9)&&(cantHojas<maxHojas)) {
+        if ((segundos>77)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
           FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
