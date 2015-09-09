@@ -45,6 +45,8 @@ void setup()
 
 void draw()
 {
+  
+  println("Frame Rate " + frameRate);
   // fondo
   background(0);
   //scale(fact);
