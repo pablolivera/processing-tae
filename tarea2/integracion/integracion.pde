@@ -9,13 +9,19 @@ import controlP5.*;
 import ddf.minim.*;
 
 // DEBUG VARIABLES
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 
 //CONTROLS
 private ControlP5 cp5;
 ControlFrame cf;
 boolean toSwitch = false;
 boolean startEscena = false;
+boolean lanzarHojas = false;
+boolean tirarHojas = false;
+int velocidadx = 0;
+int velocidady = 200;
+int colorArbol = 2000;
+boolean crece = true;
 
 //SONIDO
 Minim soundengine;
@@ -39,7 +45,7 @@ float segundos; // Variable que indicara en que segundo de la cancion estamos
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
-int maxHojas = 1500;
+int maxHojas = 1000;
 int cantHojas = 0;
 int probHoja = 100000;
 int maxProb = 99999; // valor que encara mucho, ????? 
@@ -96,7 +102,7 @@ void setup() {
       exit();
       return;
     }
-  
+
     // hay que habilitar estas dos opciones para poder usar la funcion userImage()
     context.enableDepth();
     context.enableUser();
@@ -107,7 +113,7 @@ void setup() {
 
 
   smooth();
-  
+
   //LIBRERIA FISICA
   Fisica.init(this);
   world = new FWorld();
@@ -115,7 +121,7 @@ void setup() {
 
   //CONTROLES
   cp5 = new ControlP5(this);
-  cf = addControlFrame("Controladores", 250, 200);
+  cf = addControlFrame("Controladores", 250, 230);
 }
 
 
@@ -161,7 +167,7 @@ void createNewTree(String seed) {
 // Render /////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void draw() {
-  
+
   // Esto es con el control.
   if (startEscena) {
     if (segundos == 0) {
@@ -186,9 +192,13 @@ void draw() {
 
     // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
     if (kinectConectado && context.isInit()) {
-      findHands();
-    }
-    else {
+      //CON HAND TRACKING findHands();
+      //SIN
+      handIzq = pelota(firstHand.x, firstHand.y);
+      handDer = pelota(secondHand.x, secondHand.y);
+      world.add(handIzq);
+      world.add(handDer);
+    } else {
       handIzq = pelota(mouseX, mouseY);
       world.add(handIzq);
     }
@@ -197,10 +207,14 @@ void draw() {
     List<FBody> bodies = world.getBodies();
     for (FBody b : bodies) {
 
+      //VELOCIDAD DE LAS HOJAS
+      b.setVelocity(random(-velocidadx, velocidadx), velocidady);
+
       // Color de las hojas segun los Controles
       if (toSwitch) {        
         if ((random(maxProb) >= probHoja)) {
-          b.setFill(random(48, 181), random(202, 255), random(135), random(255));
+          //b.setFill(random(48, 181), random(202, 255), random(135), random(255));
+          b.setFill(random(255), random(255), random(255));
         } else {
           b.setFill(random(236, 255), random(118, 140), random(66), random(255));
         }
@@ -215,8 +229,10 @@ void draw() {
         probHoja++;
       if (toSwitch != backToSwitch)
         probHoja = 0;
-        
+
       backToSwitch = toSwitch;
+
+
 
       // Despierto las hojas con las manos 
       if (handIzq != null) {
@@ -225,8 +241,11 @@ void draw() {
         float ymin = handIzq.getY() - 50;
         float ymax = handIzq.getY() + 50;
         if (b.getX() > xmin && b.getX() < xmax && b.getY()>ymin && b.getY()<ymax) {
-          b.setStatic(false);
-          b.wakeUp();
+          //b.setStatic(false);
+          //b.wakeUp();
+          //ESTO DE ABAJO PARA EL VERANO FALTA EL ELSE PARA tamano original.
+          FCircle c = (FCircle)b;
+          c.setSize(random(30));
         }
       }
       if (handDer !=null) {
@@ -235,10 +254,25 @@ void draw() {
         float ymin = handDer.getY() - 50;
         float ymax = handDer.getY() + 50;
         if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-          b.setStatic(false);
-          b.wakeUp();
+          //b.setStatic(false);
+          //b.wakeUp();
+          FCircle c = (FCircle)b;
+
+          c.setSize(random(30));
         }
       }
+
+      //Tiro las hojas
+      if (tirarHojas) {
+        b.setStatic(false);
+        b.wakeUp();
+      }
+
+      //Hoja se fue de plano o quedo adentro de la silueta.
+      float y = b.getY()-10;
+      float x = b.getX()-10;
+      if (y>height || y<0 || x>width || x<0)
+        world.remove(b);
     }
 
     if (kinectConectado && tracking && context.isInit()) {
@@ -250,16 +284,15 @@ void draw() {
     //MUESTRO LOS ELEMENTOS DEL MUNDO FISICO
     world.draw();
     world.step();
-    
+
     // Limpio el mundo en cada loop para no sobrecargarlo
-    world.removeBody(obstacle);
-   
+    //world.removeBody(obstacle);
+
     for (FLine f : obstacleList) {
       world.removeBody(f);
     } 
     world.removeBody(handIzq);
     world.removeBody(handDer);
-
   } else {
     //STOP DE LA ESCENA CON EL CONTROL
     if (segundos > 0) {
@@ -349,20 +382,20 @@ void crearObstaculoLines() {
   int resto = puntosBordeList.size() % paso; // Se quitan cuando sobra un resto.
   boolean first = true;
   Iterator<PVector> it = puntosBordeList.iterator();
-  if(it.hasNext() && resto == 1) { // Si el resto es 1 se procesa diferente.
+  if (it.hasNext() && resto == 1) { // Si el resto es 1 se procesa diferente.
     v = it.next();
     first = false;
     firstHand = new PVector(v.x, v.y);
   }
   // Se ajusta el tope para el for que consume los puntos intermedios que no se dibujan.
   int tope = resto != 0 && resto != 1 ? resto : paso;  
-  while(it.hasNext()) {
+  while (it.hasNext ()) {
     v = it.next(); // Primer punto para FLine
-    if(first) { // Si es el primero se toma como una mano
+    if (first) { // Si es el primero se toma como una mano
       firstHand = new PVector(v.x, v.y);
       first = false;
     }
-    for(int i = 1; i < (tope - 1); i++) {
+    for (int i = 1; i < (tope - 1); i++) {
       it.next(); // Se avanza en la lista para saltear los puntos que no se dibujan
     }
     tope = paso;
@@ -374,7 +407,7 @@ void crearObstaculoLines() {
     obstacleList.add(linea);
     world.add(linea);
   }
-  if(w != null) { // El ultimo punto se toma como la otra mano.
+  if (w != null) { // El ultimo punto se toma como la otra mano.
     secondHand = new PVector(w.x, w.y);
   }
 }
@@ -383,7 +416,7 @@ void actualizarVectorBordes() {
   puntosBordeList = new ArrayList();
   int[]   userMap = context.userMap();
   int[]   depthMap = context.depthMap(); 
-  
+
   int index;
   for (int x = 0; x < context.depthWidth (); x++) {
     for (int y = 0; y < context.depthHeight (); y++) {
@@ -393,7 +426,7 @@ void actualizarVectorBordes() {
         int userNr = userMap[index];
         if ( userNr > 0) {
           // Si hay una usuario se carga la posicion en la lista
-          puntosBordeList.add(new PVector( ((x * fact) + aumento), (y * fact)));
+          puntosBordeList.add(new PVector( (x * fact), (y * fact)+ aumento));
           break; // Se corta para detectar solo el borde superior del usuario.
         }
       }
@@ -417,13 +450,13 @@ void onLostUser(SimpleOpenNI curContext, int userId) {
 
 
 /*void contactStarted(FContact c) {
-}
-
-void contactPersisted(FContact c) {
-}
-
-void contactEnded(FContact c) {
-}*/
+ }
+ 
+ void contactPersisted(FContact c) {
+ }
+ 
+ void contactEnded(FContact c) {
+ }*/
 
 // Funcion que retorna los segundos para el cambio de escena
 // 
@@ -436,24 +469,24 @@ void contactEnded(FContact c) {
 // 5 - Caen la hojas (OTOÑO)
 // 6 - Comienza el invierno 
 int obtenerSegundoEscena(int escenaId) {
-    switch(escenaId) {
-      case 1: 
-        return 0;
-      case 2:
-        return 66; // 1m 06s
-      case 3:
-        return 121; // 2m 01s
-      case 4:
-        return 191; // 3m 11s
-      case 5:
-        return 204; // 3m 24s
-      case 6:
-        return 233; // 3m 53s
-      default: 
-        println("No existe la escena " + escenaId); 
-        exit();
-        return -1;
-    }        
+  switch(escenaId) {
+  case 1: 
+    return 0;
+  case 2:
+    return 66; // 1m 06s
+  case 3:
+    return 121; // 2m 01s
+  case 4:
+    return 191; // 3m 11s
+  case 5:
+    return 204; // 3m 24s
+  case 6:
+    return 233; // 3m 53s
+  default: 
+    println("No existe la escena " + escenaId); 
+    exit();
+    return -1;
+  }
 }
 
 
@@ -484,10 +517,6 @@ FBody circulo(float x, float y) {
     hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
   return hoja;
 }
-
-
-
-
 
 
 

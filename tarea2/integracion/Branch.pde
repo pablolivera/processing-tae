@@ -75,19 +75,36 @@ class Branch {
   // Update /////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////
   void update() {
-    if (parent != null) {
-      x = parent.x + sin(parent.angle) * parent.length * parent.growth;
-      y = parent.y + cos(parent.angle) * parent.length * parent.growth;
-      windForce = parent.windForce * (1.0+5.0/length) + blastForce;
-      blastForce = (blastForce + sin(x/2+windAngle)*0.005/length) * 0.98;
-      angle = parent.angle + angleOffset + windForce + blastForce;
-      growth = min(growth + 0.01*parent.growth, 1);
-    } else
-      growth = min(growth + 0.001, 1);
-    if (branchA != null) {
-      branchA.update();
-      if (branchB != null)
-        branchB.update();
+    if (crece) {
+      if (parent != null) {
+        x = parent.x + sin(parent.angle) * parent.length * parent.growth;
+        y = parent.y + cos(parent.angle) * parent.length * parent.growth;
+        windForce = parent.windForce * (1.0+5.0/length) + blastForce;
+        blastForce = (blastForce + sin(x/2+windAngle)*0.005/length) * 0.98;
+        angle = parent.angle + angleOffset + windForce + blastForce;
+        growth = min(growth + 0.01*parent.growth, 1);
+      } else
+        growth = min(growth + 0.001, 1);
+      if (branchA != null) {
+        branchA.update();
+        if (branchB != null)
+          branchB.update();
+      }
+    } else {
+      if (parent != null) {
+        x = parent.x + sin(parent.angle) * parent.length * parent.growth;
+        y = parent.y + cos(parent.angle) * parent.length * parent.growth;
+        windForce = parent.windForce * (1.0+5.0/length) + blastForce;
+        blastForce = (blastForce + sin(x/2+windAngle)*0.005/length) * 0.98;
+        angle = parent.angle + angleOffset + windForce + blastForce;
+        growth = min(growth - 0.01*parent.growth, 1);
+      } else
+        growth = min(growth - 0.001, 1);
+      if (branchA != null) {
+        branchA.update();
+        if (branchB != null)
+          branchB.update();
+      }
     }
   }
 
@@ -108,7 +125,7 @@ class Branch {
           yB += cos(angle+angleOffset) * length * 0.3;
         }
         // PROCESSING WAY (slow)
-        stroke(floor(1100/length));
+        stroke(floor(colorArbol/length));
         strokeWeight(length/5);
         beginShape();
         vertex(x, y);
@@ -130,7 +147,7 @@ class Branch {
         translate(x, y);
         rotate(-angle);
 
-        if ((segundos>77)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
+        if ((lanzarHojas)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
           FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
@@ -145,3 +162,4 @@ class Branch {
     }
   }
 }
+
