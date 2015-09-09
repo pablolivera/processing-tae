@@ -9,7 +9,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 // DEBUG VARIABLES
-boolean kinnectConectado = false; 
+boolean kinectConectado = false; 
 
 //CONTROLS
 private ControlP5 cp5;
@@ -37,7 +37,8 @@ PImage leaveImagePrimavera;
 PImage leaveImageOtono;
 PImage pelota;
 int cont = 0;
-float segundos;
+float segundos; // Variable que indicara en que segundo de la cancion estamos
+
 //var curContext; // Javascript drawing context (for faster rendering)
 
 //FISICA
@@ -46,7 +47,8 @@ FCircle hoja;
 int maxHojas = 1500;
 int cantHojas = 0;
 int probHoja = 100000;
-int maxProb = 99999; //valor que encara mucho
+int maxProb = 99999; // valor que encara mucho, ????? 
+
 FWorld world;
 FBox f;
 FPoly obstacle;
@@ -89,14 +91,14 @@ void setup() {
   pelota = crearPelota();
   createNewTree("OpenProcessing");
 
-
-  if (kinnectConectado) {
+  // Controlo que este conectada la camara
+  if (kinectConectado) {
     context = new SimpleOpenNI(this);
     if (context.isInit() == false)
     {
-      //println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
-      //exit();
-      //return;
+      println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
+      exit();
+      return;
     }
   
     // hay que habilitar estas dos opciones para poder usar la funcion userImage()
@@ -177,6 +179,7 @@ PImage crearPelota() {
   return buffer.get();
 }
 
+///////////////////////////////////////////////////////////
 // Create leave image /////////////////////////////////////
 ///////////////////////////////////////////////////////////
 PImage createLeaveImage2() {
@@ -239,15 +242,16 @@ void createNewTree(String seed) {
 // Render /////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 void draw() {
-  //Esto es con el control.
+  
+  // Esto es con el control.
   if (startEscena) {
     if (segundos == 0) {
       //Esto se ejecuta solo al principio.
       sonido1.trigger();
     }
 
-    // actualizamos la kinect si esta presente
-    if (kinnectConectado && context.isInit()) { 
+    // Actualizamos la kinect si esta presente
+    if (kinectConectado && context.isInit()) { 
       context.update();
     }
 
@@ -268,10 +272,8 @@ void draw() {
     }
     cont++;
 
-
-
-    // Me fijo si esta conectado el kinnect en caso contrario usamos el mouse
-    if (kinnectConectado && context.isInit()) {
+    // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
+    if (kinectConectado && context.isInit()) {
       findHands();
     }
     else {
@@ -279,12 +281,11 @@ void draw() {
       world.add(handIzq);
     }
 
-
-
+    // Creamos las "hojas"
     List<FBody> bodies = world.getBodies();
     for (FBody b : bodies) {
 
-      //Color segun Controles
+      // Color de las hojas segun los Controles
       if (toSwitch) {        
         if ((random(maxProb) >= probHoja)) {
           b.setFill(random(48, 181), random(202, 255), random(135), random(255));
@@ -298,22 +299,20 @@ void draw() {
           b.setFill(random(48, 181), random(202, 255), random(135), random(255));
         }
       }
-      if (probHoja <= maxProb)
+      if (probHoja <= maxProb) 
         probHoja++;
-
-
       if (toSwitch != backToSwitch)
         probHoja = 0;
+        
       backToSwitch = toSwitch;
 
-
-      //println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>A bu");
-      if (handIzq !=null) {
+      // Despierto las hojas con las manos 
+      if (handIzq != null) {
         float xmin = handIzq.getX() - 50;
         float xmax = handIzq.getX() + 50;
         float ymin = handIzq.getY() - 50;
         float ymax = handIzq.getY() + 50;
-        if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+        if (b.getX() > xmin && b.getX() < xmax && b.getY()>ymin && b.getY()<ymax) {
           b.setStatic(false);
           b.wakeUp();
         }
@@ -330,22 +329,20 @@ void draw() {
       }
     }
 
-
-
-
-
-    if (tracking && context.isInit()) {
+    if (kinectConectado && tracking && context.isInit()) {
       actualizarVectorBordes();
       crearObstaculo();
     }
 
 
-
     world.draw();
     world.step();
-    world.removeBody(obstacle);
+    
+    // Limpio el mundo en cada loop para no sobrecargarlo
+    world.removeBody(obstacle); 
     world.removeBody(handIzq);
     world.removeBody(handDer);
+
   } else {
     //Estaba andando
     if (segundos > 0) {
@@ -359,6 +356,7 @@ void draw() {
   }
 }
 
+// Busca las manos y si las encuentra llama a drawHand para dibujarlas
 void findHands() {
   // Dibujar manos si están disponibles
   int[] userList = context.getUsers();
@@ -370,6 +368,7 @@ void findHands() {
   }
 }
 
+// Dibuja las manos
 void drawHand(int userId) {
 
   PVector rightHand = new PVector(); 
@@ -449,26 +448,61 @@ void actualizarVectorBordes() {
   }
 }
 
+// Cuando encuentre un usuario que lo empiece a sensar
 void onNewUser(SimpleOpenNI curContext, int userId) { 
   tracking = true;
   //println("tracking" + userId);
   context.startTrackingSkeleton(userId);
 }
 
+// Marco cuando pierdo el usuario
 void onLostUser(SimpleOpenNI curContext, int userId) {
   tracking = false;
   //println("onLostUser - userId: " + userId);
 }
 
 
-void contactStarted(FContact c) {
+
+/*void contactStarted(FContact c) {
 }
 
 void contactPersisted(FContact c) {
 }
 
 void contactEnded(FContact c) {
+}*/
+
+// Funcion que retorna los segundos para el cambio de escena
+// 
+// TODO podriamos ya poner el codigo aca de cada escena asi queda bien separada
+// 
+// 1 - Inicio, crecimiento del arbol
+// 2 - Termina de crecer el arbol y aparecen las primeras hojas (PRIMAVERA)
+// 3 - Comienzo del verano
+// 4 - Comienzo del otoño
+// 5 - Caen la hojas (OTOÑO)
+// 6 - Comienza el invierno 
+int obtenerSegundoEscena(int escenaId) {
+    switch(escenaId) {
+      case 1: 
+        return 0;
+      case 2:
+        return 66; // 1m 06s
+      case 3:
+        return 121; // 2m 01s
+      case 4:
+        return 191; // 3m 11s
+      case 5:
+        return 204; // 3m 24s
+      case 6:
+        return 233; // 3m 53s
+      default: 
+        println("No existe la escena " + escenaId); 
+        exit();
+        return -1;
+    }        
 }
+
 
 
 FBody hoja(float x, float y, float angle) {
