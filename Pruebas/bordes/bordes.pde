@@ -5,14 +5,21 @@ import fisica.*;
 
 FWorld world;
 FPoly obstacle;
+List<FLine> obstacleList;
 
 SimpleOpenNI  context;
 // variable que define el factor para escalar la imagen que nos da la kinect
 float fact;
-int[] puntosBorde; // puntosBorde[i] < 0 : No hay user. En otro caso esta la posicion en y mas alta en la x dada del usuario. 
+//int[] puntosBorde; // puntosBorde[i] < 0 : No hay user. En otro caso esta la posicion en y mas alta en la x dada del usuario. 
 List<PVector> puntosBordeList; // Lista con los puntos de borde superiores del user. Escalado por fact.
 boolean tracking = false;
-boolean hayObstaculo = false;
+
+int aumento = 0;
+PVector firstHand = new PVector();
+PVector secondHand = new PVector();
+
+
+float minFR = -1;
 
 
 void setup()
@@ -41,12 +48,15 @@ void setup()
   
   world = new FWorld();
   
+  obstacleList = new ArrayList();
+  
 }
 
 void draw()
-{
-  
+{  
   println("Frame Rate " + frameRate);
+  minFR = minFR == -1 || frameRate < minFR ? frameRate : minFR;
+  println("MIN FR " + minFR);
   // fondo
   background(0);
   //scale(fact);
@@ -57,7 +67,7 @@ void draw()
     
     actualizarVectorBordes();
     
-    crearObstaculo();
+    crearObstaculoLines();
   
     if (frameCount % 5 == 0) {
       FCircle b = new FCircle(20);
@@ -66,25 +76,102 @@ void draw()
       b.setRestitution(0);
       b.setNoStroke();
       b.setFill(200, 30, 90);
+      
+      FCircle c = new FCircle(20);
+      c.setPosition(width/3 + random(-50, 50), 50);
+      c.setVelocity(0, 200);
+      c.setRestitution(0);
+      c.setNoStroke();
+      c.setFill(250, 50, 98);
+      
       world.add(b);
+      world.add(c);
     }
   
     world.draw();
     world.step();
   
-    strokeWeight(1);
-    stroke(255);
-    ArrayList contacts = obstacle.getContacts();
-    System.out.println("Esto es el tamanio de contacts" + contacts.size());
-    for (int i=0; i<contacts.size (); i++) {
-      FContact c = (FContact)contacts.get(i);
-      //line(c.getBody1().getX(), c.getBody1().getY(), c.getBody2().getX(), c.getBody2().getY());
-    }    
   }
   
-  world.removeBody(obstacle);
+  for (FLine f : obstacleList) {
+    world.removeBody(f);
+  }
   
 }
+
+void crearObstaculoLines() {
+  obstacleList = new ArrayList();
+  PVector v = null;
+  PVector w = null;
+  FLine linea;
+  int paso = 2; // Minimo 2. Indica cuantos puntos se toman para crear FLine.
+  int resto = puntosBordeList.size() % paso; // Se quitan cuando sobra un resto.
+  boolean first = true;
+  Iterator<PVector> it = puntosBordeList.iterator();
+  if(it.hasNext() && resto == 1) { // Si el resto es 1 se procesa diferente.
+    v = it.next();
+    first = false;
+    firstHand = new PVector(v.x, v.y);
+  }
+  // Se ajusta el tope para el for que consume los puntos intermedios que no se dibujan.
+  int tope = resto != 0 && resto != 1 ? resto : paso;  
+  while(it.hasNext()) {
+    v = it.next(); // Primer punto para FLine
+    if(first) { // Si es el primero se toma como una mano
+      firstHand = new PVector(v.x, v.y);
+      first = false;
+    }
+    for(int i = 1; i < (tope - 1); i++) {
+      it.next(); // Se avanza en la lista para saltear los puntos que no se dibujan
+    }
+    tope = paso;
+    w = it.next(); // Segundo punto para FLine
+    linea = new FLine(v.x, v.y, w.x, w.y); // Se crea el objecto que es obstaculo en el mundo.
+    linea.setStatic(true);
+    linea.setStroke(255);
+    linea.setRestitution(0);
+    obstacleList.add(linea);
+    world.add(linea);
+  }
+  if(w != null) { // El ultimo punto se toma como la otra mano.
+    secondHand = new PVector(w.x, w.y);
+  }
+}
+
+void actualizarVectorBordes() {
+  puntosBordeList = new ArrayList();
+  int[]   userMap = context.userMap();
+  int[]   depthMap = context.depthMap(); 
+  //puntosBorde = new int[context.depthWidth()]; 
+
+  int index;
+  for (int x = 0; x < context.depthWidth (); x++) {
+    for (int y = 0; y < context.depthHeight (); y++) {
+      index = x + (y * context.depthWidth());
+      int d = depthMap[index];
+      if ( d > 0) {
+        int userNr = userMap[index];
+        if ( userNr > 0) {
+          // Si hay una usuario se carga la posicion en la lista
+          puntosBordeList.add(new PVector( ((x * fact) + aumento), (y * fact)));
+          break; // Se corta para detectar solo el borde superior del usuario.
+        }
+      }
+    }
+  }
+}
+
+void onNewUser(SimpleOpenNI curContext, int userId) { 
+  tracking = true;
+  //println("tracking" + userId);
+  //curContext.startTrackingSkeleton(userId);
+}
+
+void onLostUser(SimpleOpenNI curContext, int userId) {
+  tracking = false;
+  //println("onLostUser - userId: " + userId);
+}
+
 
 void crearObstaculo() {
   obstacle = new FPoly();
@@ -108,58 +195,7 @@ void crearObstaculo() {
   world.add(obstacle);
 }
 
-void actualizarVectorBordes() {
-  puntosBordeList = new ArrayList();
-  int[]   userMap = context.userMap();
-  int[]   depthMap = context.depthMap(); 
-  puntosBorde = new int[context.depthWidth()]; 
-
-  int index;
-  for (int x = 0; x < context.depthWidth (); x++) {
-    for (int y = 0; y < context.depthHeight (); y++) {
-      index = x + (y * context.depthWidth());
-      int d = depthMap[index];
-      // si no hay usuarios se pone posicion en -1
-      puntosBorde[x] = -1;
-      if ( d > 0) {
-        int userNr = userMap[index];
-        if ( userNr > 0) {
-          // Si hay una usuario se carga la posicion en el array          
-          puntosBordeList.add(new PVector( (x * fact), (y * fact)));
-          puntosBorde[x] = y;
-          break; // Se corta para detectar solo el borde superior del usuario.
-        }
-      }
-    }
-  }
-  /*for(int posX = 0; posX < puntosBorde.length; posX++) {
-   if(puntosBorde[posX] >= 0) {
-   puntosBorderList.add(new PVector(posX, puntosBorde[posX]));
-   //stroke(255);
-   //ellipse(posX, puntosBorde[posX], 3, 3);
-   }
-   }
-  for (PVector p : puntosBordeList) {
-    stroke(255);
-    ellipse(p.x, p.y, 3, 3);
-  }*/
-}
-
-void onNewUser(SimpleOpenNI curContext, int userId) { 
-  tracking = true;
-  //println("tracking" + userId);
-  //curContext.startTrackingSkeleton(userId);
-}
-
-void onLostUser(SimpleOpenNI curContext, int userId) {
-  tracking = false;
-  //println("onLostUser - userId: " + userId);
-}
-
-synchronized void setTracking(boolean value) {
-  tracking = value;
-}
-
+/*
 void contactStarted(FContact c) {
   FBody ball = null;
   if (c.getBody1() == obstacle) {
@@ -207,5 +243,5 @@ void contactEnded(FContact c) {
   }
 
   ball.setFill(200, 30, 90);
-}
+} */
 

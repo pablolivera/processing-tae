@@ -39,7 +39,6 @@ PImage pelota;
 int cont = 0;
 float segundos; // Variable que indicara en que segundo de la cancion estamos
 
-//var curContext; // Javascript drawing context (for faster rendering)
 
 //FISICA
 Boolean[][] hayHoja; 
@@ -54,6 +53,7 @@ FBox f;
 FPoly obstacle;
 FBody handIzq;
 FBody handDer;
+List<FLine> obstacleList; // Lista con obstaculos para la hoja.
 
 //KINECT
 SimpleOpenNI  context = null;
@@ -66,10 +66,12 @@ PVector convertedLeftHand;
 boolean backToSwitch = false;
 
 // variable que define el factor para escalar la imagen que nos da la kinect
-float fact;
-int[] puntosBorde; // puntosBorde[i] < 0 : No hay user. En otro caso esta la posicion en y mas alta en la x dada del usuario. 
+float fact; 
 List<PVector> puntosBordeList; // Lista con los puntos de borde superiores del user. Escalado por fact.
 boolean tracking = false;
+PVector firstHand = new PVector();
+PVector secondHand = new PVector();
+int aumento = 0;
 
 
 ///////////////////////////////////////////////////////////
@@ -113,6 +115,7 @@ void setup() {
   smooth();
   Fisica.init(this);
   world = new FWorld();
+  obstacleList = new ArrayList(); // Iniciar la lista de obstaculos.
 
   //CONTROLES
   cp5 = new ControlP5(this);
@@ -331,7 +334,8 @@ void draw() {
 
     if (kinectConectado && tracking && context.isInit()) {
       actualizarVectorBordes();
-      crearObstaculo();
+      crearObstaculoLines();
+      //crearObstaculo();
     }
 
 
@@ -339,7 +343,11 @@ void draw() {
     world.step();
     
     // Limpio el mundo en cada loop para no sobrecargarlo
-    world.removeBody(obstacle); 
+    world.removeBody(obstacle);
+   
+    for (FLine f : obstacleList) {
+      world.removeBody(f);
+    } 
     world.removeBody(handIzq);
     world.removeBody(handDer);
 
@@ -422,25 +430,61 @@ void crearObstaculo() {
   world.add(obstacle);
 }
 
+// Crea una lista de FLine que sirven de obstaculos para las hojas.
+void crearObstaculoLines() {
+  obstacleList = new ArrayList();
+  PVector v = null;
+  PVector w = null;
+  FLine linea;
+  int paso = 2; // Minimo 2. Indica cuantos puntos se toman para crear FLine.
+  int resto = puntosBordeList.size() % paso; // Se quitan cuando sobra un resto.
+  boolean first = true;
+  Iterator<PVector> it = puntosBordeList.iterator();
+  if(it.hasNext() && resto == 1) { // Si el resto es 1 se procesa diferente.
+    v = it.next();
+    first = false;
+    firstHand = new PVector(v.x, v.y);
+  }
+  // Se ajusta el tope para el for que consume los puntos intermedios que no se dibujan.
+  int tope = resto != 0 && resto != 1 ? resto : paso;  
+  while(it.hasNext()) {
+    v = it.next(); // Primer punto para FLine
+    if(first) { // Si es el primero se toma como una mano
+      firstHand = new PVector(v.x, v.y);
+      first = false;
+    }
+    for(int i = 1; i < (tope - 1); i++) {
+      it.next(); // Se avanza en la lista para saltear los puntos que no se dibujan
+    }
+    tope = paso;
+    w = it.next(); // Segundo punto para FLine
+    linea = new FLine(v.x, v.y, w.x, w.y); // Se crea el objecto que es obstaculo en el mundo.
+    linea.setStatic(true);
+    linea.setStroke(255);
+    linea.setRestitution(0);
+    obstacleList.add(linea);
+    world.add(linea);
+  }
+  if(w != null) { // El ultimo punto se toma como la otra mano.
+    secondHand = new PVector(w.x, w.y);
+  }
+}
+
 void actualizarVectorBordes() {
   puntosBordeList = new ArrayList();
   int[]   userMap = context.userMap();
   int[]   depthMap = context.depthMap(); 
-  puntosBorde = new int[context.depthWidth()]; 
-
+  
   int index;
   for (int x = 0; x < context.depthWidth (); x++) {
     for (int y = 0; y < context.depthHeight (); y++) {
       index = x + (y * context.depthWidth());
       int d = depthMap[index];
-      // si no hay usuarios se pone posicion en -1
-      puntosBorde[x] = -1;
       if ( d > 0) {
         int userNr = userMap[index];
         if ( userNr > 0) {
-          // Si hay una usuario se carga la posicion en el array          
-          puntosBordeList.add(new PVector( (x * fact), (y * fact)));
-          puntosBorde[x] = y;
+          // Si hay una usuario se carga la posicion en la lista
+          puntosBordeList.add(new PVector( ((x * fact) + aumento), (y * fact)));
           break; // Se corta para detectar solo el borde superior del usuario.
         }
       }
