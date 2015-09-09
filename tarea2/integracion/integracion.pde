@@ -8,6 +8,9 @@ import java.util.*;
 import controlP5.*;
 import ddf.minim.*;
 
+// DEBUG VARIABLES
+boolean kinnectConectado = false; 
+
 //CONTROLS
 private ControlP5 cp5;
 ControlFrame cf;
@@ -84,17 +87,19 @@ void setup() {
   createNewTree("OpenProcessing");
 
 
-  context = new SimpleOpenNI(this);
-  if (context.isInit() == false)
-  {
-    //println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
-    //exit();
-    //return;
+  if (kinnectConectado) {
+    context = new SimpleOpenNI(this);
+    if (context.isInit() == false)
+    {
+      //println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
+      //exit();
+      //return;
+    }
+  
+    // hay que habilitar estas dos opciones para poder usar la funcion userImage()
+    context.enableDepth();
+    context.enableUser();
   }
-
-  // hay que habilitar estas dos opciones para poder usar la funcion userImage()
-  context.enableDepth();
-  context.enableUser();
 
   // el factor lo definimos dividiendo el ancho del proyector, por el ancho de la imagen de la kinect
   fact = float(width)/640;
@@ -238,26 +243,34 @@ void draw() {
       sonido1.trigger();
     }
 
-    // actualizamos la kinect
-    if (context.isInit()) context.update();
+    // actualizamos la kinect si esta presente
+    if (kinnectConectado && context.isInit()) { 
+      context.update();
+    }
 
     background(0);
     noStroke();
     noFill();
+    
     //windAngle += 0.001; //Con 0.01 parece que se MUEREEEE
     //tree.windForce = sin(windAngle) * 0.05;
+    
     tree.update();
     segundos = millis()/1000;
     tree.render(1);
 
 
-    if (cont > 50) cont = 0;
+    if (cont > 50) { 
+      cont = 0;
+    }
     cont++;
 
 
 
-    if (context.isInit())
+    // Me fijo si esta conectado el kinnect en caso contrario usamos el mouse
+    if (kinnectConectado && context.isInit()) {
       findHands();
+    }
     else {
       handIzq = pelota(mouseX, mouseY);
       world.add(handIzq);
@@ -629,4 +642,5 @@ class Branch {
     }
   }
 }
+
 
