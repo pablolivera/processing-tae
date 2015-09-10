@@ -9,7 +9,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 // DEBUG VARIABLES
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 
 //CONTROLS
 private ControlP5 cp5;
@@ -22,6 +22,11 @@ int velocidadx = 0;
 int velocidady = 200;
 int colorArbol = 2000;
 boolean crece = true;
+boolean esVerano1 = false;
+boolean esVerano2 = false;
+boolean esPrimavera = false;
+boolean esOtono = false;
+boolean esInvierno = false;
 
 //SONIDO
 Minim soundengine;
@@ -121,7 +126,7 @@ void setup() {
 
   //CONTROLES
   cp5 = new ControlP5(this);
-  cf = addControlFrame("Controladores", 250, 230);
+  cf = addControlFrame("Controladores", 380, 380);
 }
 
 
@@ -168,6 +173,7 @@ void createNewTree(String seed) {
 ///////////////////////////////////////////////////////////
 void draw() {
 
+  startEscena = esInvierno || esVerano1 || esVerano2 || esOtono || esPrimavera;
   // Esto es con el control.
   if (startEscena) {
     if (segundos == 0) {
@@ -244,8 +250,11 @@ void draw() {
           //b.setStatic(false);
           //b.wakeUp();
           //ESTO DE ABAJO PARA EL VERANO FALTA EL ELSE PARA tamano original.
+
+          if (esVerano2) {
           FCircle c = (FCircle)b;
           c.setSize(random(30));
+          } 
         }
       }
       if (handDer !=null) {
@@ -294,7 +303,7 @@ void draw() {
     world.removeBody(handIzq);
     world.removeBody(handDer);
   } else {
-    //STOP DE LA ESCENA CON EL CONTROL
+    //ninguna estacion activa
     if (segundos > 0) {
       //RESETEO TODO COMO AL INICIO
       segundos = 0;
