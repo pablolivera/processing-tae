@@ -47,6 +47,8 @@ String typedText;
 String lastSeed;
 float segundos; // Variable que indicara en que segundo de la cancion estamos
 int alpha = 0;
+int[][] col = new int[3][2];
+int[][] colanterior = new int[3][2];
 
 
 //FISICA
@@ -191,8 +193,8 @@ void draw() {
     background(0);
 
     if (esVerano2) {
-      
-      background(0,alpha);
+
+      background(0, alpha);
 
       noStroke();
       if ((random(10) > 8)&&(alpha < 255)) {
@@ -250,26 +252,50 @@ void draw() {
       b.setVelocity(random(-velocidadx, velocidadx), velocidady);
 
       // Color de las hojas segun los Controles
-      if (esOtono1) {        
-        if ((random(maxProb) >= probHoja)) {
-          //b.setFill(random(48, 181), random(202, 255), random(135), random(255));
-          b.setFill(random(255), random(255), random(255));
-        } else {
-          b.setFill(random(236, 255), random(118, 140), random(66), random(255));
-        }
-      } else {        
-        if ((random(maxProb) >= probHoja)) {
-          b.setFill(random(236, 255), random(118, 140), random(66), random(255));
-        } else {
-          b.setFill(random(48, 181), random(202, 255), random(135), random(255));
-        }
+      colanterior= col;
+      int transparency = 255;
+
+      if (esPrimavera) {
+        transparency = 0;
+      } else if (esVerano1) {
+        col[0][0] = 48;
+        col[0][1] = 181;
+        col[1][0] = 202;
+        col[1][1] = 255;
+        col[2][0] = 0;
+        col[2][1] = 135;
+      } else if (esVerano2) {
+        col[0][0] = 0;
+        col[0][1] = 255;
+        col[1][0] = 0;
+        col[1][1] = 255;
+        col[2][0] = 0;
+        col[2][1] = 255;
+      } else if (esOtono1 || esOtono1) {
+        col[0][0] = 236;
+        col[0][1] = 255;
+        col[1][0] = 118;
+        col[1][1] = 140;
+        col[2][0] = 0;
+        col[2][1] = 66;
+      } else if (esInvierno) {
+        transparency = 0;
+      } 
+      if ((random(maxProb) >= probHoja)) {
+        b.setFill(random(col[0][0], col[0][1]), random(col[1][0], col[1][1]), random(col[2][0], col[2][1]), random(transparency));
+      } else {
+        b.setFill(random(colanterior[0][0], colanterior[0][1]), random(colanterior[1][0], colanterior[1][1]), random(colanterior[2][0], colanterior[2][1]), random(transparency));
       }
+
       if (probHoja <= maxProb) 
         probHoja++;
-      if (toSwitch != backToSwitch)
-        probHoja = 0;
 
-      backToSwitch = toSwitch;
+      if (toSwitch) {
+        toSwitch = false;
+        probHoja = 0;
+      }
+
+
 
 
 

@@ -186,6 +186,7 @@ public class ControlFrame extends PApplet {
       verano2.setValue(false);
       verano2.update();
       println("Primavera ON");
+      c.toSwitch = true;
       ct.reset();
     }
   }
@@ -212,6 +213,7 @@ public class ControlFrame extends PApplet {
       verano2.unlock();
       verano2.update();
       println("Verano1 ON");
+      c.toSwitch = true;
     }
   }
   void VERANO_2(boolean theFlag) {
@@ -235,6 +237,7 @@ public class ControlFrame extends PApplet {
       verano1.lock();
       verano1.update();
       println("Verano2 ON");
+      c.toSwitch = true;
     }
   }
   void OTONO_1(boolean theFlag) {
@@ -258,6 +261,7 @@ public class ControlFrame extends PApplet {
       verano2.setValue(false);
       verano2.lock();
       verano2.update();
+      c.toSwitch = true;
     }
   }
   void OTONO_2(boolean theFlag) {
@@ -281,6 +285,7 @@ public class ControlFrame extends PApplet {
       c.esVerano2 = false;
       verano2.setValue(false);
       verano2.update();
+      c.toSwitch = true;
     }
   }
   void INVIERNO(boolean theFlag) {
@@ -303,6 +308,7 @@ public class ControlFrame extends PApplet {
       verano2.setValue(false);
       verano2.update();
       println("Invierno ON");
+      c.toSwitch = true;
     }
   }
 }
