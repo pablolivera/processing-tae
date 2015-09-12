@@ -78,14 +78,14 @@ public class ControlFrame extends PApplet {
     cp5.addSlider("Velocidad X")
       .plugTo(parent, "velocidadx")
         .setRange(0, 300)
-          .setValue(20)
+          .setValue(185)
             .setSize(400, 20)
               .setPosition(x, y);
 
     cp5.addSlider("Velocidad Y")
       .plugTo(parent, "velocidady")
         .setRange(0, 300)
-          .setValue(200)
+          .setValue(250)
             .setSize(400, 20)
               .setPosition(x, y+=30);
 

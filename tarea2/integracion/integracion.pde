@@ -78,7 +78,7 @@ int[][] colanterior = {
 //FISICA
 Boolean[][] hayHoja; 
 FCircle hoja;
-int maxHojas = 1000;
+int maxHojas = 500;
 int cantHojas = 0;
 int probHoja = 0;
 int maxProb = 50999; // valor que encara mucho, ????? 
@@ -226,8 +226,8 @@ void draw() {
     } else if (esOtono1) {
       background(0, alpha);
       noStroke();
-      if ((random(10) > 8)&&(alpha < 255)) {
-        alpha-=5;
+      if ((random(10) > 8)&&(alpha > 0)) {
+        alpha-=10;
       }
       crearArcoiris();
     }
@@ -257,6 +257,7 @@ void draw() {
 
     // Actualizamos las "hojas"
     List<FBody> bodies = world.getBodies();
+    //println("cuerpos: "+bodies.size());
     for (FBody b : bodies) {
 
       //VELOCIDAD DE LAS HOJAS
