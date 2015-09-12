@@ -7,89 +7,106 @@ public class ControlFrame extends PApplet {
   Object parent;
   controlP5.Toggle verano1;
   controlP5.Toggle verano2;
-  controlP5.Toggle otono;
+  controlP5.Toggle otono1;
+  controlP5.Toggle otono2;
   controlP5.Toggle invierno;
   controlP5.Toggle primavera;
+  ControlTimer ct;
+  Textlabel t;
 
   public void setup() {
     size(w, h);
-    frameRate(25);
+    frameRate(30);
     cp5 = new ControlP5(this);
+    ct = new ControlTimer();
+    t = new Textlabel(cp5, "--", 100, 100);
+    ct.setSpeedOfTime(1);
 
+    int x = 20;
+    int y = 30;
 
-
-    primavera = cp5.addToggle("togglePrimavera")
-      .setPosition(10, 50)
+    primavera = cp5.addToggle("PRIMAVERA")
+      .setPosition(x, y)
         .setSize(50, 20)
           .plugTo(parent, "esPrimavera")
-            .setValue(false)
-              .setMode(ControlP5.SWITCH)
-                ;
+            .setValue(false);
 
-    verano1 = cp5.addToggle("toggleVerano1")
-      .setPosition(90, 50)
+    verano1 = cp5.addToggle("VERANO_1")
+      .setPosition(x+=80, y)
         .setSize(50, 20)
           .plugTo(parent, "esVerano1")
             .setValue(false)
-              .setMode(ControlP5.SWITCH)
-                ;
+              .lock();
 
-    verano2 = cp5.addToggle("toggleVerano2")
-      .setPosition(170, 50)
+    verano2 = cp5.addToggle("VERANO_2")
+      .setPosition(x+=80, y)
         .setSize(50, 20)
           .plugTo(parent, "esVerano2")
             .setValue(false)
-              .setMode(ControlP5.SWITCH)
-                ;
+              .lock();
 
-    otono = cp5.addToggle("toggleOtono")
-      .setPosition(250, 50)
+    otono1 = cp5.addToggle("OTONO_1")
+      .setPosition(x+=80, y)
         .setSize(50, 20)
-          .plugTo(parent, "esOtono")
+          .plugTo(parent, "esOtono1")
             .setValue(false)
-              .setMode(ControlP5.SWITCH)
-                ;
+              .lock();
 
-    invierno = cp5.addToggle("toggleInvierno")
-      .setPosition(330, 50)
+    otono2 = cp5.addToggle("OTONO_2")
+      .setPosition(x+=80, y)
+        .setSize(50, 20)
+          .plugTo(parent, "esOtono2")
+            .setValue(false)
+              .lock();
+
+    invierno = cp5.addToggle("INVIERNO")
+      .setPosition(x+=80, y)
         .setSize(50, 20)
           .plugTo(parent, "esInvierno")
             .setValue(false)
-              .setMode(ControlP5.SWITCH)
-                ;
+              .lock();
 
-    cp5.addToggle("Lanzar hojas")
-      .plugTo(parent, "lanzarHojas")
-        .setPosition(10, 90)
-          .setSize(50, 20)
-            .setValue(false);
+
+    y+= 50;
+    x = 20;
+
 
     cp5.addToggle("Tirar hojas")
       .plugTo(parent, "tirarHojas")
-        .setPosition(90, 90)
+        .setPosition(x, y)
           .setSize(50, 20)
             .setValue(false);
+
+    y+= 50;
+    x = 20;
+
 
     cp5.addSlider("Velocidad X")
       .plugTo(parent, "velocidadx")
         .setRange(0, 300)
           .setValue(20)
-            .setPosition(10, 130);
+            .setSize(400, 20)
+              .setPosition(x, y);
 
     cp5.addSlider("Velocidad Y")
       .plugTo(parent, "velocidady")
         .setRange(0, 300)
           .setValue(200)
-            .setPosition(10, 160);
+            .setSize(400, 20)
+              .setPosition(x, y+=30);
 
     cp5.addSlider("Color Arbol")
       .plugTo(parent, "colorArbol")
         .setRange(1000, 2550)
           .setValue(2000)
-            .setPosition(10, 190);
+            .setSize(400, 20)
+              .setPosition(x, y+=30);
   }
   public void draw() {
     background(0);
+    t.setValue(ct.toString());
+    t.draw(this);
+    t.setPosition(mouseX, mouseY);
   }
   private ControlFrame() {
   }
@@ -101,30 +118,64 @@ public class ControlFrame extends PApplet {
   public ControlP5 control() {
     return cp5;
   }
-  void toggleVerano1(boolean theFlag) {
+  void PRIMAVERA(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
-      c.esOtono = false;
-      otono.setValue(false);
-      otono.update();
-      c.esPrimavera = false;
-      primavera.setValue(false);
-      primavera.update();
+      c.esOtono1 = false;
+      otono1.setValue(false);
+      otono1.update();
+      c.esOtono2 = false;
+      otono2.setValue(false);
+      otono2.update();
+      c.esVerano1 = false;
+      verano1.setValue(false);
+      verano1.unlock();
+      verano1.update();
       c.esInvierno = false;
       invierno.setValue(false);
       invierno.update();
       c.esVerano2 = false;
       verano2.setValue(false);
       verano2.update();
+      println("Primavera ON");
+      ct.reset();
+    }
+  }
+  void VERANO_1(boolean theFlag) {
+    integracion c = (integracion)parent;
+    if (theFlag) {
+      c.esVerano1 = true;
+
+      c.esOtono1 = false;
+      otono1.setValue(false);
+      otono1.update();
+      c.esOtono2 = false;
+      otono2.setValue(false);
+      otono2.update();
+      c.esPrimavera = false;
+      primavera.setValue(false);
+      primavera.lock();
+      primavera.update();
+      c.esInvierno = false;
+      invierno.setValue(false);
+      invierno.update();
+      c.esVerano2 = false;
+      verano2.setValue(false);
+      verano2.unlock();
+      verano2.update();
       println("Verano1 ON");
     }
   }
-  void toggleVerano2(boolean theFlag) {
+  void VERANO_2(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
-      c.esOtono = false;
-      otono.setValue(false);
-      otono.update();
+      c.esOtono1 = false;
+      otono1.setValue(false);
+      otono1.unlock();
+      otono1.update();
+      c.esOtono2 = false;
+      otono2.setValue(false);
+      otono2.update();
       c.esPrimavera = false;
       primavera.setValue(false);
       primavera.update();
@@ -133,13 +184,18 @@ public class ControlFrame extends PApplet {
       invierno.update();
       c.esVerano1 = false;
       verano1.setValue(false);
+      verano1.lock();
       verano1.update();
       println("Verano2 ON");
     }
   }
-  void toggleOtono(boolean theFlag) {
+  void OTONO_1(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
+      c.esOtono2 = false;
+      otono2.setValue(false);
+      otono2.unlock();
+      otono2.update();
       c.esVerano1 = false;
       verano1.setValue(false);
       verano1.update();
@@ -152,15 +208,43 @@ public class ControlFrame extends PApplet {
       println("Otono ON");
       c.esVerano2 = false;
       verano2.setValue(false);
+      verano2.lock();
       verano2.update();
     }
   }
-  void toggleInvierno(boolean theFlag) {
+  void OTONO_2(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
-      c.esOtono = false;
-      otono.setValue(false);
-      otono.update();
+      c.esOtono1 = false;
+      otono1.setValue(false);
+      otono1.lock();
+      otono1.update();
+      c.esVerano1 = false;
+      verano1.setValue(false);
+      verano1.update();
+      c.esPrimavera = false;
+      primavera.setValue(false);
+      primavera.update();
+      c.esInvierno = false;
+      invierno.setValue(false);
+      invierno.unlock();
+      invierno.update();
+      println("Otono ON");
+      c.esVerano2 = false;
+      verano2.setValue(false);
+      verano2.update();
+    }
+  }
+  void INVIERNO(boolean theFlag) {
+    integracion c = (integracion)parent;
+    if (theFlag) {
+      c.esOtono1 = false;
+      otono1.setValue(false);
+      otono1.update();
+      c.esOtono2 = false;
+      otono2.setValue(false);
+      otono2.lock();
+      otono2.update();
       c.esPrimavera = false;
       primavera.setValue(false);
       primavera.update();
@@ -171,24 +255,6 @@ public class ControlFrame extends PApplet {
       verano2.setValue(false);
       verano2.update();
       println("Invierno ON");
-    }
-  }
-  void togglePrimavera(boolean theFlag) {
-    integracion c = (integracion)parent;
-    if (theFlag) {
-      c.esOtono = false;
-      otono.setValue(false);
-      otono.update();
-      c.esVerano1 = false;
-      verano1.setValue(false);
-      verano1.update();
-      c.esInvierno = false;
-      invierno.setValue(false);
-      invierno.update();
-      c.esVerano2 = false;
-      verano2.setValue(false);
-      verano2.update();
-      println("Primavera ON");
     }
   }
 }

@@ -25,7 +25,8 @@ boolean crece = true;
 boolean esVerano1 = false;
 boolean esVerano2 = false;
 boolean esPrimavera = false;
-boolean esOtono = false;
+boolean esOtono1 = false;
+boolean esOtono2 = false;
 boolean esInvierno = false;
 
 //SONIDO
@@ -126,7 +127,7 @@ void setup() {
 
   //CONTROLES
   cp5 = new ControlP5(this);
-  cf = addControlFrame("Controladores", 380, 380);
+  cf = addControlFrame("Controladores", 550, 550);
 }
 
 
@@ -173,7 +174,7 @@ void createNewTree(String seed) {
 ///////////////////////////////////////////////////////////
 void draw() {
 
-  startEscena = esInvierno || esVerano1 || esVerano2 || esOtono || esPrimavera;
+  startEscena = esInvierno || esVerano1 || esVerano2 || esOtono1 || esOtono2 || esPrimavera;
   // Esto es con el control.
   if (startEscena) {
     if (segundos == 0) {
@@ -217,7 +218,7 @@ void draw() {
       b.setVelocity(random(-velocidadx, velocidadx), velocidady);
 
       // Color de las hojas segun los Controles
-      if (toSwitch) {        
+      if (esOtono1) {        
         if ((random(maxProb) >= probHoja)) {
           //b.setFill(random(48, 181), random(202, 255), random(135), random(255));
           b.setFill(random(255), random(255), random(255));
@@ -247,14 +248,15 @@ void draw() {
         float ymin = handIzq.getY() - 50;
         float ymax = handIzq.getY() + 50;
         if (b.getX() > xmin && b.getX() < xmax && b.getY()>ymin && b.getY()<ymax) {
-          //b.setStatic(false);
-          //b.wakeUp();
-          //ESTO DE ABAJO PARA EL VERANO FALTA EL ELSE PARA tamano original.
-
-          if (esVerano2) {
           FCircle c = (FCircle)b;
-          c.setSize(random(30));
-          } 
+          if (esVerano2) {
+            c.setSize(random(30));
+          } else c.setSize(10);
+
+          if (esOtono2) {
+            b.setStatic(false);
+            b.wakeUp();
+          }
         }
       }
       if (handDer !=null) {
@@ -263,11 +265,15 @@ void draw() {
         float ymin = handDer.getY() - 50;
         float ymax = handDer.getY() + 50;
         if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-          //b.setStatic(false);
-          //b.wakeUp();
           FCircle c = (FCircle)b;
+          if (esVerano2) {
+            c.setSize(random(30));
+          } else c.setSize(10);
 
-          c.setSize(random(30));
+          if (esOtono2) {
+            b.setStatic(false);
+            b.wakeUp();
+          }
         }
       }
 
@@ -520,13 +526,10 @@ FBody circulo(float x, float y) {
   hoja.setRestitution(0);
   hoja.setNoStroke();
   //Otono
-  if (toSwitch)
+  if (esOtono1)
     hoja.setFill(random(236, 255), random(118, 140), random(66), random(255));
   else 
     hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
   return hoja;
 }
-
-
-
 

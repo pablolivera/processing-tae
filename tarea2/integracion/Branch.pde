@@ -147,7 +147,7 @@ class Branch {
         translate(x, y);
         rotate(-angle);
 
-        if ((lanzarHojas)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
+        if ((esVerano1)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
           FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
