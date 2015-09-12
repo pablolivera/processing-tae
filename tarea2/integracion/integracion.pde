@@ -191,30 +191,32 @@ void draw() {
     background(0);
 
     if (esVerano2) {
+      
+      background(0,alpha);
 
       noStroke();
       if ((random(10) > 8)&&(alpha < 255)) {
-        alpha++;
+        alpha+=3;
       }
 
       fill(#FF0000, alpha);
-      ellipse(width/2, height, 1480, 980);
+      ellipse(2*width/3, height, 1480, 1140);
       fill(#FF8D00, alpha);
-      ellipse(width/2, height, 1460, 960);
+      ellipse(2*width/3, height, 1460, 1100);
       fill(#FEEE00, alpha);
-      ellipse(width/2, height, 1440, 940);
+      ellipse(2*width/3, height, 1440, 1060);
       fill(#10C10E, alpha);
-      ellipse(width/2, height, 1420, 920);
+      ellipse(2*width/3, height, 1420, 1020);
       fill(#398DFF, alpha);
-      ellipse(width/2, height, 1400, 900);
+      ellipse(2*width/3, height, 1400, 980);
       fill(#164B93, alpha);
-      ellipse(width/2, height, 1380, 880);
+      ellipse(2*width/3, height, 1380, 940);
       fill(#4B0295, alpha);
-      ellipse(width/2, height, 1360, 860);
+      ellipse(2*width/3, height, 1360, 900);
       fill(#9900BC, alpha);
-      ellipse(width/2, height, 1340, 840);
+      ellipse(2*width/3, height, 1340, 860);
       fill(0);
-      ellipse(width/2, height, 1320, 820);
+      ellipse(2*width/3, height, 1320, 820);
     }
 
     noStroke();
