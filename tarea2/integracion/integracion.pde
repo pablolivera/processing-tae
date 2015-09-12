@@ -46,6 +46,7 @@ int blinkUpdate;
 String typedText;
 String lastSeed;
 float segundos; // Variable que indicara en que segundo de la cancion estamos
+int alpha = 0;
 
 
 //FISICA
@@ -188,6 +189,34 @@ void draw() {
     }
 
     background(0);
+
+    if (esVerano2) {
+
+      noStroke();
+      if ((random(10) > 8)&&(alpha < 255)) {
+        alpha++;
+      }
+
+      fill(#FF0000, alpha);
+      ellipse(width/2, height, 1480, 980);
+      fill(#FF8D00, alpha);
+      ellipse(width/2, height, 1460, 960);
+      fill(#FEEE00, alpha);
+      ellipse(width/2, height, 1440, 940);
+      fill(#10C10E, alpha);
+      ellipse(width/2, height, 1420, 920);
+      fill(#398DFF, alpha);
+      ellipse(width/2, height, 1400, 900);
+      fill(#164B93, alpha);
+      ellipse(width/2, height, 1380, 880);
+      fill(#4B0295, alpha);
+      ellipse(width/2, height, 1360, 860);
+      fill(#9900BC, alpha);
+      ellipse(width/2, height, 1340, 840);
+      fill(0);
+      ellipse(width/2, height, 1320, 820);
+    }
+
     noStroke();
     noFill();
 
@@ -248,8 +277,8 @@ void draw() {
         float xmax = handIzq.getX() + 50;
         float ymin = handIzq.getY() - 50;
         float ymax = handIzq.getY() + 50;
+        FCircle c = (FCircle)b;
         if (b.getX() > xmin && b.getX() < xmax && b.getY()>ymin && b.getY()<ymax) {
-          FCircle c = (FCircle)b;
           if (esVerano2) {
             c.setSize(random(30));
           } else c.setSize(10);
@@ -258,15 +287,15 @@ void draw() {
             b.setStatic(false);
             b.wakeUp();
           }
-        }
+        } else c.setSize(10);
       }
       if (handDer !=null) {
         float xmin = handDer.getX() - 50;
         float xmax = handDer.getX() + 50;
         float ymin = handDer.getY() - 50;
         float ymax = handDer.getY() + 50;
+        FCircle c = (FCircle)b;
         if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
-          FCircle c = (FCircle)b;
           if (esVerano2) {
             c.setSize(random(30));
           } else c.setSize(10);
@@ -275,7 +304,7 @@ void draw() {
             b.setStatic(false);
             b.wakeUp();
           }
-        }
+        } else c.setSize(10);
       }
 
       //Tiro las hojas
