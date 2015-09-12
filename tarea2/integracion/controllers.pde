@@ -101,6 +101,54 @@ public class ControlFrame extends PApplet {
           .setValue(2000)
             .setSize(400, 20)
               .setPosition(x, y+=30);
+
+    cp5.addSlider("Angulo Viento")
+      .plugTo(parent, "windAngle")
+        .setRange(0, 5)
+          .setValue(0.001)
+            .setSize(400, 20)
+              .setPosition(x, y+=30);
+              
+    y+=40;
+    x+=70;
+
+    cp5.addTextlabel("label1")
+      .setText("PRIMAVERA:    0.00 - 0.55")
+        .setPosition(x, y+=30)
+          .setColorValue(230)
+            .setFont(createFont("Arial", 20))
+              ;
+    cp5.addTextlabel("label2")
+      .setText("VERANO_1:     0.55 - 1.52")
+        .setPosition(x, y+=30)
+          .setColorValue(230)
+            .setFont(createFont("Arial", 20))
+              ;
+    cp5.addTextlabel("label3")
+      .setText("VERANO_2:     1.52 - 3.01")
+        .setPosition(x, y+=30)
+          .setColorValue(230)
+            .setFont(createFont("Arial", 20))
+              ;
+    cp5.addTextlabel("label4")
+      .setText("OTONO_1:       3.01 - 3.13")
+        .setPosition(x, y+=30)
+          .setColorValue(230)
+            .setFont(createFont("Arial", 20))
+              ;
+    cp5.addTextlabel("label5")
+      .setText("OTONO_2:       3.13 - 3.43")
+        .setPosition(x, y+=30)
+          .setColorValue(230)
+            .setFont(createFont("Arial", 20))
+              ;
+
+    cp5.addTextlabel("label6")
+      .setText("INVIERNO:      3.43 - FIN")
+        .setPosition(x, y+=30)
+          .setColorValue(230)
+            .setFont(createFont("Arial", 20))
+              ;
   }
   public void draw() {
     background(0);

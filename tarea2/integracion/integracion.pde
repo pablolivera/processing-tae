@@ -127,7 +127,7 @@ void setup() {
 
   //CONTROLES
   cp5 = new ControlP5(this);
-  cf = addControlFrame("Controladores", 550, 550);
+  cf = addControlFrame("Controladores", 520, 500);
 }
 
 
@@ -192,6 +192,7 @@ void draw() {
     noFill();
 
     //ACTUALIZAMOS Y MOSTRAMOS EL ARBOL
+    tree.windForce = sin(windAngle) * 0.06;
     tree.update();
     segundos = millis()/1000;
     tree.render(1);

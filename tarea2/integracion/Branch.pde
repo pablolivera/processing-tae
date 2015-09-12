@@ -75,7 +75,7 @@ class Branch {
   // Update /////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////
   void update() {
-    if (crece) {
+    if (esPrimavera) {
       if (parent != null) {
         x = parent.x + sin(parent.angle) * parent.length * parent.growth;
         y = parent.y + cos(parent.angle) * parent.length * parent.growth;
@@ -90,7 +90,7 @@ class Branch {
         if (branchB != null)
           branchB.update();
       }
-    } else {
+    } else if (esInvierno) {
       if (parent != null) {
         x = parent.x + sin(parent.angle) * parent.length * parent.growth;
         y = parent.y + cos(parent.angle) * parent.length * parent.growth;
