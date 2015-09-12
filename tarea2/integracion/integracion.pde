@@ -47,8 +47,32 @@ String typedText;
 String lastSeed;
 float segundos; // Variable que indicara en que segundo de la cancion estamos
 int alpha = 0;
-int[][] col = new int[3][2];
-int[][] colanterior = new int[3][2];
+int[][] col = {
+  { 
+    0, 0
+  }
+  , 
+  { 
+    0, 0
+  }
+  , 
+  { 
+    0, 0
+  }
+};
+int[][] colanterior = {
+  { 
+    0, 0
+  }
+  , 
+  { 
+    0, 0
+  }
+  , 
+  { 
+    0, 0
+  }
+};
 
 
 //FISICA
@@ -56,8 +80,8 @@ Boolean[][] hayHoja;
 FCircle hoja;
 int maxHojas = 1000;
 int cantHojas = 0;
-int probHoja = 100000;
-int maxProb = 99999; // valor que encara mucho, ????? 
+int probHoja = 0;
+int maxProb = 50999; // valor que encara mucho, ????? 
 
 FWorld world;
 FBox f;
@@ -252,11 +276,25 @@ void draw() {
       b.setVelocity(random(-velocidadx, velocidadx), velocidady);
 
       // Color de las hojas segun los Controles
-      colanterior= col;
       int transparency = 255;
+
+      //cambio la estacion
+      if (toSwitch) {
+        for (int i=0; i<3; i++) {
+          for (int j=0; j<2; j++) {
+            colanterior[i][j] = col[i][j];
+          }
+        }
+      }
 
       if (esPrimavera) {
         transparency = 0;
+        col[0][0] = 48;
+        col[0][1] = 181;
+        col[1][0] = 202;
+        col[1][1] = 255;
+        col[2][0] = 0;
+        col[2][1] = 135;
       } else if (esVerano1) {
         col[0][0] = 48;
         col[0][1] = 181;
@@ -281,20 +319,22 @@ void draw() {
       } else if (esInvierno) {
         transparency = 0;
       } 
-      if ((random(maxProb) >= probHoja)) {
+      if ((esVerano1)||(random(maxProb) < probHoja)) {
         b.setFill(random(col[0][0], col[0][1]), random(col[1][0], col[1][1]), random(col[2][0], col[2][1]), random(transparency));
       } else {
         b.setFill(random(colanterior[0][0], colanterior[0][1]), random(colanterior[1][0], colanterior[1][1]), random(colanterior[2][0], colanterior[2][1]), random(transparency));
       }
 
-      if (probHoja <= maxProb) 
+      if (probHoja < maxProb) {
         probHoja++;
+      }
 
+
+      //cambio la estacion
       if (toSwitch) {
         toSwitch = false;
         probHoja = 0;
       }
-
 
 
 

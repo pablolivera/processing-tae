@@ -28,41 +28,35 @@ public class ControlFrame extends PApplet {
     primavera = cp5.addToggle("PRIMAVERA")
       .setPosition(x, y)
         .setSize(50, 20)
-          .plugTo(parent, "esPrimavera")
             .setValue(false);
 
     verano1 = cp5.addToggle("VERANO_1")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .plugTo(parent, "esVerano1")
             .setValue(false)
               .lock();
 
     verano2 = cp5.addToggle("VERANO_2")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .plugTo(parent, "esVerano2")
             .setValue(false)
               .lock();
 
     otono1 = cp5.addToggle("OTONO_1")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .plugTo(parent, "esOtono1")
             .setValue(false)
               .lock();
 
     otono2 = cp5.addToggle("OTONO_2")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .plugTo(parent, "esOtono2")
             .setValue(false)
               .lock();
 
     invierno = cp5.addToggle("INVIERNO")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .plugTo(parent, "esInvierno")
             .setValue(false)
               .lock();
 
@@ -169,6 +163,8 @@ public class ControlFrame extends PApplet {
   void PRIMAVERA(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
+      c.esPrimavera = true;
+      
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.update();
@@ -219,6 +215,8 @@ public class ControlFrame extends PApplet {
   void VERANO_2(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
+      c.esVerano2 = true;
+      
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.unlock();
@@ -243,6 +241,8 @@ public class ControlFrame extends PApplet {
   void OTONO_1(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
+      c.esOtono1 = true;
+      
       c.esOtono2 = false;
       otono2.setValue(false);
       otono2.unlock();
@@ -267,6 +267,8 @@ public class ControlFrame extends PApplet {
   void OTONO_2(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
+      c.esOtono2 = true;
+      
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.lock();
@@ -291,6 +293,8 @@ public class ControlFrame extends PApplet {
   void INVIERNO(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
+      c.esInvierno = true;
+      
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.update();
