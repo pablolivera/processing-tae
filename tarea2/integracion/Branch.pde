@@ -97,7 +97,7 @@ class Branch {
         windForce = parent.windForce * (1.0+5.0/length) + blastForce;
         blastForce = (blastForce + sin(x/2+windAngle)*0.005/length) * 0.98;
         angle = parent.angle + angleOffset + windForce + blastForce;
-        growth = min(growth - 0.01*parent.growth, 1);
+        growth = min(growth - 0.0008*parent.growth, 1);
       } else
         growth = min(growth - 0.001, 1);
       if (branchA != null) {

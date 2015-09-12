@@ -217,32 +217,19 @@ void draw() {
     background(0);
 
     if (esVerano2) {
-
       background(0, alpha);
-
       noStroke();
       if ((random(10) > 8)&&(alpha < 255)) {
         alpha+=3;
       }
-
-      fill(#FF0000, alpha);
-      ellipse(2*width/3, height, 1480, 1140);
-      fill(#FF8D00, alpha);
-      ellipse(2*width/3, height, 1460, 1100);
-      fill(#FEEE00, alpha);
-      ellipse(2*width/3, height, 1440, 1060);
-      fill(#10C10E, alpha);
-      ellipse(2*width/3, height, 1420, 1020);
-      fill(#398DFF, alpha);
-      ellipse(2*width/3, height, 1400, 980);
-      fill(#164B93, alpha);
-      ellipse(2*width/3, height, 1380, 940);
-      fill(#4B0295, alpha);
-      ellipse(2*width/3, height, 1360, 900);
-      fill(#9900BC, alpha);
-      ellipse(2*width/3, height, 1340, 860);
-      fill(0);
-      ellipse(2*width/3, height, 1320, 820);
+      crearArcoiris();
+    } else if (esOtono1) {
+      background(0, alpha);
+      noStroke();
+      if ((random(10) > 8)&&(alpha < 255)) {
+        alpha-=5;
+      }
+      crearArcoiris();
     }
 
     noStroke();
@@ -629,5 +616,26 @@ FBody circulo(float x, float y) {
   else 
     hoja.setFill(random(48, 181), random(202, 255), random(135), random(255));
   return hoja;
+}
+
+void crearArcoiris() {
+  fill(#FF0000, alpha);
+  ellipse(2*width/3, height, 1480, 1140);
+  fill(#FF8D00, alpha);
+  ellipse(2*width/3, height, 1460, 1100);
+  fill(#FEEE00, alpha);
+  ellipse(2*width/3, height, 1440, 1060);
+  fill(#10C10E, alpha);
+  ellipse(2*width/3, height, 1420, 1020);
+  fill(#398DFF, alpha);
+  ellipse(2*width/3, height, 1400, 980);
+  fill(#164B93, alpha);
+  ellipse(2*width/3, height, 1380, 940);
+  fill(#4B0295, alpha);
+  ellipse(2*width/3, height, 1360, 900);
+  fill(#9900BC, alpha);
+  ellipse(2*width/3, height, 1340, 860);
+  fill(0);
+  ellipse(2*width/3, height, 1320, 820);
 }
 
