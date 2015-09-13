@@ -80,6 +80,15 @@ public class ControlFrame extends PApplet {
           .setSize(50, 20)
             .setValue(false);
 
+    //Control para tirar las hojas que queden
+    cp5.addToggle("Contorno Silueta Activado")
+      .plugTo(parent, "contornoSiluetaActivado")
+        .setPosition(x+70, y)
+          .setSize(50, 20)
+            .setValue(false);
+
+
+
     //salto de linea
     y+= 50;
     x = 20;
@@ -160,27 +169,27 @@ public class ControlFrame extends PApplet {
             .setFont(createFont("Arial", 20))
               ;
   }
-  
+
   public void draw() {
     background(0);
     t.setValue(ct.toString());
     t.draw(this);
     t.setPosition(mouseX, mouseY);
   }
-  
+
   private ControlFrame() {
   }
-  
+
   public ControlFrame(Object theParent, int theWidth, int theHeight) {
     parent = theParent;
     w = theWidth;
     h = theHeight;
   }
-  
+
   public ControlP5 control() {
     return cp5;
   }
-  
+
   //en el inicio de primavera ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void PRIMAVERA(boolean theFlag) {
     integracion c = (integracion)parent;
@@ -208,7 +217,7 @@ public class ControlFrame extends PApplet {
       ct.reset();
     }
   }
-  
+
   //en el inicio de verano1 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void VERANO_1(boolean theFlag) {
     integracion c = (integracion)parent;
@@ -236,7 +245,7 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
-  
+
   //en el inicio de verano2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void VERANO_2(boolean theFlag) {
     integracion c = (integracion)parent;
@@ -264,7 +273,7 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
-  
+
   //en el inicio de otono1 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void OTONO_1(boolean theFlag) {
     integracion c = (integracion)parent;
@@ -292,7 +301,7 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
-  
+
   ///en el inicio de otono2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void OTONO_2(boolean theFlag) {
     integracion c = (integracion)parent;
@@ -320,7 +329,7 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
-  
+
   //en el inicio de invierno ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void INVIERNO(boolean theFlag) {
     integracion c = (integracion)parent;

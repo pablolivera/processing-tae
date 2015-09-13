@@ -21,6 +21,7 @@ boolean esPrimavera = false;   //escena primavera
 boolean esOtono1 = false;      //escena otono 1
 boolean esOtono2 = false;      //escena otono 2
 boolean esInvierno = false;    //escena invierno
+boolean contornoSiluetaActivado = true;      //silueta activada
 
 //variables para cargar y controlar la cancion
 Minim soundengine;
@@ -168,6 +169,38 @@ void createNewTree(String seed) {
 //render
 void draw() {
 
+  //fondo negro
+  background(0);
+
+  // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
+  if (kinectConectado && context.isInit()) {
+    // Actualizamos la kinect si esta presente
+
+    context.update();
+
+    //actualiza vector de bordes de silueta superior del usuario.
+    actualizarVectorBordes();
+    crearObstaculoLines();
+
+    //la alternativa para las manos con skeleton tracking:
+    //findHands();
+    //alternativa con depth map para las manos:
+    handIzq = pelota(firstHand.x, firstHand.y);
+    //println("x izq "+firstHand.x+" y izq "+firstHand.y);
+    handDer = pelota(secondHand.x, secondHand.y);
+    //println("x der "+secondHand.x+" y der "+secondHand.y);
+
+
+    //agrego las manos al mundo.
+    world.add(handIzq);
+    world.add(handDer);
+  } else {
+    //agrego una mano al mundo que es el mouse.
+    handIzq = pelota(mouseX, mouseY);
+    world.add(handIzq);
+  }
+
+
   // estaciones con el control.
   if (esInvierno || esVerano1 || esVerano2 || esOtono1 || esOtono2 || esPrimavera) {
     if (segundos == 0) {
@@ -175,13 +208,6 @@ void draw() {
       sonido1.trigger();
     }
 
-    // Actualizamos la kinect si esta presente
-    if (kinectConectado && context.isInit()) { 
-      context.update();
-    }
-
-    //fondo negro
-    background(0);
 
     //si es verano 2 aparece arcoiris
     if (esVerano2) {
@@ -212,23 +238,8 @@ void draw() {
     tree.render(1);
 
 
-    // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
-    if (kinectConectado && context.isInit()) {
-      //la alternativa para las manos con skeleton tracking:
-      //findHands();
 
-      //alternativa con depth map para las manos:
-      handIzq = pelota(firstHand.x, firstHand.y);
-      handDer = pelota(secondHand.x, secondHand.y);
 
-      //agrego las manos al mundo.
-      world.add(handIzq);
-      world.add(handDer);
-    } else {
-      //agrego una mano al mundo que es el mouse.
-      handIzq = pelota(mouseX, mouseY);
-      world.add(handIzq);
-    }
 
     // Actualizamos las "hojas"
     List<FBody> bodies = world.getBodies();
@@ -286,9 +297,15 @@ void draw() {
       //si es verano1 o cambio la estacion, con cierta probabilidad cambio de color las hojas.
       if ((esVerano1)||(random(maxProb) < probHoja)) {
         b.setFill(random(col[0][0], col[0][1]), random(col[1][0], col[1][1]), random(col[2][0], col[2][1]), random(transparency));
+        if (esOtono1) {
+          FCircle c = (FCircle)b;
+          c.setSize(10);
+        }
       } else {
         b.setFill(random(colanterior[0][0], colanterior[0][1]), random(colanterior[1][0], colanterior[1][1]), random(colanterior[2][0], colanterior[2][1]), random(transparency));
       }
+
+
 
       //hago que sea cada vez mas probable cambiar el color de las hojas.
       if (probHoja < maxProb) {
@@ -306,7 +323,7 @@ void draw() {
         //defino un cuadrante de influencia de la mano
         float xmin = handIzq.getX() - 50;
         float xmax = handIzq.getX() + 50;
-        float ymin = handIzq.getY() - 50;
+        float ymin = handIzq.getY() - 350;
         float ymax = handIzq.getY() + 50;
         FCircle c = (FCircle)b;
         //si la hoja cae en el cuadrante
@@ -316,8 +333,7 @@ void draw() {
             //cambio su tamano
             c.setSize(random(30));
           } 
-          //en otra estacion dejo el tamano fijo.
-          else c.setSize(10);
+
 
           //si es otono 2 hago que caigan.
           if (esOtono2) {
@@ -326,14 +342,14 @@ void draw() {
           }
         }
         //si ya no esta en la zonade influencia la vuelvo al tamano normal
-        else c.setSize(10);
+        //else c.setSize(10);
       }
       //interaccion de las hojas con la mano der.
       if (handDer !=null) {
         //defino un cuadrante de influencia de la mano
         float xmin = handDer.getX() - 50;
         float xmax = handDer.getX() + 50;
-        float ymin = handDer.getY() - 50;
+        float ymin = handDer.getY() - 350;
         float ymax = handDer.getY() + 50;
         FCircle c = (FCircle)b;
         //si la hoja cae en el cuadrante
@@ -343,8 +359,6 @@ void draw() {
             //cambio su tamano
             c.setSize(random(30));
           }
-          //en otra estacion dejo el tamano fijo.
-          else c.setSize(10);
 
           //si es otono 2 hago que caigan.
           if (esOtono2) {
@@ -353,7 +367,7 @@ void draw() {
           }
         }
         //si ya no esta en la zonade influencia la vuelvo al tamano normal
-        else c.setSize(10);
+        //else c.setSize(10);
       }
 
       //tiro las hojas desde el control
@@ -368,24 +382,6 @@ void draw() {
       if (y>height || y<0 || x>width || x<0)
         world.remove(b);
     }
-
-    //actualiza vector de bordes de silueta superior del usuario.
-    if (kinectConectado && tracking && context.isInit()) {
-      actualizarVectorBordes();
-      crearObstaculoLines();
-    }
-
-    //muestro elementos del mundo fisico.
-    world.draw();
-    world.step();
-
-    //limpio el mundo en cada loop para no sobrecargarlo
-    for (FLine f : obstacleList) {
-      world.removeBody(f);
-    } 
-    world.removeBody(handIzq);
-    world.removeBody(handDer);
-    
   } else {
     //ninguna estacion activa
     if (segundos > 0) {
@@ -397,6 +393,17 @@ void draw() {
       background(0);
     }
   }
+
+  //muestro elementos del mundo fisico.
+  world.draw();
+  world.step();
+
+  //limpio el mundo en cada loop para no sobrecargarlo
+  for (FLine f : obstacleList) {
+    world.removeBody(f);
+  } 
+  world.removeBody(handIzq);
+  world.removeBody(handDer);
 }
 
 // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
@@ -446,7 +453,7 @@ void crearObstaculoLines() {
   PVector v = null;
   PVector w = null;
   FLine linea;
-  int paso = 2; // Minimo 2. Indica cuantos puntos se toman para crear FLine.
+  int paso = 4; // Minimo 2. Indica cuantos puntos se toman para crear FLine.
   int resto = puntosBordeList.size() % paso; // Se quitan cuando sobra un resto.
   boolean first = true;
   Iterator<PVector> it = puntosBordeList.iterator();
@@ -470,7 +477,11 @@ void crearObstaculoLines() {
     w = it.next(); // Segundo punto para FLine
     linea = new FLine(v.x, v.y, w.x, w.y); // Se crea el objecto que es obstaculo en el mundo.
     linea.setStatic(true);
-    linea.setStroke(255);
+    if (contornoSiluetaActivado) {
+      linea.setStroke(255);
+    } else {
+      linea.setNoStroke();
+    }
     linea.setRestitution(0);
     obstacleList.add(linea);
     world.add(linea);
@@ -524,7 +535,11 @@ FBody pelota(float x, float y) {
   f.setDamping(0);
   f.setDensity(30);
   f.setRestitution(0.5);
-  f.setFill(200);
+  if (contornoSiluetaActivado) {
+    f.setFill(200);
+  } else {
+    f.setNoFill();
+  }
   f.setNoStroke();
   return f;
 }
