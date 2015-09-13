@@ -1,12 +1,10 @@
-///////////////////////////////////////////////////////////
-// Class that handles the branches ////////////////////////
-///////////////////////////////////////////////////////////
+//basado en el sketch: http://www.openprocessing.org/sketch/90192
+//autor: http://www.openprocessing.org/user/25079
+//clase para crear las ramas y hojas.
 class Branch {
 
 
-  ///////////////////////////////////////////////////////////
-  // Variable definitions ///////////////////////////////////
-  ///////////////////////////////////////////////////////////
+  //definicion de variables
   float x;
   float y;
   float angle;
@@ -20,9 +18,7 @@ class Branch {
   Branch parent;
 
 
-  ///////////////////////////////////////////////////////////
-  // Constructor ////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
+  //Contructor, posicion de la rama (x,y), inclinacion offset: angleOffset, profundidad de la recursion: length
   Branch(Branch parent, float x, float y, float angleOffset, float length) {
     this.parent = parent;
     this.x = x;
@@ -39,11 +35,11 @@ class Branch {
     float yB = y + cos(angle) * length;
     if (length > 16) {
       if (length+random(length) > 55) {
-        //DERECHA
-        branchA = new Branch(this, xB, yB, -0.05-random(0.2) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.95));//-random(0.02)));
+        //rama derecha
+        branchA = new Branch(this, xB, yB, -0.05-random(0.2) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.95));
       }
       if (length+random(length) > 29) {
-        //IZQ
+        //rama izquierda
         branchB = new Branch(this, xB, yB, 0.2+random(0.1) + ((angle % TWO_PI) > PI ? -1/length : +1/length), length*(0.7+random(0.2)));
       }
       if (branchB != null && branchA == null) {
@@ -58,9 +54,7 @@ class Branch {
   }
 
 
-  ///////////////////////////////////////////////////////////
-  // Set scale //////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
+  //tamano del arbol
   void setScale(float scale) {
     length *= scale;
     if (branchA != null) {
@@ -71,10 +65,9 @@ class Branch {
   }
 
 
-  ///////////////////////////////////////////////////////////
-  // Update /////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
+  //actualizacion del arbol en cada iteracion de draw.
   void update() {
+    //mientras crece, en "primavera".
     if (esPrimavera) {
       if (parent != null) {
         x = parent.x + sin(parent.angle) * parent.length * parent.growth;
@@ -90,7 +83,9 @@ class Branch {
         if (branchB != null)
           branchB.update();
       }
-    } else if (esInvierno) {
+    } 
+    //cuando se achica en "invierno"
+    else if (esInvierno) {
       if (parent != null) {
         x = parent.x + sin(parent.angle) * parent.length * parent.growth;
         y = parent.y + cos(parent.angle) * parent.length * parent.growth;
@@ -109,11 +104,10 @@ class Branch {
   }
 
 
-  ///////////////////////////////////////////////////////////
-  // Render /////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
+  //dibujo del arbol en cada iteracion del draw.
   void render(int maxLen) {
     if (length > maxLen) {
+      //mientras son ramas
       if (branchB != null) {
         float xB = x;
         float yB = y;
@@ -124,39 +118,28 @@ class Branch {
           xB += sin(angle+angleOffset) * length * 0.3;
           yB += cos(angle+angleOffset) * length * 0.3;
         }
-        // PROCESSING WAY (slow)
-        stroke(floor(colorArbol/length));
+        stroke(floor(2000/length));
         strokeWeight(length/5);
         beginShape();
         vertex(x, y);
         bezierVertex(xB, yB, xB, yB, branchB.x, branchB.y);
         endShape();
-
-        /*curContext.beginPath();
-         curContext.moveTo(x, y);
-         curContext.bezierCurveTo(xB, yB, xB, yB, branchA.x, branchA.y);
-         int branchColor = floor(1100/length);
-         curContext.strokeStyle = "rgb("+branchColor+","+branchColor+","+branchColor+")";
-         curContext.lineWidth = length/5;
-         curContext.stroke();*/
         branchB.render(maxLen);
         if (branchA != null)
           branchA.render(maxLen);
-      } else {
+      } 
+      //al final se agregan las hojas.
+      else {
         pushMatrix();
         translate(x, y);
         rotate(-angle);
-
+        //en "verano" se van agregando hojas con cierta probabilidad mientras no supere el maximo de hojas establecido.
         if ((esVerano1)&&(random(1000)>999)&&(cantHojas<maxHojas)) {
           FBody f = circulo(x, y);
           f.setStatic(true);
           world.add(f);
           cantHojas++;
-        } else {
-          //println("fin hojas.");
         }
-
-
         popMatrix();
       }
     }

@@ -18,77 +18,89 @@ public class ControlFrame extends PApplet {
     size(w, h);
     frameRate(30);
     cp5 = new ControlP5(this);
+    //Timer para tener el tiempo en el cursor.
     ct = new ControlTimer();
     t = new Textlabel(cp5, "--", 100, 100);
     ct.setSpeedOfTime(1);
 
+    //Posicion inicial de los controles  
     int x = 20;
     int y = 30;
 
+    //Control para iniciar escena primavera.
     primavera = cp5.addToggle("PRIMAVERA")
       .setPosition(x, y)
         .setSize(50, 20)
-            .setValue(false);
+          .setValue(false);
 
+    //Control para iniciar escena verano 1.
     verano1 = cp5.addToggle("VERANO_1")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-            .setValue(false)
-              .lock();
+          .setValue(false)
+            .lock();
 
+    //Control para iniciar escena verano 2.
     verano2 = cp5.addToggle("VERANO_2")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-            .setValue(false)
-              .lock();
+          .setValue(false)
+            .lock();
 
+    //Control para iniciar escena otono 1.
     otono1 = cp5.addToggle("OTONO_1")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-            .setValue(false)
-              .lock();
+          .setValue(false)
+            .lock();
 
+    //Control para iniciar escena otono 2.
     otono2 = cp5.addToggle("OTONO_2")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-            .setValue(false)
-              .lock();
+          .setValue(false)
+            .lock();
 
+    //Control para iniciar escena invierno.
     invierno = cp5.addToggle("INVIERNO")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-            .setValue(false)
-              .lock();
+          .setValue(false)
+            .lock();
 
 
+    //salto de linea
     y+= 50;
     x = 20;
 
-
+    //Control para tirar las hojas que queden
     cp5.addToggle("Tirar hojas")
       .plugTo(parent, "tirarHojas")
         .setPosition(x, y)
           .setSize(50, 20)
             .setValue(false);
 
+    //salto de linea
     y+= 50;
     x = 20;
 
-
-    cp5.addSlider("Velocidad X")
+    //velocidad de las hojas al caer en x.
+    cp5.addSlider("Velocidad de Hojas X")
       .plugTo(parent, "velocidadx")
         .setRange(0, 300)
           .setValue(185)
             .setSize(400, 20)
               .setPosition(x, y);
 
-    cp5.addSlider("Velocidad Y")
+    //velocidad de las hojas al caer en y.
+    cp5.addSlider("Velocidad de Hojas Y")
       .plugTo(parent, "velocidady")
         .setRange(0, 300)
           .setValue(250)
             .setSize(400, 20)
               .setPosition(x, y+=30);
 
+    //escala de grises del arbol.
     cp5.addSlider("Color Arbol")
       .plugTo(parent, "colorArbol")
         .setRange(1000, 2550)
@@ -96,16 +108,20 @@ public class ControlFrame extends PApplet {
             .setSize(400, 20)
               .setPosition(x, y+=30);
 
+    //angulo del viento para las ramas del arbol.
     cp5.addSlider("Angulo Viento")
       .plugTo(parent, "windAngle")
         .setRange(0, 5)
           .setValue(0.001)
             .setSize(400, 20)
               .setPosition(x, y+=30);
-              
+
+    //salto de linea
     y+=40;
     x+=70;
 
+
+    //textos de referencia para el cambio manual de escenas.
     cp5.addTextlabel("label1")
       .setText("PRIMAVERA:    0.00 - 0.55")
         .setPosition(x, y+=30)
@@ -144,27 +160,33 @@ public class ControlFrame extends PApplet {
             .setFont(createFont("Arial", 20))
               ;
   }
+  
   public void draw() {
     background(0);
     t.setValue(ct.toString());
     t.draw(this);
     t.setPosition(mouseX, mouseY);
   }
+  
   private ControlFrame() {
   }
+  
   public ControlFrame(Object theParent, int theWidth, int theHeight) {
     parent = theParent;
     w = theWidth;
     h = theHeight;
   }
+  
   public ControlP5 control() {
     return cp5;
   }
+  
+  //en el inicio de primavera ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void PRIMAVERA(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
       c.esPrimavera = true;
-      
+
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.update();
@@ -186,6 +208,8 @@ public class ControlFrame extends PApplet {
       ct.reset();
     }
   }
+  
+  //en el inicio de verano1 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void VERANO_1(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
@@ -212,11 +236,13 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
+  
+  //en el inicio de verano2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void VERANO_2(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
       c.esVerano2 = true;
-      
+
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.unlock();
@@ -238,11 +264,13 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
+  
+  //en el inicio de otono1 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void OTONO_1(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
       c.esOtono1 = true;
-      
+
       c.esOtono2 = false;
       otono2.setValue(false);
       otono2.unlock();
@@ -264,11 +292,13 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
+  
+  ///en el inicio de otono2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void OTONO_2(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
       c.esOtono2 = true;
-      
+
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.lock();
@@ -290,11 +320,13 @@ public class ControlFrame extends PApplet {
       c.toSwitch = true;
     }
   }
+  
+  //en el inicio de invierno ajusto booleanos de estaciones y desbloqueo la proxima escena.
   void INVIERNO(boolean theFlag) {
     integracion c = (integracion)parent;
     if (theFlag) {
       c.esInvierno = true;
-      
+
       c.esOtono1 = false;
       otono1.setValue(false);
       otono1.update();

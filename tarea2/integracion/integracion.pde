@@ -1,6 +1,3 @@
-/* OpenProcessing Tweak of *@*http://www.openprocessing.org/sketch/90192*@* */
-/* !do not delete the line above, required for linking your tweak if you upload again */
-/* @pjs globalKeyEvents=true; */
 import fisica.*;
 import java.util.List;
 import SimpleOpenNI.*;
@@ -8,45 +5,38 @@ import java.util.*;
 import controlP5.*;
 import ddf.minim.*;
 
-// DEBUG VARIABLES
+//variable para probar el ejemplo sin el kinect.
 boolean kinectConectado = false; 
 
-//CONTROLS
+//variables usadas por los controles.
 private ControlP5 cp5;
 ControlFrame cf;
-boolean toSwitch = false;
-boolean startEscena = false;
-boolean lanzarHojas = false;
-boolean tirarHojas = false;
-int velocidadx = 0;
-int velocidady = 200;
-int colorArbol = 2000;
-boolean crece = true;
-boolean esVerano1 = false;
-boolean esVerano2 = false;
-boolean esPrimavera = false;
-boolean esOtono1 = false;
-boolean esOtono2 = false;
-boolean esInvierno = false;
+boolean toSwitch = false;      //indica cambio de estacion.
+boolean tirarHojas = false;    //indica si hay que tirar las hojas que queden.
+int velocidadx = 0;            //velocidad de las hojas en x.
+int velocidady = 200;          //velocidad de las hojas en Y.      
+boolean esVerano1 = false;     //escena verano 1
+boolean esVerano2 = false;     //escena verano 2
+boolean esPrimavera = false;   //escena primavera
+boolean esOtono1 = false;      //escena otono 1
+boolean esOtono2 = false;      //escena otono 2
+boolean esInvierno = false;    //escena invierno
 
-//SONIDO
+//variables para cargar y controlar la cancion
 Minim soundengine;
 AudioSample sonido1;
 
-///////////////////////////////////////////////////////////
-// Variable definitions ///////////////////////////////////
-///////////////////////////////////////////////////////////
+//variables para el arbol
 Branch tree;
 float windAngle = 0;
 float minX;
 float maxX;
 float minY;
 float maxY;
-int blinkUpdate;
-String typedText;
-String lastSeed;
-float segundos; // Variable que indicara en que segundo de la cancion estamos
-int alpha = 0;
+
+//variables auxiliares
+float segundos;       //variable que indica en que segundo de la cancion estamos
+int alpha = 0;        //transparencia del arcoiris
 int[][] col = {
   { 
     0, 0
@@ -59,7 +49,7 @@ int[][] col = {
   { 
     0, 0
   }
-};
+};                  //matriz de colores, maximo y minimo para r,g,b
 int[][] colanterior = {
   { 
     0, 0
@@ -72,61 +62,51 @@ int[][] colanterior = {
   { 
     0, 0
   }
-};
+};                //matriz de colores anterior, maximo y minimo para r,g,b
 
 
-//FISICA
-Boolean[][] hayHoja; 
-FCircle hoja;
-int maxHojas = 500;
-int cantHojas = 0;
-int probHoja = 0;
-int maxProb = 50999; // valor que encara mucho, ????? 
-
-FWorld world;
-FBox f;
-FPoly obstacle;
-FBody handIzq;
-FBody handDer;
+//variables para controlar el mundo "fisico"
+int maxHojas = 500;    //maximo cantidad de hojas en el mundo.
+int cantHojas = 0;     //cantidad de hojas hasta el momento.
+int probHoja = 0;      //variable para controlar la probabilidad de que cambie el color de las hojas.
+int maxProb = 50999;   //valor para controlar la probabilidad de que cambie el color de las hojas.
+FWorld world;          //mundo fisico.
+FBody handIzq;         //representa a la mano que se encuentre mas a la izquierda.
+FBody handDer;         //representa a la mano que se encuentre mas a la derecha.
 List<FLine> obstacleList; // Lista con obstaculos para la hoja.
 
-//KINECT
+//kinect
 SimpleOpenNI  context = null;
+float fact;                           //variable con el factor para escalar la imagen del kinect.
+List<PVector> puntosBordeList;        //Lista con los puntos de borde superiores del user. Escalado por fact.
+boolean tracking = false;             //true cuando se esta trackeando a un usuario. 
+int aumento = 0;                      //pixeles extra al dibujar el contorno.
 
-//CONTROLES
-boolean mostrarSilueta = false;
-// Vectores para las manos.
+// Vectores para las manos cuando se usa la alternativa del depth map.
+PVector firstHand = new PVector();    
+PVector secondHand = new PVector();
+
+// Vectores para las manos cuando se usa la alternativa del skeleton tracking.
 PVector convertedRightHand;
 PVector convertedLeftHand;
-boolean backToSwitch = false;
 
-// variable que define el factor para escalar la imagen que nos da la kinect
-float fact; 
-List<PVector> puntosBordeList; // Lista con los puntos de borde superiores del user. Escalado por fact.
-boolean tracking = false;
-PVector firstHand = new PVector();
-PVector secondHand = new PVector();
-int aumento = 0;
-
-
-///////////////////////////////////////////////////////////
-// Init ///////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
+//setup processing.
 void setup() {
 
-  //FONDO INICIAL NEGRO
+  //fondo inicial negro
   background(0);
 
-  //SONIDO
+  //cargamos la cancion.
   soundengine = new Minim(this);
   sonido1 = soundengine.loadSample("vivalavida.mp3", 1024);
 
-  size(1024, 768); // Set screen size & renderer
+  //resolucion
+  size(1024, 768); 
 
-  //CREAMOS EL ARBOL
+  //creamos el arbol.
   createNewTree("OpenProcessing");
 
-  // Controlo que este conectada la camara
+  //controlo que este conectada la camara
   if (kinectConectado) {
     context = new SimpleOpenNI(this);
     if (context.isInit() == false)
@@ -136,43 +116,32 @@ void setup() {
       return;
     }
 
-    // hay que habilitar estas dos opciones para poder usar la funcion userImage()
+    //hay que habilitar estas dos opciones para poder usar la funcion userImage()
     context.enableDepth();
     context.enableUser();
   }
 
-  // el factor lo definimos dividiendo el ancho del proyector, por el ancho de la imagen de la kinect
+  //el factor lo definimos dividiendo el ancho del proyector, por el ancho de la imagen de la kinect
   fact = float(width)/640;
 
-
+  //bordes anti alias
   smooth();
 
-  //LIBRERIA FISICA
+  //libreria fisica
   Fisica.init(this);
   world = new FWorld();
-  obstacleList = new ArrayList(); // Iniciar la lista de obstaculos.
+  //iniciar la lista de obstaculos.
+  obstacleList = new ArrayList(); 
 
-  //CONTROLES
+  //controles
   cp5 = new ControlP5(this);
   cf = addControlFrame("Controladores", 520, 500);
 }
 
 
-///////////////////////////////////////////////////////////
-// Return a random string /////////////////////////////////
-///////////////////////////////////////////////////////////
-String getRandomSeed() {
-  randomSeed(millis());
-  return ((int)(random(9999999)+random(999999)+random(99999)))+"";
-}
-
-
-///////////////////////////////////////////////////////////
-// CREAMOS EL ARBOL ///////////////////////////////////////
-///////////////////////////////////////////////////////////
+//crear el arbol
 void createNewTree(String seed) {
-  lastSeed = seed;
-  randomSeed(seed.hashCode()); // Set seed
+  randomSeed(seed.hashCode()); 
   minX = width/2;
   maxX = width/2;
   minY = height;
@@ -183,27 +152,24 @@ void createNewTree(String seed) {
   float scale = 1;
   if (xSize > ySize) {
     if (xSize > 500)
+      //valor experimental para ubicar el arbol
       scale = 1100/xSize;
   } else {
     if (ySize > 500)
+      //valor experimental para ubicar el arbol
       scale = 1100/ySize;
   }
   tree.setScale(scale);
-  tree.x = width/5;// - xSize/2*scale + (tree.x-minX)*scale;
-  tree.y = height;///2 + ySize/2*scale + (tree.y-maxY)*scale;
-  blinkUpdate = -1; // Set/reset variables
-  typedText = "";
+  tree.x = width/5;
+  tree.y = height;
 }
 
 
-///////////////////////////////////////////////////////////
-// Render /////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
+//render
 void draw() {
 
-  startEscena = esInvierno || esVerano1 || esVerano2 || esOtono1 || esOtono2 || esPrimavera;
-  // Esto es con el control.
-  if (startEscena) {
+  // estaciones con el control.
+  if (esInvierno || esVerano1 || esVerano2 || esOtono1 || esOtono2 || esPrimavera) {
     if (segundos == 0) {
       //Esto se ejecuta solo al principio.
       sonido1.trigger();
@@ -214,8 +180,10 @@ void draw() {
       context.update();
     }
 
+    //fondo negro
     background(0);
 
+    //si es verano 2 aparece arcoiris
     if (esVerano2) {
       background(0, alpha);
       noStroke();
@@ -223,7 +191,9 @@ void draw() {
         alpha+=3;
       }
       crearArcoiris();
-    } else if (esOtono1) {
+    } 
+    //si es otono 1 desaparece arcoiris
+    else if (esOtono1) {
       background(0, alpha);
       noStroke();
       if ((random(10) > 8)&&(alpha > 0)) {
@@ -235,7 +205,7 @@ void draw() {
     noStroke();
     noFill();
 
-    //ACTUALIZAMOS Y MOSTRAMOS EL ARBOL
+    //actualizamos y mostramos el arbol
     tree.windForce = sin(windAngle) * 0.06;
     tree.update();
     segundos = millis()/1000;
@@ -244,29 +214,33 @@ void draw() {
 
     // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
     if (kinectConectado && context.isInit()) {
-      //CON HAND TRACKING findHands();
-      //SIN
+      //la alternativa para las manos con skeleton tracking:
+      //findHands();
+
+      //alternativa con depth map para las manos:
       handIzq = pelota(firstHand.x, firstHand.y);
       handDer = pelota(secondHand.x, secondHand.y);
+
+      //agrego las manos al mundo.
       world.add(handIzq);
       world.add(handDer);
     } else {
+      //agrego una mano al mundo que es el mouse.
       handIzq = pelota(mouseX, mouseY);
       world.add(handIzq);
     }
 
     // Actualizamos las "hojas"
     List<FBody> bodies = world.getBodies();
-    //println("cuerpos: "+bodies.size());
     for (FBody b : bodies) {
 
-      //VELOCIDAD DE LAS HOJAS
+      //velocidad de las hojas.
       b.setVelocity(random(-velocidadx, velocidadx), velocidady);
 
-      // Color de las hojas segun los Controles
+      //color de las hojas segun los Controles
       int transparency = 255;
 
-      //cambio la estacion
+      //si cambio la estacion
       if (toSwitch) {
         for (int i=0; i<3; i++) {
           for (int j=0; j<2; j++) {
@@ -275,6 +249,7 @@ void draw() {
         }
       }
 
+      //colores de las hojas segun estacion
       if (esPrimavera) {
         transparency = 0;
         col[0][0] = 48;
@@ -307,93 +282,110 @@ void draw() {
       } else if (esInvierno) {
         transparency = 0;
       } 
+
+      //si es verano1 o cambio la estacion, con cierta probabilidad cambio de color las hojas.
       if ((esVerano1)||(random(maxProb) < probHoja)) {
         b.setFill(random(col[0][0], col[0][1]), random(col[1][0], col[1][1]), random(col[2][0], col[2][1]), random(transparency));
       } else {
         b.setFill(random(colanterior[0][0], colanterior[0][1]), random(colanterior[1][0], colanterior[1][1]), random(colanterior[2][0], colanterior[2][1]), random(transparency));
       }
 
+      //hago que sea cada vez mas probable cambiar el color de las hojas.
       if (probHoja < maxProb) {
         probHoja++;
       }
 
-
-      //cambio la estacion
+      //reseteo control de probabilidades.
       if (toSwitch) {
         toSwitch = false;
         probHoja = 0;
       }
 
-
-
-
-      // Despierto las hojas con las manos 
+      //interaccion de las hojas con la mano izq.
       if (handIzq != null) {
+        //defino un cuadrante de influencia de la mano
         float xmin = handIzq.getX() - 50;
         float xmax = handIzq.getX() + 50;
         float ymin = handIzq.getY() - 50;
         float ymax = handIzq.getY() + 50;
         FCircle c = (FCircle)b;
+        //si la hoja cae en el cuadrante
         if (b.getX() > xmin && b.getX() < xmax && b.getY()>ymin && b.getY()<ymax) {
+          //si es verano 2
           if (esVerano2) {
+            //cambio su tamano
             c.setSize(random(30));
-          } else c.setSize(10);
+          } 
+          //en otra estacion dejo el tamano fijo.
+          else c.setSize(10);
 
+          //si es otono 2 hago que caigan.
           if (esOtono2) {
             b.setStatic(false);
             b.wakeUp();
           }
-        } else c.setSize(10);
+        }
+        //si ya no esta en la zonade influencia la vuelvo al tamano normal
+        else c.setSize(10);
       }
+      //interaccion de las hojas con la mano der.
       if (handDer !=null) {
+        //defino un cuadrante de influencia de la mano
         float xmin = handDer.getX() - 50;
         float xmax = handDer.getX() + 50;
         float ymin = handDer.getY() - 50;
         float ymax = handDer.getY() + 50;
         FCircle c = (FCircle)b;
+        //si la hoja cae en el cuadrante
         if (b.getX()>xmin && b.getX()<xmax && b.getY()>ymin && b.getY()<ymax) {
+          //si es verano 2
           if (esVerano2) {
+            //cambio su tamano
             c.setSize(random(30));
-          } else c.setSize(10);
+          }
+          //en otra estacion dejo el tamano fijo.
+          else c.setSize(10);
 
+          //si es otono 2 hago que caigan.
           if (esOtono2) {
             b.setStatic(false);
             b.wakeUp();
           }
-        } else c.setSize(10);
+        }
+        //si ya no esta en la zonade influencia la vuelvo al tamano normal
+        else c.setSize(10);
       }
 
-      //Tiro las hojas
+      //tiro las hojas desde el control
       if (tirarHojas) {
         b.setStatic(false);
         b.wakeUp();
       }
 
-      //Hoja se fue de plano o quedo adentro de la silueta.
+      //hoja se fue de plano o quedo adentro de la silueta.
       float y = b.getY()-10;
       float x = b.getX()-10;
       if (y>height || y<0 || x>width || x<0)
         world.remove(b);
     }
 
+    //actualiza vector de bordes de silueta superior del usuario.
     if (kinectConectado && tracking && context.isInit()) {
       actualizarVectorBordes();
       crearObstaculoLines();
-      //crearObstaculo();
     }
 
-    //MUESTRO LOS ELEMENTOS DEL MUNDO FISICO
+    //muestro elementos del mundo fisico.
     world.draw();
     world.step();
 
-    // Limpio el mundo en cada loop para no sobrecargarlo
-    //world.removeBody(obstacle);
-
+    //limpio el mundo en cada loop para no sobrecargarlo
     for (FLine f : obstacleList) {
       world.removeBody(f);
     } 
     world.removeBody(handIzq);
     world.removeBody(handDer);
+    
   } else {
     //ninguna estacion activa
     if (segundos > 0) {
@@ -407,7 +399,7 @@ void draw() {
   }
 }
 
-// Busca las manos y si las encuentra llama a drawHand para dibujarlas
+// Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
 void findHands() {
   // Dibujar manos si están disponibles
   int[] userList = context.getUsers();
@@ -419,7 +411,7 @@ void findHands() {
   }
 }
 
-// Dibuja las manos
+// Dibuja las manos, esto usa skeleton tracking.
 void drawHand(int userId) {
 
   PVector rightHand = new PVector(); 
@@ -446,32 +438,7 @@ void drawHand(int userId) {
   world.add(handDer);
 }
 
-void crearObstaculo() {
-  obstacle = new FPoly();
 
-  float firstX = -1; // Guardar el primer x del usuario
-  float currentX = 0;
-  for (PVector p : puntosBordeList) {
-    if (firstX < 0) {
-      firstX = p.x;
-      obstacle.vertex(p.x, height); // Primer punto del poligono contra el piso.
-    }
-    obstacle.vertex(p.x, p.y);
-    currentX = p.x;
-  }
-  obstacle.vertex(currentX, height); // La posicion mas lejana x del usuario
-  obstacle.vertex(firstX, height); // Para cerrar el poligono
-
-  obstacle.setStatic(true);
-  obstacle.setFill(255);
-  if (!mostrarSilueta) {
-    obstacle.setNoStroke();
-    obstacle.setNoFill();
-  }
-
-  obstacle.setRestitution(0); // ??
-  world.add(obstacle);
-}
 
 // Crea una lista de FLine que sirven de obstaculos para las hojas.
 void crearObstaculoLines() {
@@ -550,48 +517,6 @@ void onLostUser(SimpleOpenNI curContext, int userId) {
 
 
 
-/*void contactStarted(FContact c) {
- }
- 
- void contactPersisted(FContact c) {
- }
- 
- void contactEnded(FContact c) {
- }*/
-
-// Funcion que retorna los segundos para el cambio de escena
-// 
-// TODO podriamos ya poner el codigo aca de cada escena asi queda bien separada
-// 
-// 1 - Inicio, crecimiento del arbol
-// 2 - Termina de crecer el arbol y aparecen las primeras hojas (PRIMAVERA)
-// 3 - Comienzo del verano
-// 4 - Comienzo del otoño
-// 5 - Caen la hojas (OTOÑO)
-// 6 - Comienza el invierno 
-int obtenerSegundoEscena(int escenaId) {
-  switch(escenaId) {
-  case 1: 
-    return 0;
-  case 2:
-    return 66; // 1m 06s
-  case 3:
-    return 121; // 2m 01s
-  case 4:
-    return 191; // 3m 11s
-  case 5:
-    return 204; // 3m 24s
-  case 6:
-    return 233; // 3m 53s
-  default: 
-    println("No existe la escena " + escenaId); 
-    exit();
-    return -1;
-  }
-}
-
-
-
 //CIRCULO PARA LAS MANOS O EL MOUSE
 FBody pelota(float x, float y) {
   FCircle f = new FCircle(50);
@@ -619,6 +544,7 @@ FBody circulo(float x, float y) {
   return hoja;
 }
 
+//creamos el arcoiris
 void crearArcoiris() {
   fill(#FF0000, alpha);
   ellipse(2*width/3, height, 1480, 1140);
