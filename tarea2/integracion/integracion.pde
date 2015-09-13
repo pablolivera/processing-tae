@@ -6,7 +6,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 
 //variables usadas por los controles.
 private ControlP5 cp5;
@@ -226,6 +226,13 @@ void draw() {
         alpha-=10;
       }
       crearArcoiris();
+    } else if (esInvierno) {
+      background(0, alpha);
+      noStroke();
+      if ((random(10) > 8)&&(alpha < 255)) {
+        alpha+=3;
+      }
+      crearLuna();
     }
 
     noStroke();
@@ -562,22 +569,31 @@ FBody circulo(float x, float y) {
 //creamos el arcoiris
 void crearArcoiris() {
   fill(#FF0000, alpha);
-  ellipse(2*width/3, height, 1480, 1140);
+  ellipse(2*width/3, height-100, 1480, 1140);
   fill(#FF8D00, alpha);
-  ellipse(2*width/3, height, 1460, 1100);
+  ellipse(2*width/3, height-100, 1460, 1100);
   fill(#FEEE00, alpha);
-  ellipse(2*width/3, height, 1440, 1060);
+  ellipse(2*width/3, height-100, 1440, 1060);
   fill(#10C10E, alpha);
-  ellipse(2*width/3, height, 1420, 1020);
+  ellipse(2*width/3, height-100, 1420, 1020);
   fill(#398DFF, alpha);
-  ellipse(2*width/3, height, 1400, 980);
+  ellipse(2*width/3, height-100, 1400, 980);
   fill(#164B93, alpha);
-  ellipse(2*width/3, height, 1380, 940);
+  ellipse(2*width/3, height-100, 1380, 940);
   fill(#4B0295, alpha);
-  ellipse(2*width/3, height, 1360, 900);
+  ellipse(2*width/3, height-100, 1360, 900);
   fill(#9900BC, alpha);
-  ellipse(2*width/3, height, 1340, 860);
+  ellipse(2*width/3, height-100, 1340, 860);
   fill(0);
-  ellipse(2*width/3, height, 1320, 820);
+  ellipse(2*width/3, height-100, 1320, 820);
+}
+
+//crear luna
+void crearLuna() {
+  noStroke();
+  fill(220,alpha);
+  ellipse(200, 200, 200, 200);
+  fill(0);
+  ellipse(250, 180, 200, 200);
 }
 
