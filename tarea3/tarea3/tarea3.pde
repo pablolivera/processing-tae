@@ -60,9 +60,8 @@ void setup() {
 
   //bordes anti alias
   smooth();
-  
-      scale(float(width)/640,float(height)/480);
 
+  //scale(float(width)/640, float(height)/480);
 }
 
 
@@ -79,11 +78,11 @@ void draw() {
   if (kinectConectado && context.isInit()) {
     // Actualizamos la kinect si esta presente
 
-
+    PVector realWorldPoint;
     context.update();
 
-    loadPixels();
-    img.loadPixels();
+    //loadPixels();
+   // img.loadPixels();
 
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
@@ -92,25 +91,55 @@ void draw() {
     for (int x = 0; x < context.depthWidth (); x++) {
       for (int y = 0; y < context.depthHeight (); y++) {
         index = x + (y * context.depthWidth());
+
         int d = depthMap[index];
+        realWorldPoint = context.depthMapRealWorld()[index];
+
         if ( d > 0) {
           int userNr = userMap[index];
+
           if ( userNr > 0) {
-            pixels[y*width+x] = img.pixels[y*width+x];
+            stroke(255);
+            fill(200, 234, 140);
+            //pushMatrix();
+            // Scale up by 200
+            //translate(realWorldPoint.x*fact, , fact-realWorldPoint.z*fact);
+            // Draw a point
+            point(width-realWorldPoint.x*fact, height-realWorldPoint.y*fact);
+            //popMatrix();
+
+
+            //pixels[(int)realWorldPoint.y*width+realWorldPoint.x] = img.pixels[(int)realWorldPoint.y*width+realWorldPoint.x];
           } else {
-            pixels[y*width+x] = 255 - img.pixels[y*width+x];
+            //pixels[realWorldPoint.y*width+realWorldPoint.x] = 255 - img.pixels[realWorldPoint.y*width+realWorldPoint.x];
+            stroke(100);
+            fill(80, 150, 70);
+
+            //pushMatrix();
+            // Scale up by 200
+            //translate(realWorldPoint.x*fact, realWorldPoint.y*fact, fact-realWorldPoint.z*fact);
+            // Draw a point
+            //point(realWorldPoint.x*fact, realWorldPoint.y*fact);
+            //popMatrix();
           }
         } else {
-          pixels[y*width+x] = 255 - img.pixels[y*width+x];
+          stroke(100);
+          fill(80, 150, 70);
+
+          //pushMatrix();
+            // Scale up by 200
+            //translate(realWorldPoint.x*fact, realWorldPoint.y*fact, fact-realWorldPoint.z*fact);
+            // Draw a point
+            //point(realWorldPoint.x*fact, realWorldPoint.y*fact);
+            //popMatrix();
+          // pixels[realWorldPoint.y*width+realWorldPoint.x] = 255 - img.pixels[realWorldPoint.y*width+realWorldPoint.x];
         }
       }
     }
 
-    
 
-    updatePixels();
-    
+
+   // updatePixels();
   }
 }
-
 
