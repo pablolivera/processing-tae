@@ -6,10 +6,17 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 
-
-
+//controles
+ControlP5 cp5;
+ControlFrame cf;
+boolean toSwitch = false;      //indica cambio de escena.
+boolean estrellas = false;
+boolean movimiento = false;
+boolean bigbang = false;
+boolean galaxia = false;
+boolean end = false;
 
 
 //kinect
@@ -60,9 +67,12 @@ void setup() {
 
   //bordes anti alias
   smooth();
-  
-      scale(float(width)/640,float(height)/480);
 
+  scale(float(width)/640, float(height)/480);
+  
+  //controles
+  cp5 = new ControlP5(this);
+  cf = addControlFrame("Controladores", 520, 500);
 }
 
 
@@ -106,11 +116,9 @@ void draw() {
       }
     }
 
-    
+
 
     updatePixels();
-    
   }
 }
-
 
