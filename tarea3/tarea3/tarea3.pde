@@ -7,6 +7,8 @@ import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
 boolean kinectConectado = true; 
+PVector com = new PVector();
+PVector com2d = new PVector();
 
 //controles
 ControlP5 cp5;
@@ -56,6 +58,8 @@ float cy; //center
 
 PImage img;
 
+boolean inicializado = false;
+int cant = 0;
 //setup processing.
 void setup() {
 
@@ -95,8 +99,8 @@ void setup() {
   speed=speed/frameRate;
 
   // begin in the center
-  cx = width/2;
-  cy = height/2;
+  //cx = width/2;
+  //cy = height/2;
   // itit stars
   for (int i=0; i< stars; i++) {
     angle[i]= random(0, 2*pi);
@@ -119,6 +123,11 @@ void draw() {
 
   //fondo negro
   background(0);
+  //dibujarGalaxia();
+  //e
+
+  cant = 0;
+
 
   // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
   if (kinectConectado && context.isInit()) {
@@ -127,6 +136,16 @@ void draw() {
     PVector realWorldPoint;
     context.update();
 
+    // draw the skeleton if it's available
+    int[] userList = context.getUsers();
+    //for (int i = 0; i < userList.length; i++) {
+    if ((userList.length > 0) && context.getCoM(userList[0], com)) {
+      context.convertRealWorldToProjective(com, com2d);
+      drawCenterOfMass(userList, 0);
+      //ajuste
+      //drawLineasAjuste(userList,i);
+    }
+    //}
 
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
@@ -143,11 +162,26 @@ void draw() {
           int userNr = userMap[index];
 
           if ( userNr > 0) {
+
             //DENTRO DEL USUARIO
             stroke(255);
             fill(200, 234, 140);
-            point(width-realWorldPoint.x*fact, height-realWorldPoint.y*fact);
-            //println("entro user");
+            point(realWorldPoint.x*fact, height-realWorldPoint.y*fact);
+
+
+            if (!inicializado) {
+              println("entro user");
+
+              cx = com2d.x * (float)fact; //width/2;
+              cy = com2d.y * (float)fact; // height/2;
+              inicializado = true;
+            }
+
+            if (inicializado && (cant == 0)) {
+              dibujarGalaxia();
+              println("abu");
+              cant++;
+            }
           } else {
             //RESTO
             //println("entro no se que es esto");
@@ -155,35 +189,60 @@ void draw() {
         } else {
           //RESTO
           //println("entro estrellas");
-          noSmooth();
-          img=get();
-          img.resize(round(width*0.5), round(height*0.5));
-          img.resize(width-2, height-2);
-          tint(245, 250, 255);
-          image(img, 0, 0);
-          //fill(0,8); rect(0,0,width,height);
-          noStroke();
-          float r, a, x, y, b, s, c, xx, yy, dd;
-          for (int i=0; i< stars; i++) {
-            r=radius[i];
-            a=angle[i]+speed*(Rmax/r)*3.0; // increment angle
-            angle[i]=a;
-            x=r*sin(a);
-            y=r*eratio*cos(a);
-            b=r*etwist;
-            s=sin(b);
-            c=cos(b);
-            xx=cx + s*x + c*y; // a bit of trigo
-            yy=cy + c*x - s*y;
-            //dd=(r-50.0)*7.0;
-            dd=8000.0/r;
-            fill(color(dd, dd, dd*0.9, 32));
-            rect(xx-1.5, yy-1.5, 3.0, 3.0);
-          }
         }
       }
     }
   }
+}
+
+void drawCenterOfMass(int[] userList, int i) {
+  //background(255);
+  stroke(100, 255, 0);
+  strokeWeight(1);
+  beginShape(LINES);
+  float posx = com2d.x * (float)fact;
+  float posy = com2d.y * (float)fact;
+  vertex(posx, posy - 5);
+  vertex(posx, posy + 5);
+
+  vertex(posx - 5, posy);
+  vertex(posx + 5, posy);
+  endShape();
+
+  //System.out.println("x: " + com2d.x + " ###  y: " + com2d.y);
+  System.out.println("x: " + posx + " ###  y: " + posy);
+
+  fill(0, 255, 100);
+  text(Integer.toString(userList[i]), com2d.x, com2d.y);
+}
+
+float dibujarGalaxia() {
+  noSmooth();
+  img=get();
+  img.resize(round(width*0.5), round(height*0.5));
+  img.resize(width-2, height-2);
+  tint(245, 250, 255);
+  image(img, 0, 0);
+  //fill(0,8); rect(0,0,width,height);
+  noStroke();
+  float r, a, x, y, b, s, c, xx, yy, dd;
+  for (int i=0; i< stars; i++) {
+    r=radius[i];
+    a=angle[i]+speed*(Rmax/r)*3.0; // increment angle
+    angle[i]=a;
+    x=r*sin(a);
+    y=r*eratio*cos(a);
+    b=r*etwist;
+    s=sin(b);
+    c=cos(b);
+    xx=cx + s*x + c*y; // a bit of trigo
+    yy=cy + c*x - s*y;
+    //dd=(r-50.0)*7.0;
+    dd=8000.0/r;
+    fill(color(dd, dd, dd*0.9, 32));
+    rect(xx-1.5, yy-1.5, 3.0, 3.0);
+  }
+  return 0.0;
 }
 
 float gauss(float x) { 
@@ -219,3 +278,20 @@ float randomGaussIn(float L, float H, float mul) {
 float randomGaussAt(float L, float H, float mul) { 
   return            randomGauss()*(H-L)*mul + (L+H)/2.0;
 }
+
+void keyPressed() {
+  if (keyCode == UP) { 
+    eratio=eratio*1.02;
+  }
+  if (keyCode == DOWN) { 
+    eratio=eratio/1.02;
+  }
+  if (keyCode == LEFT) { 
+    etwist=etwist+0.001;
+  }
+  if (keyCode == RIGHT) { 
+    etwist=etwist-0.001;
+  } 
+  //println("eratio="+eratio+" etwist="+etwist);
+}
+
