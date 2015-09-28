@@ -94,7 +94,7 @@ void draw(){
     xx=cx + s*x + c*y; // a bit of trigo
     yy=cy + c*x - s*y;
     //dd=(r-50.0)*7.0;
-    dd=40000.0/r;
+    dd=8000.0/r;
     fill(color(dd,dd,dd*0.9,32));
     rect(xx-1.5,yy-1.5,3.0,3.0);
   }

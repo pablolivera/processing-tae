@@ -6,7 +6,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 
 //controles
 ControlP5 cp5;
@@ -33,6 +33,8 @@ PImage img;
 // Vectores para las manos cuando se usa la alternativa del skeleton tracking.
 PVector convertedRightHand;
 PVector convertedLeftHand;
+
+
 
 //setup processing.
 void setup() {
@@ -69,7 +71,8 @@ void setup() {
   smooth();
 
   scale(float(width)/640, float(height)/480);
-  
+
+
   //controles
   cp5 = new ControlP5(this);
   cf = addControlFrame("Controladores", 520, 500);
@@ -92,8 +95,6 @@ void draw() {
     PVector realWorldPoint;
     context.update();
 
-    //loadPixels();
-   // img.loadPixels();
 
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
@@ -110,49 +111,23 @@ void draw() {
           int userNr = userMap[index];
 
           if ( userNr > 0) {
+            //DENTRO DEL USUARIO
             stroke(255);
             fill(200, 234, 140);
-            //pushMatrix();
-            // Scale up by 200
-            //translate(realWorldPoint.x*fact, , fact-realWorldPoint.z*fact);
-            // Draw a point
             point(width-realWorldPoint.x*fact, height-realWorldPoint.y*fact);
-            //popMatrix();
-
-
-            //pixels[(int)realWorldPoint.y*width+realWorldPoint.x] = img.pixels[(int)realWorldPoint.y*width+realWorldPoint.x];
+            //println("entro user");
           } else {
-            //pixels[realWorldPoint.y*width+realWorldPoint.x] = 255 - img.pixels[realWorldPoint.y*width+realWorldPoint.x];
-            stroke(100);
-            fill(80, 150, 70);
-
-            //pushMatrix();
-            // Scale up by 200
-            //translate(realWorldPoint.x*fact, realWorldPoint.y*fact, fact-realWorldPoint.z*fact);
-            // Draw a point
-            //point(realWorldPoint.x*fact, realWorldPoint.y*fact);
-            //popMatrix();
+            //RESTO
+            //println("entro no se que es esto");
           }
         } else {
-          stroke(100);
-          fill(80, 150, 70);
-
-          //pushMatrix();
-            // Scale up by 200
-            //translate(realWorldPoint.x*fact, realWorldPoint.y*fact, fact-realWorldPoint.z*fact);
-            // Draw a point
-            //point(realWorldPoint.x*fact, realWorldPoint.y*fact);
-            //popMatrix();
-          // pixels[realWorldPoint.y*width+realWorldPoint.x] = 255 - img.pixels[realWorldPoint.y*width+realWorldPoint.x];
+          //RESTO
+          //println("entro estrellas");
+          
+          }
         }
       }
     }
-
-    
-
-
-   // updatePixels();
   }
 }
-
 
