@@ -39,7 +39,7 @@ float randomGaussAt(float L, float H, float mul){ return            randomGauss(
 float pi=4*atan(1);
 
 int stars=10000; // only ...
-int Rmax=200; // galaxy radius
+int Rmax=50; // galaxy radius
 float speed=0.02;  // rotation speed
 
 // stars follow elliptic orbits around the center
@@ -54,7 +54,7 @@ float cx; float cy; //center
 PImage img;
 
 void setup(){
-  size(int(Rmax*3), int(Rmax*2),P3D);
+  size(1024,800,P3D);
   background(0); // back to black
   speed=speed/frameRate;
 
@@ -102,8 +102,8 @@ void draw(){
 }
 
 void keyPressed() {
-  if(keyCode == UP) { eratio=eratio*1.02; }
-  if(keyCode == DOWN) { eratio=eratio/1.02; }
+  if(keyCode == UP) { eratio=eratio*1.02;Rmax = Rmax*2; }
+  if(keyCode == DOWN) { eratio=eratio/1.02; Rmax = Rmax/2; }
   if(keyCode == LEFT) { etwist=etwist+0.001; }
   if(keyCode == RIGHT) { etwist=etwist-0.001; } 
   //println("eratio="+eratio+" etwist="+etwist);
