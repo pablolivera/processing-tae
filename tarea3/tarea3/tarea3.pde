@@ -93,7 +93,7 @@ void setup() {
   //bordes anti alias
   smooth();
 
-  scale(float(width)/640, float(height)/480);
+  //scale(float(width)/640, float(height)/480);
 
   //cosas galaxy
   speed=speed/frameRate;
@@ -147,6 +147,38 @@ void draw() {
     }
     //}
 
+   
+
+    if (inicializado) {
+      noSmooth();
+      img=get();
+      img.resize(round(width*0.5), round(height*0.5));
+      img.resize(width-2, height-2);
+      tint(245, 250, 255);
+      image(img, 0, 0);
+      //fill(0,8); rect(0,0,width,height);
+      noStroke();
+      float r, a, x, y, b, s, c, xx, yy, dd;
+      for (int i=0; i< stars; i++) {
+        r=radius[i];
+        a=angle[i]+speed*(Rmax/r)*3.0; // increment angle
+        angle[i]=a;
+        x=r*sin(a);
+        y=r*eratio*cos(a);
+        b=r*etwist;
+        s=sin(b);
+        c=cos(b);
+        xx=cx + s*x + c*y; // a bit of trigo
+        yy=cy + c*x - s*y;
+        //dd=(r-50.0)*7.0;
+        dd=8000.0/r;
+        fill(color(dd, dd, dd*0.9, 32));
+        rect(xx-1.5, yy-1.5, 3.0, 3.0);
+      }
+      println("abu");
+      cant++;
+    }
+
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
 
@@ -156,7 +188,6 @@ void draw() {
         index = xb + (yb * context.depthWidth());
 
         int d = depthMap[index];
-        realWorldPoint = context.depthMapRealWorld()[index];
 
         if ( d > 0) {
           int userNr = userMap[index];
@@ -164,30 +195,21 @@ void draw() {
           if ( userNr > 0) {
 
             //DENTRO DEL USUARIO
-            stroke(255);
-            fill(200, 234, 140);
-            point(realWorldPoint.x*fact, height-realWorldPoint.y*fact);
+            //stroke(255);
+            //fill(200, 234, 140);
+            //point(xb*fact, yb*fact);
 
-
-            if (!inicializado) {
-              println("entro user");
-
-              cx = com2d.x * (float)fact; //width/2;
-              cy = com2d.y * (float)fact; // height/2;
-              inicializado = true;
-            }
-
-            if (inicializado && (cant == 0)) {
-              dibujarGalaxia();
-              println("abu");
-              cant++;
-            }
+            cx = com2d.x * (float)fact; //width/2;
+            cy = com2d.y * (float)fact; // height/2;
+            inicializado = true;
           } else {
             //RESTO
             //println("entro no se que es esto");
+            //inicializado = false;
           }
         } else {
           //RESTO
+          //inicializado = false;
           //println("entro estrellas");
         }
       }
@@ -213,7 +235,7 @@ void drawCenterOfMass(int[] userList, int i) {
   System.out.println("x: " + posx + " ###  y: " + posy);
 
   fill(0, 255, 100);
-  text(Integer.toString(userList[i]), com2d.x, com2d.y);
+  //text(Integer.toString(userList[i]), com2d.x, com2d.y);
 }
 
 float dibujarGalaxia() {
