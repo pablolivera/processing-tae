@@ -1,4 +1,4 @@
-class SceneManager{
+class ManejadorEscenas{
 
   Escena[] escenas;  
   Escena actual;
@@ -7,7 +7,7 @@ class SceneManager{
   SceneManager(){
 
     Escena [] todas = {        
-      new Movimiento();
+      new Movimiento()
     };
 
     escenas = todas;

@@ -6,7 +6,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -60,8 +60,15 @@ PImage img;
 
 boolean inicializado = false;
 int cant = 0;
+
+//ManejadorEscenas manejador;
+
 //setup processing.
 void setup() {
+
+  //Manejador Escenas
+  //manejador = new ManejadorEscenas();
+  //manejador.actual.setupEscena();
 
   //fondo inicial negro
   background(0);
@@ -147,7 +154,7 @@ void draw() {
     }
     //}
 
-   
+
 
     if (inicializado) {
       noSmooth();
@@ -214,6 +221,9 @@ void draw() {
         }
       }
     }
+  } else {
+    //No kinect
+    manejador.actual.drawEscena();
   }
 }
 
