@@ -61,14 +61,15 @@ PImage img;
 boolean inicializado = false;
 int cant = 0;
 
-//ManejadorEscenas manejador;
+ManejadorEscenas manejador;
+boolean stopDraw = false;
 
 //setup processing.
 void setup() {
 
   //Manejador Escenas
-  //manejador = new ManejadorEscenas();
-  //manejador.actual.setupEscena();
+  manejador = new ManejadorEscenas();
+  manejador.actual.setupEscena();
 
   //fondo inicial negro
   background(0);
@@ -223,7 +224,7 @@ void draw() {
     }
   } else {
     //No kinect
-    manejador.actual.drawEscena();
+    if(!stopDraw) manejador.actual.drawEscena();
   }
 }
 

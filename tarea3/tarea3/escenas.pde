@@ -1,52 +1,51 @@
-class ManejadorEscenas{
+class ManejadorEscenas {
 
   Escena[] escenas;  
   Escena actual;
   int actual_indx;
-  
-  SceneManager(){
+
+  ManejadorEscenas() {
 
     Escena [] todas = {        
       new Movimiento()
-    };
+      };
 
-    escenas = todas;
+      escenas = todas;
     actual_indx = 0;
-    scenes[0].setupEscena();
+    escenas[0].setupEscena();
     actual = escenas[0];
   }
-  
-  void proxima(){
+
+  void proxima() {
     int indx = (actual_indx+1)%(escenas.length);
-    activate(indx);
+    activar(indx);
   }
 
-  void previa(){
+  void previa() {
     int indx;
-    if(actual_indx-1 < 0) indx = escenas.length -1;
+    if (actual_indx-1 < 0) indx = escenas.length -1;
     else indx = (actual_indx-1)%(escenas.length);
-    activate(indx);
+    activar(indx);
   }
 
-  void activar(int indx){
+  void activar(int indx) {
     stopDraw = true;
     actual_indx = indx;
     actual.cerrarEscena();
     actual = escenas[indx];
     actual.setupEscena();
-    println(indx,actual.getNombre());
+    println(indx, actual.getNombre());
     stopDraw = false;
   }
-
-  
 }
 
 
 // Escena
 interface Escena
 { 
-    void setupEscena();
-    void drawScene();
-    void cerrarEscena();
-    String getNombre();
+  void setupEscena();
+  void drawEscena();
+  void cerrarEscena();
+  String getNombre();
 }
+
