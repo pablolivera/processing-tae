@@ -67,6 +67,21 @@ public class ControlFrame extends PApplet {
     y+= 50;
     x = 20;
 
+    //tamaño galaxia
+    cp5.addSlider("eratio")
+      .plugTo(parent, "eratio")
+        .setRange(1, 20)
+          .setValue(1)
+            .setSize(200, 20)
+              .setPosition(x, y+=30);
+
+    cp5.addSlider("etwist")
+      .plugTo(parent, "etwist")
+        .setRange(-0.5, 0.5)
+          .setValue(0)
+            .setSize(200, 20)
+              .setPosition(x, y+=30);
+
     //Control para tirar las hojas que queden
     //cp5.addToggle("Kinect Conectado")
     //.plugTo(parent, "kinectConectado")
