@@ -3,9 +3,9 @@ public class Estrellas implements Escena {
 
   float pi=4*atan(1);
 
-  int stars=5000; // only ...
+  int stars=8000; // only ...
   
-  float speed=0.02;  // rotation speed
+  float speed=0.1;  // rotation speed
 
   // stars follow elliptic orbits around the center
   //float eratio=.85; // ellipse ratio
@@ -43,8 +43,7 @@ public class Estrellas implements Escena {
 
 
 
-  void dibujarGalaxia() {
-    noSmooth();
+  void dibujarGalaxia() {    
     noStroke();
     float r, a, x, y, b, s, c, xx, yy, dd;
     for (int i=0; i< stars; i++) {
@@ -63,7 +62,7 @@ public class Estrellas implements Escena {
       rect(xx-1.5, yy-1.5, 3.0, 3.0);
     }
   }
-
+/*
   float gauss(float x) { 
     return exp(-x*x/2.0) / sqrt(2*PI);
   }
@@ -82,7 +81,7 @@ public class Estrellas implements Escena {
   float gaussE(float z) { 
     return gaussI(z)*2-1;
   }// gauss error func==> [-1..0..1]
-
+*/
   float randomGauss() {
     float x=0, y=0, r, c;
     do { 
@@ -94,13 +93,13 @@ public class Estrellas implements Escena {
     c=sqrt(-2.0*log(r)/r);
     return x*c; //return [x*c, y*c];
   }
-
+/*
   float randomGaussIn(float L, float H, float mul) { 
     return constrain( randomGauss()*(H-L)*mul + (L+H)/2.0, L, H);
   }
 
   float randomGaussAt(float L, float H, float mul) { 
     return            randomGauss()*(H-L)*mul + (L+H)/2.0;
-  }
+  }*/
 } 
 
