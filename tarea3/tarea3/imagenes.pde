@@ -1,8 +1,8 @@
+// Basado en el ejemplo Interactive - Ewelina Bakala
 class Galaxia implements Escena { 
 
   public PImage bImg;
-  public int meTvTransparency;
-  PImage backPic;
+  PImage imagenDeFondo;
   String nombreImagen = "";
   PImage [] imagenes = new PImage[6];
   int cantImagenes = 6;
@@ -11,45 +11,34 @@ class Galaxia implements Escena {
   public Galaxia() {}
 
   void setupEscena() {
-      meTvTransparency = 40;
       
+      // Cargo las imagenes en un arra
       for (int imagen = 0; imagen < cantImagenes; imagen++) {
         nombreImagen = imagen + ".jpg";
         imagenes[imagen] = loadImage(nombreImagen);            
       }
-    
+      
   }
 
   void drawEscena() { 
     
     if (kinectConectado) { // Si no esta conectado no se ve nada 
     
-      //for (int i = 0; i < 10; i++) {
-       
-        //nombreImagen = (i%imagenes) + ".jpg";
-        //println(nombreImagen);
-         
-        backPic = imagenes[i%cantImagenes];
+        imagenDeFondo = imagenes[i%cantImagenes];
     
-        fill(0, meTvTransparency);
         rect(0, 0, width, height);
-        bImg = getMeImg(backPic);
+        bImg = obtenerImagenPersona(imagenDeFondo);
         image(bImg, 0, 0);
-        
-        
         
         if (frameCount % 10 == 0) {
           i = i % cantImagenes;
           i++;
         }
           
-        
         // Por las dudas que se vaya de tema el i
-        //if (i == 2147483647) {
-          //  i = 0;
-        //}
-        
-      //}
+        if (i == 2147483647) {
+            i = 0;
+        }
     }
     
   }
@@ -63,10 +52,10 @@ class Galaxia implements Escena {
 
 
   // Funciones Auxiliares
-  PImage getMeImg(PImage backPic) {
+  PImage obtenerImagenPersona(PImage imagenDeFondo) {
 
     // para imagen de la kinect
-    //println("back w h ",backPic.width,backPic.height);
+    //println("back w h ",imagenDeFondo.width,imagenDeFondo.height);
     PImage img = new PImage(context.depthWidth(), context.depthHeight(), ARGB); 
     img.loadPixels();
     // para imagen escalada
@@ -77,6 +66,8 @@ class Galaxia implements Escena {
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap();
 
+
+    // Obtengo la imagen del kinect y "prendo" los pixeles que "caen" dentro 
     int index;
     for (int x = 0; x < context.depthWidth(); x++)
     {
@@ -91,11 +82,7 @@ class Galaxia implements Escena {
           int userNr =userMap[index];
           if ( userNr > 0)
           { 
-            // si esta un usuario cargamos img con el valor del pixel
-            // de la backPic
-            // int indexBack = int(map(x,0,img.width,0,backPic.width)  + map(y,0,img.height,0,backPic.height) * backPic.width);
-
-            img.pixels[index] = backPic.pixels[index];
+            img.pixels[index] = imagenDeFondo.pixels[index];
           }
         }
       }
