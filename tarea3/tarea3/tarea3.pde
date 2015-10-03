@@ -39,8 +39,11 @@ PVector convertedLeftHand;
 
 float cx; 
 float cy; //center
+int Rmax=50; // galaxy radius
+float eratio=.85; // ellipse ratio
+float etwist=8.0/Rmax; // twisting factor (orbit axes depend on radius)
 
-PImage img;
+//PImage img;
 
 boolean inicializado = false;
 int cant = 0;
@@ -108,13 +111,11 @@ void draw() {
     int[] userList = context.getUsers();
     if ((userList.length > 0) && context.getCoM(userList[0], com)) {
       context.convertRealWorldToProjective(com, com2d);
-      drawCenterOfMass(userList, 0);
+      cx = com2d.x * (float)fact;
+      cy = com2d.y * (float)fact;
+      
+      //drawCenterOfMass(userList, 0);
     }
-
-
-
-
-
 
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
@@ -152,7 +153,12 @@ void draw() {
       }
     }
   }
+  else {
+    cx = mouseX;
+    cy = mouseY;
+  }
 }
+
 
 void drawCenterOfMass(int[] userList, int i) {
   //background(255);

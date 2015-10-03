@@ -7,8 +7,8 @@ class ManejadorEscenas {
   ManejadorEscenas() {
 
     Escena [] todas = {        
-      new Movimiento(),
-      new Estrellas()
+      new Estrellas(),
+      new Movimiento()      
       };
 
       escenas = todas;
