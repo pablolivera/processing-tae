@@ -6,7 +6,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
