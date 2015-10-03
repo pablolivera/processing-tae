@@ -8,13 +8,14 @@ class ManejadorEscenas {
 
     Escena [] todas = {        
       new Movimiento(),
-      new Estrellas()
+      new Estrellas(),
+      new Galaxia()
       };
 
-      escenas = todas;
-    actual_indx = 0;
-    escenas[0].setupEscena();
-    actual = escenas[0];
+    escenas = todas;
+    actual_indx = 2;
+    escenas[2].setupEscena();
+    actual = escenas[2];
   }
 
   void proxima() {
