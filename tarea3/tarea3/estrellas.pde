@@ -43,8 +43,7 @@ public class Estrellas implements Escena {
 
 
 
-  void dibujarGalaxia() {
-    noSmooth();
+  void dibujarGalaxia() {    
     noStroke();
     float r, a, x, y, b, s, c, xx, yy, dd;
     for (int i=0; i< stars; i++) {
