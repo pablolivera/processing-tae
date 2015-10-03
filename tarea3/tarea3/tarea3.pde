@@ -35,14 +35,32 @@ PVector secondHand = new PVector();
 PVector convertedRightHand;
 PVector convertedLeftHand;
 
-//Cosas para el fondo
-
+//Coordenadas centro de masa
 float cx; 
-float cy; //center
+float cy; 
+
 int Rmax=50; // galaxy radius
 float eratio=.85; // ellipse ratio
 float etwist=8.0/Rmax; // twisting factor (orbit axes depend on radius)
 
+//Control Warp escena movimiento
+boolean movimientoWarp;
+
+//para ver silueta
+boolean debugBody;
+
+//para escena singularidad
+ArrayList forces;
+PImage buffer;
+float G = 1;
+boolean clear = true;
+boolean renderForces = false;
+Force handIzqForce; 
+Force handDerForce; 
+Force mouseForce; 
+boolean mouseAttract = false;
+
+//no se
 boolean inicializado = false;
 int cant = 0;
 
@@ -57,7 +75,7 @@ void setup() {
 
   //Manejador Escenas
   manejador = new ManejadorEscenas();
-  
+
   //cargamos la cancion.
   soundengine = new Minim(this);
   sonido1 = soundengine.loadSample("time.mp3", 1024);
@@ -105,6 +123,7 @@ void draw() {
   background(0);
 
   if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
+  else if (stopDraw) background(255);
 
   // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
   if (kinectConectado && context.isInit()) {
@@ -118,7 +137,8 @@ void draw() {
       cx = com2d.x * (float)fact;
       cy = com2d.y * (float)fact;
       // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
-      drawHand(userList[0]);
+      if (context.isTrackingSkeleton(userList[0]))
+        drawHand(userList[0]);
       //drawCenterOfMass(userList, 0);
     }
 
@@ -139,14 +159,12 @@ void draw() {
 
           if ( userNr > 0) {
 
-            //DENTRO DEL USUARIO relleno de negro para que tape la escena? esto no va con lo de la imagen.
-            //stroke(0);
-            //fill(0);
-            //ellipse(xb*fact, yb*fact, 20, 20);
-
-            // cx = com2d.x * (float)fact; //width/2;
-            //cy = com2d.y * (float)fact; // height/2;
-            //inicializado = true;
+            //Ver la silueta
+            if (debugBody) {
+              noStroke();
+              fill(178);
+              ellipse(xb*fact, yb*fact, 15, 15);
+            }
           } else {
             //RESTO
             //println("entro no se que es esto");
@@ -159,8 +177,7 @@ void draw() {
         }
       }
     }
-  }
-  else {
+  } else {
     cx = mouseX;
     cy = mouseY;
     convertedRightHand = new PVector();
@@ -207,8 +224,7 @@ void drawHand(int userId) {
   // Se escala la coordenada.
   convertedRightHand.x = convertedRightHand.x * fact;
   convertedRightHand.y = convertedRightHand.y  * fact;
-  fill(200);
-  ellipse( convertedRightHand.x, convertedRightHand.y, 40, 40);
+
 
   PVector leftHand = new PVector(); 
   context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, leftHand);
@@ -216,10 +232,33 @@ void drawHand(int userId) {
   context.convertRealWorldToProjective(leftHand, convertedLeftHand);
   convertedLeftHand.x = convertedLeftHand.x  * fact;
   convertedLeftHand.y = convertedLeftHand.y * fact;
-  fill(200);
-  ellipse(convertedLeftHand.x, convertedLeftHand.y, 40, 40); // Se escala la coordenada.
 
-  
+  if (debugBody) {
+    fill(255, 0, 30);
+    ellipse( convertedRightHand.x, convertedRightHand.y, 40, 40);
+    fill(0, 255, 30);
+    ellipse(convertedLeftHand.x, convertedLeftHand.y, 40, 40); // Se escala la coordenada.
+    println("Hand left :"+convertedLeftHand.x+","+convertedLeftHand.y);
+    println("Hand right :"+convertedRightHand.x+","+convertedRightHand.y);
+  }
+}
+
+void onNewUser(SimpleOpenNI curContext, int userId)
+{
+  println("onNewUser - userId: " + userId);
+  println("\tstart tracking skeleton");
+
+  context.startTrackingSkeleton(userId);
+}
+
+void onLostUser(SimpleOpenNI curContext, int userId)
+{
+  println("onLostUser - userId: " + userId);
+}
+
+void onVisibleUser(SimpleOpenNI curContext, int userId)
+{
+  //println("onVisibleUser - userId: " + userId);
 }
 
 

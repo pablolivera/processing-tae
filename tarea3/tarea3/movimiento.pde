@@ -4,11 +4,11 @@ class Movimiento implements Escena {
   float h2;//=height/2
   float w2;//=width/2
   float d2;//=diagonal/2
-  
-  Movimiento(){
+
+    Movimiento() {
   }
 
-    void setupEscena() {
+  void setupEscena() {
     w2=width/2;
     h2= height/2;
     d2 = dist(0, 0, w2, h2);
@@ -39,29 +39,32 @@ class Movimiento implements Escena {
       float d =stars.get(i).z;
 
       //el movimiento de las estrellas
-      //dependeran en x de una mano y en y de la otra mano.
+      //si no hay kinect dependen del mouse.
       float enX = mouseX;
       float enY = mouseY;
-      //if (convertedRightHand!=null) enX = convertedRightHand.x;
-      //if (convertedLeftHand!=null) enY = convertedLeftHand.y;
-      enX = cx;
-      enY = cy;
-      if (frameCount < 500) {
-        stars.set(i, new PVector(x-map(enX, 0, width, -0.05, 0.05)*(w2-x), y-map(enY, 0, height, -0.05, 0.05)*(h2-y), d+0.2-0.6*noise(x, y, frameCount)));
-      }
-      else { 
-        stars.set(i, new PVector(x-map(0, 0, width, -0.05, 0.05)*(w2-x), y-map(0, 0, height, -0.05, 0.05)*(h2-y), d+0.2-0.6*noise(x, y, frameCount)));
+      //si hay y no esta el warp activado con las manos
+      if (!movimientoWarp) {
+        if (convertedRightHand!=null) enX = min(convertedRightHand.x, convertedLeftHand.x);
+        if (convertedLeftHand!=null) enY =  min(convertedRightHand.y, convertedLeftHand.y);
+      } 
+      //sino warp
+      else {
+        enX = 0;
+        enY = 0;
       }
 
-      if (d > 3 ||d < -3) { stars.set(i, new PVector(x, y, 3)); }
+      stars.set(i, new PVector(x-map(enX, 0, width, -0.05, 0.05)*(w2-x), y-map(enY, 0, height, -0.05, 0.05)*(h2-y), d+0.2-0.6*noise(x, y, frameCount)));
+
+
+      if (d > 3 ||d < -3) { 
+        stars.set(i, new PVector(x, y, 3));
+      }
       if (x < 0 || x > width || y < 0 || y > height) stars.remove(i);
       if (stars.size()>9999) stars.remove(1);
       ellipse(x, y, d, d);//draw stars
     }
   }
 }
-
-
 
 
 

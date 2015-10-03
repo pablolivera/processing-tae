@@ -23,7 +23,7 @@ class Galaxia implements Escena {
   void drawEscena() { 
     
     if (kinectConectado) { // Si no esta conectado no se ve nada 
-    
+       
         imagenDeFondo = imagenes[i%cantImagenes];
     
         rect(0, 0, width, height);

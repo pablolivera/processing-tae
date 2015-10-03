@@ -10,6 +10,10 @@ public class ControlFrame extends PApplet {
   controlP5.Toggle bigbang;
   controlP5.Toggle galaxia;
   controlP5.Toggle end;
+
+  controlP5.Slider eratio;
+  controlP5.Slider etwist;
+  controlP5.Toggle warp;
   ControlTimer ct;
   Textlabel t;
 
@@ -68,14 +72,14 @@ public class ControlFrame extends PApplet {
     x = 20;
 
     //tamaño galaxia
-    cp5.addSlider("eratio")
+    eratio = cp5.addSlider("eratio")
       .plugTo(parent, "eratio")
         .setRange(1, 20)
           .setValue(1)
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
-    cp5.addSlider("etwist")
+    etwist = cp5.addSlider("etwist")
       .plugTo(parent, "etwist")
         .setRange(-0.5, 0.5)
           .setValue(0)
@@ -101,6 +105,22 @@ public class ControlFrame extends PApplet {
     //salto de linea
     y+= 50;
     x = 20;
+
+    //Control para tirar las hojas que queden
+    warp = cp5.addToggle("Warp (Movimiento)")
+      .plugTo(parent, "movimientoWarp")
+        .setPosition(x, y)
+          .setSize(50, 20)
+            .lock()
+              .setValue(false);
+              
+              
+   cp5.addToggle("Debug Body")
+      .plugTo(parent, "debugBody")
+        .setPosition(x+80, y)
+          .setSize(50, 20)
+              .setValue(false);
+
 
     //velocidad de las hojas al caer en x.
     //cp5.addSlider("Velocidad de Hojas X")
@@ -141,13 +161,13 @@ public class ControlFrame extends PApplet {
 
     //textos de referencia para el cambio manual de escenas.
     cp5.addTextlabel("label1")
-      .setText("ESTRELLAS:    0.00 - 0.08")
+      .setText("ESTRELLAS:    0.00 - 0.34")
         .setPosition(x, y+=30)
           .setColorValue(230)
             .setFont(createFont("Arial", 20))
               ;
     cp5.addTextlabel("label2")
-      .setText("MOVIMIENTO:     0.09 - 1.02")
+      .setText("MOVIMIENTO:     0.35 - 1.02")
         .setPosition(x, y+=30)
           .setColorValue(230)
             .setFont(createFont("Arial", 20))
@@ -177,6 +197,11 @@ public class ControlFrame extends PApplet {
     t.setValue(ct.toString());
     t.draw(this);
     t.setPosition(mouseX, mouseY);
+    tarea3 c = (tarea3)parent;
+    eratio.setValue(c.eratio);
+    eratio.update();
+    etwist.setValue(c.etwist);
+    etwist.update();
   }
 
   private ControlFrame() {
@@ -219,7 +244,6 @@ public class ControlFrame extends PApplet {
 
       println("Estrellas ON");
       c.toSwitch = true;
-      ct.reset();
     }
   }
 
@@ -237,6 +261,10 @@ public class ControlFrame extends PApplet {
       bigbang.setValue(false);
       bigbang.unlock();
       bigbang.update();
+      
+      warp.unlock();
+      warp.setValue(false);
+      warp.update();
 
       c.galaxia = false;
       galaxia.setValue(false);
@@ -250,7 +278,6 @@ public class ControlFrame extends PApplet {
 
       println("Movimiento ON");
       c.toSwitch = true;
-      ct.reset();
     }
   }
 
@@ -281,7 +308,6 @@ public class ControlFrame extends PApplet {
 
       println("BigBang ON");
       c.toSwitch = true;
-      ct.reset();
     }
   }
 
@@ -309,10 +335,9 @@ public class ControlFrame extends PApplet {
       end.update();
 
       c.manejador.proxima();
-            
+
       println("Galaxia ON");
       c.toSwitch = true;
-      ct.reset();
     }
   }
 
