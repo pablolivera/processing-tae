@@ -42,12 +42,19 @@ class Movimiento implements Escena {
       //dependeran en x de una mano y en y de la otra mano.
       float enX = mouseX;
       float enY = mouseY;
-      if (convertedRightHand!=null) enX = convertedRightHand.x;
-      if (convertedLeftHand!=null) enY = convertedLeftHand.y;
-      stars.set(i, new PVector(x-map(enX, 0, width, -0.05, 0.05)*(w2-x), y-map(enY, 0, height, -0.05, 0.05)*(h2-y), d+0.2-0.6*noise(x, y, frameCount)));
+      //if (convertedRightHand!=null) enX = convertedRightHand.x;
+      //if (convertedLeftHand!=null) enY = convertedLeftHand.y;
+      enX = cx;
+      enY = cy;
+      if (frameCount < 500) {
+        stars.set(i, new PVector(x-map(enX, 0, width, -0.05, 0.05)*(w2-x), y-map(enY, 0, height, -0.05, 0.05)*(h2-y), d+0.2-0.6*noise(x, y, frameCount)));
+      }
+      else { 
+        stars.set(i, new PVector(x-map(0, 0, width, -0.05, 0.05)*(w2-x), y-map(0, 0, height, -0.05, 0.05)*(h2-y), d+0.2-0.6*noise(x, y, frameCount)));
+      }
 
-      if (d>3||d<-3) stars.set(i, new PVector(x, y, 3));
-      if (x<0||x>width||y<0||y>height) stars.remove(i);
+      if (d > 3 ||d < -3) { stars.set(i, new PVector(x, y, 3)); }
+      if (x < 0 || x > width || y < 0 || y > height) stars.remove(i);
       if (stars.size()>9999) stars.remove(1);
       ellipse(x, y, d, d);//draw stars
     }

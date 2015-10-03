@@ -43,8 +43,6 @@ int Rmax=50; // galaxy radius
 float eratio=.85; // ellipse ratio
 float etwist=8.0/Rmax; // twisting factor (orbit axes depend on radius)
 
-//PImage img;
-
 boolean inicializado = false;
 int cant = 0;
 
@@ -55,7 +53,6 @@ boolean stopDraw = false;
 Minim soundengine;
 AudioSample sonido1;
 
-//setup processing.
 void setup() {
 
   //Manejador Escenas
@@ -64,7 +61,6 @@ void setup() {
   //cargamos la cancion.
   soundengine = new Minim(this);
   sonido1 = soundengine.loadSample("time.mp3", 1024);
-
 
   //fondo inicial negro
   background(0);
@@ -129,6 +125,8 @@ void draw() {
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
 
+
+    // El for del kinnect para tapar la silueta¿?
     int index;
     for (int xb = 0; xb < context.depthWidth (); xb+=10) {
       for (int yb = 0; yb < context.depthHeight (); yb+=10) {

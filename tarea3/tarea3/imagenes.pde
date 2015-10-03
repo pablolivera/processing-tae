@@ -22,32 +22,36 @@ class Galaxia implements Escena {
 
   void drawEscena() { 
     
-    //for (int i = 0; i < 10; i++) {
-     
-      //nombreImagen = (i%imagenes) + ".jpg";
-      //println(nombreImagen);
+    if (kinectConectado) { // Si no esta conectado no se ve nada 
+    
+      //for (int i = 0; i < 10; i++) {
        
-      backPic = imagenes[i%cantImagenes];
-  
-      fill(0, meTvTransparency);
-      rect(0, 0, width, height);
-      bImg = getMeImg(backPic);
-      image(bImg, 0, 0);
-      
-      
-      
-      if (frameCount % 10 == 0) {
-        i = i % cantImagenes;
-        i++;
-      }
+        //nombreImagen = (i%imagenes) + ".jpg";
+        //println(nombreImagen);
+         
+        backPic = imagenes[i%cantImagenes];
+    
+        fill(0, meTvTransparency);
+        rect(0, 0, width, height);
+        bImg = getMeImg(backPic);
+        image(bImg, 0, 0);
         
-      
-      // Por las dudas que se vaya de tema el i
-      //if (i == 2147483647) {
-        //  i = 0;
+        
+        
+        if (frameCount % 10 == 0) {
+          i = i % cantImagenes;
+          i++;
+        }
+          
+        
+        // Por las dudas que se vaya de tema el i
+        //if (i == 2147483647) {
+          //  i = 0;
+        //}
+        
       //}
-      
-    //}
+    }
+    
   }
 
   void cerrarEscena() {

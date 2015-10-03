@@ -7,15 +7,17 @@ class ManejadorEscenas {
   ManejadorEscenas() {
 
     Escena [] todas = {
-      new Movimiento(),
       new Estrellas(),
-      new Galaxia()
+      new Movimiento(),
+      new Galaxia(),
+      new Estrellas()
       };
 
     escenas = todas;
-    actual_indx = 2;
-    escenas[2].setupEscena();
-    actual = escenas[2];
+    actual_indx = -1;
+    //escenas[2].setupEscena();
+    //actual = escenas[2];
+    actual = null;
   }
 
   void proxima() {
@@ -32,7 +34,7 @@ class ManejadorEscenas {
 
   void activar(int indx) {
     stopDraw = true;
-    if (actual!=null) {
+    if (actual != null) {
       actual.cerrarEscena();
     }
     actual_indx = indx;
