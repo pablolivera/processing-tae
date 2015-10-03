@@ -215,6 +215,7 @@ public class ControlFrame extends PApplet {
       end.setValue(false);
       end.update();
 
+      c.manejador.proxima();
 
       println("Estrellas ON");
       c.toSwitch = true;
@@ -245,6 +246,7 @@ public class ControlFrame extends PApplet {
       end.setValue(false);
       end.update();
 
+      c.manejador.proxima();
 
       println("Movimiento ON");
       c.toSwitch = true;
@@ -275,6 +277,7 @@ public class ControlFrame extends PApplet {
       end.setValue(false);
       end.update();
 
+      c.manejador.proxima();
 
       println("BigBang ON");
       c.toSwitch = true;
@@ -305,7 +308,8 @@ public class ControlFrame extends PApplet {
       end.unlock();
       end.update();
 
-
+      c.manejador.proxima();
+            
       println("Galaxia ON");
       c.toSwitch = true;
       ct.reset();
@@ -334,6 +338,7 @@ public class ControlFrame extends PApplet {
       galaxia.setValue(false);
       galaxia.update();
 
+      c.manejador.reset();
 
       println("End ON");
       c.toSwitch = true;

@@ -6,7 +6,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -39,8 +39,11 @@ PVector convertedLeftHand;
 
 float cx; 
 float cy; //center
+int Rmax=50; // galaxy radius
+float eratio=.85; // ellipse ratio
+float etwist=8.0/Rmax; // twisting factor (orbit axes depend on radius)
 
-PImage img;
+//PImage img;
 
 boolean inicializado = false;
 int cant = 0;
@@ -48,12 +51,20 @@ int cant = 0;
 ManejadorEscenas manejador;
 boolean stopDraw = false;
 
+//variables para cargar y controlar la cancion
+Minim soundengine;
+AudioSample sonido1;
+
 //setup processing.
 void setup() {
 
   //Manejador Escenas
   manejador = new ManejadorEscenas();
-  manejador.actual.setupEscena();
+  
+  //cargamos la cancion.
+  soundengine = new Minim(this);
+  sonido1 = soundengine.loadSample("time.mp3", 1024);
+
 
   //fondo inicial negro
   background(0);
@@ -97,7 +108,7 @@ void draw() {
   //fondo negro
   background(0);
 
-  if (!stopDraw) manejador.actual.drawEscena();
+  if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
 
   // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
   if (kinectConectado && context.isInit()) {
@@ -108,13 +119,12 @@ void draw() {
     int[] userList = context.getUsers();
     if ((userList.length > 0) && context.getCoM(userList[0], com)) {
       context.convertRealWorldToProjective(com, com2d);
-      drawCenterOfMass(userList, 0);
+      cx = com2d.x * (float)fact;
+      cy = com2d.y * (float)fact;
+      // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
+      drawHand(userList[0]);
+      //drawCenterOfMass(userList, 0);
     }
-
-
-
-
-
 
     int[]   userMap = context.userMap();
     int[]   depthMap = context.depthMap(); 
@@ -132,9 +142,9 @@ void draw() {
           if ( userNr > 0) {
 
             //DENTRO DEL USUARIO relleno de negro para que tape la escena? esto no va con lo de la imagen.
-            stroke(0);
-            fill(0);
-            ellipse(xb*fact, yb*fact, 20, 20);
+            //stroke(0);
+            //fill(0);
+            //ellipse(xb*fact, yb*fact, 20, 20);
 
             // cx = com2d.x * (float)fact; //width/2;
             //cy = com2d.y * (float)fact; // height/2;
@@ -152,7 +162,18 @@ void draw() {
       }
     }
   }
+  else {
+    cx = mouseX;
+    cy = mouseY;
+    convertedRightHand = new PVector();
+    convertedRightHand.x = mouseX;
+    convertedRightHand.y = mouseY;
+    convertedLeftHand = new PVector();
+    convertedLeftHand.x = mouseX;
+    convertedLeftHand.y = mouseY;
+  }
 }
+
 
 void drawCenterOfMass(int[] userList, int i) {
   //background(255);
@@ -173,6 +194,34 @@ void drawCenterOfMass(int[] userList, int i) {
 
   //fill(0, 255, 100);
   //text(Integer.toString(userList[i]), com2d.x, com2d.y);
+}
+
+
+
+
+// Dibuja las manos, esto usa skeleton tracking.
+void drawHand(int userId) {
+
+  PVector rightHand = new PVector(); 
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, rightHand);  
+  convertedRightHand = new PVector();
+  context.convertRealWorldToProjective(rightHand, convertedRightHand);
+  // Se escala la coordenada.
+  convertedRightHand.x = convertedRightHand.x * fact;
+  convertedRightHand.y = convertedRightHand.y  * fact;
+  fill(200);
+  ellipse( convertedRightHand.x, convertedRightHand.y, 40, 40);
+
+  PVector leftHand = new PVector(); 
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, leftHand);
+  convertedLeftHand = new PVector();
+  context.convertRealWorldToProjective(leftHand, convertedLeftHand);
+  convertedLeftHand.x = convertedLeftHand.x  * fact;
+  convertedLeftHand.y = convertedLeftHand.y * fact;
+  fill(200);
+  ellipse(convertedLeftHand.x, convertedLeftHand.y, 40, 40); // Se escala la coordenada.
+
+  
 }
 
 

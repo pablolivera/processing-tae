@@ -1,12 +1,12 @@
 class ManejadorEscenas {
 
-  Escena[] escenas;  
+  Escena[] escenas;
   Escena actual;
   int actual_indx;
 
   ManejadorEscenas() {
 
-    Escena [] todas = {        
+    Escena [] todas = {
       new Movimiento(),
       new Estrellas(),
       new Galaxia()
@@ -32,22 +32,30 @@ class ManejadorEscenas {
 
   void activar(int indx) {
     stopDraw = true;
+    if (actual!=null) {
+      actual.cerrarEscena();
+    }
     actual_indx = indx;
-    actual.cerrarEscena();
     actual = escenas[indx];
     actual.setupEscena();
     println(indx, actual.getNombre());
     stopDraw = false;
+  }
+
+  void reset(){
+    actual_indx = -1;
+    actual = null;
+    //musica
+    sonido1.stop();
   }
 }
 
 
 // Escena
 interface Escena
-{ 
+{
   void setupEscena();
   void drawEscena();
   void cerrarEscena();
   String getNombre();
 }
-
