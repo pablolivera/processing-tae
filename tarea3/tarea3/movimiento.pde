@@ -9,7 +9,6 @@ class Movimiento implements Escena {
   }
 
     void setupEscena() {
-    size(600, 600);
     w2=width/2;
     h2= height/2;
     d2 = dist(0, 0, w2, h2);

@@ -7,14 +7,13 @@ class ManejadorEscenas {
   ManejadorEscenas() {
 
     Escena [] todas = {        
-      new Estrellas(),
-      new Movimiento()      
+      new Estrellas(), 
+      new Movimiento()
       };
 
       escenas = todas;
-    actual_indx = 0;
-    escenas[0].setupEscena();
-    actual = escenas[0];
+    actual_indx = -1;
+    actual = null;
   }
 
   void proxima() {
@@ -31,12 +30,21 @@ class ManejadorEscenas {
 
   void activar(int indx) {
     stopDraw = true;
+    if (actual!=null) {
+      actual.cerrarEscena();
+    }
     actual_indx = indx;
-    actual.cerrarEscena();
     actual = escenas[indx];
     actual.setupEscena();
     println(indx, actual.getNombre());
     stopDraw = false;
+  }
+  
+  void reset(){
+    actual_indx = -1;
+    actual = null;
+    //musica
+    sonido1.stop();
   }
 }
 
