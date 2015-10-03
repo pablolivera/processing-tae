@@ -51,12 +51,20 @@ int cant = 0;
 ManejadorEscenas manejador;
 boolean stopDraw = false;
 
+//variables para cargar y controlar la cancion
+Minim soundengine;
+AudioSample sonido1;
+
 //setup processing.
 void setup() {
 
   //Manejador Escenas
   manejador = new ManejadorEscenas();
-  manejador.actual.setupEscena();
+  
+  //cargamos la cancion.
+  soundengine = new Minim(this);
+  sonido1 = soundengine.loadSample("time.mp3", 1024);
+
 
   //fondo inicial negro
   background(0);
@@ -100,7 +108,7 @@ void draw() {
   //fondo negro
   background(0);
 
-  if (!stopDraw) manejador.actual.drawEscena();
+  if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
 
   // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
   if (kinectConectado && context.isInit()) {

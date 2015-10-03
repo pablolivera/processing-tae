@@ -25,6 +25,8 @@ public class Estrellas implements Escena {
       angle[i]= random(0, 2*pi);
       radius[i]=((abs(randomGauss())))*Rmax*0.6+0.0;
     }
+    //musica
+    sonido1.trigger();
   }
 
   void drawEscena() {
