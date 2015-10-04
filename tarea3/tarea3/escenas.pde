@@ -7,10 +7,10 @@ class ManejadorEscenas {
   ManejadorEscenas() {
 
     Escena [] todas = {
-      new Singularidad(),
       new Estrellas(true),
-      new Movimiento(),
       new Galaxia(),
+      new Movimiento(),
+      new Singularidad(),
       new Estrellas(false)
       };
 

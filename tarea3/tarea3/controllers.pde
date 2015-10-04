@@ -36,36 +36,37 @@ public class ControlFrame extends PApplet {
         .setSize(50, 20)
           .setValue(false);
 
+    //Control para iniciar escena otono 1.
+    galaxia = cp5.addToggle("GALAXIA")
+      .setPosition(x+=80, y)
+        .setSize(50, 20)
+          .setValue(false);
+
     //Control para iniciar escena verano 1.
     movimiento = cp5.addToggle("MOVIMIENTO")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .setValue(false)
-            .lock();
+          .setValue(false);
+
+    //Control para iniciar escena otono 2.
+    end = cp5.addToggle("SING")
+      .setPosition(x+=80, y)
+        .setSize(50, 20)
+          .setValue(false);
 
     //Control para iniciar escena verano 2.
     bigbang = cp5.addToggle("BIGBANG")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .setValue(false)
-            .lock();
+          .setValue(false);
 
-    //Control para iniciar escena otono 1.
-    galaxia = cp5.addToggle("GALAXIA")
-      .setPosition(x+=80, y)
-        .setSize(50, 20)
-          .setValue(false)
-            .lock();
 
     //Control para iniciar escena otono 2.
-    end = cp5.addToggle("END")
+    cp5.addToggle("RESET")
       .setPosition(x+=80, y)
         .setSize(50, 20)
           .setValue(false)
             .lock();
-
-
-
 
     //salto de linea
     y+= 50;
@@ -86,22 +87,6 @@ public class ControlFrame extends PApplet {
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
-    //Control para tirar las hojas que queden
-    //cp5.addToggle("Kinect Conectado")
-    //.plugTo(parent, "kinectConectado")
-    //.setPosition(x, y)
-    //.setSize(50, 20)
-    //.setValue(false);
-
-    //Control para tirar las hojas que queden
-    //cp5.addToggle("Contorno Silueta Activado")
-    //.plugTo(parent, "contornoSiluetaActivado")
-    //.setPosition(x+70, y)
-    //.setSize(50, 20)
-    //.setValue(false);
-
-
-
     //salto de linea
     y+= 50;
     x = 20;
@@ -113,46 +98,13 @@ public class ControlFrame extends PApplet {
           .setSize(50, 20)
             .lock()
               .setValue(false);
-              
-              
-   cp5.addToggle("Debug Body")
+
+
+    cp5.addToggle("Debug Body")
       .plugTo(parent, "debugBody")
         .setPosition(x+80, y)
           .setSize(50, 20)
-              .setValue(false);
-
-
-    //velocidad de las hojas al caer en x.
-    //cp5.addSlider("Velocidad de Hojas X")
-    //.plugTo(parent, "velocidadx")
-    //.setRange(0, 300)
-    //.setValue(185)
-    //.setSize(400, 20)
-    //.setPosition(x, y);
-
-    //velocidad de las hojas al caer en y.
-    //cp5.addSlider("Velocidad de Hojas Y")
-    //.plugTo(parent, "velocidady")
-    //.setRange(0, 300)
-    //.setValue(250)
-    //.setSize(400, 20)
-    //.setPosition(x, y+=30);
-
-    //escala de grises del arbol.
-    //cp5.addSlider("Color Arbol")
-    //.plugTo(parent, "colorArbol")
-    //.setRange(1000, 2550)
-    //.setValue(2000)
-    //.setSize(400, 20)
-    //.setPosition(x, y+=30);
-
-    //angulo del viento para las ramas del arbol.
-    //cp5.addSlider("Angulo Viento")
-    //.plugTo(parent, "windAngle")
-    //.setRange(0, 5)
-    //.setValue(0.001)
-    //.setSize(400, 20)
-    //.setPosition(x, y+=30);
+            .setValue(false);
 
     //salto de linea
     y+=40;
@@ -167,19 +119,19 @@ public class ControlFrame extends PApplet {
             .setFont(createFont("Arial", 20))
               ;
     cp5.addTextlabel("label2")
-      .setText("MOVIMIENTO:     0.35 - 1.02")
+      .setText("GALAXIA:     0.35 - 1.05")
         .setPosition(x, y+=30)
           .setColorValue(230)
             .setFont(createFont("Arial", 20))
               ;
     cp5.addTextlabel("label3")
-      .setText("BIG BANG:     1.03 - 1.10")
+      .setText("MOVIMIENTO:     1.06 - 1.36")
         .setPosition(x, y+=30)
           .setColorValue(230)
             .setFont(createFont("Arial", 20))
               ;
     cp5.addTextlabel("label4")
-      .setText("GALAXIA:       1.11 - 2.36")
+      .setText("SINGULARIDAD:       1.37 - 2.36")
         .setPosition(x, y+=30)
           .setColorValue(230)
             .setFont(createFont("Arial", 20))
@@ -225,7 +177,6 @@ public class ControlFrame extends PApplet {
 
       c.movimiento = false;
       movimiento.setValue(false);
-      movimiento.unlock();
       movimiento.update();
 
       c.bigbang = false;
@@ -259,9 +210,8 @@ public class ControlFrame extends PApplet {
 
       c.bigbang = false;
       bigbang.setValue(false);
-      bigbang.unlock();
       bigbang.update();
-      
+
       warp.unlock();
       warp.setValue(false);
       warp.update();
@@ -297,7 +247,6 @@ public class ControlFrame extends PApplet {
 
       c.galaxia = false;
       galaxia.setValue(false);
-      galaxia.unlock();
       galaxia.update();
 
       c.end = false;
@@ -342,7 +291,7 @@ public class ControlFrame extends PApplet {
   }
 
   ///en el inicio de otono2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
-  void END(boolean theFlag) {
+  void SING(boolean theFlag) {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
       c.end = true;
@@ -363,10 +312,23 @@ public class ControlFrame extends PApplet {
       galaxia.setValue(false);
       galaxia.update();
 
-      c.manejador.reset();
+      c.manejador.proxima();
 
       println("End ON");
       c.toSwitch = true;
+      ct.reset();
+    }
+  }
+
+  void RESET(boolean theFlag) {
+    tarea3 c = (tarea3)parent;
+    if (theFlag) {
+
+
+
+      c.manejador.reset();
+
+      println("RESET");
       ct.reset();
     }
   }
