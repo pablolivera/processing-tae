@@ -6,7 +6,7 @@ import controlP5.*;
 import ddf.minim.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -19,7 +19,7 @@ boolean movimiento = false;
 boolean bigbang = false;
 boolean galaxia = false;
 boolean end = false;
-
+int offset; // centro de masa x plus
 
 //kinect
 SimpleOpenNI  context = null;

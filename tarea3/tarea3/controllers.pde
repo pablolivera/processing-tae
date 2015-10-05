@@ -10,6 +10,7 @@ public class ControlFrame extends PApplet {
   controlP5.Toggle bigbang;
   controlP5.Toggle galaxia;
   controlP5.Toggle end;
+  controlP5.Toggle reset;
 
   controlP5.Slider eratio;
   controlP5.Slider etwist;
@@ -62,11 +63,10 @@ public class ControlFrame extends PApplet {
 
 
     //Control para iniciar escena otono 2.
-    cp5.addToggle("RESET")
+   reset = cp5.addToggle("RESET")
       .setPosition(x+=80, y)
         .setSize(50, 20)
-          .setValue(false)
-            .lock();
+          .setValue(false);
 
     //salto de linea
     y+= 50;
@@ -86,6 +86,14 @@ public class ControlFrame extends PApplet {
           .setValue(0)
             .setSize(200, 20)
               .setPosition(x, y+=30);
+
+   cp5.addSlider("offset")
+      .plugTo(parent, "offset")
+        .setRange(0, 500)
+          .setValue(200)
+            .setSize(200, 20)
+              .setPosition(x, y+=30);
+
 
     //salto de linea
     y+= 50;
@@ -190,11 +198,15 @@ public class ControlFrame extends PApplet {
       c.end = false;
       end.setValue(false);
       end.update();
+      
+      reset.setValue(false);
+      reset.update();
 
       c.manejador.proxima();
 
       println("Estrellas ON");
       c.toSwitch = true;
+      ct.reset();
     }
   }
 
@@ -279,8 +291,7 @@ public class ControlFrame extends PApplet {
       bigbang.update();
 
       c.end = false;
-      end.setValue(false);
-      end.unlock();
+      end.setValue(false);      
       end.update();
 
       c.manejador.proxima();
@@ -313,10 +324,9 @@ public class ControlFrame extends PApplet {
       galaxia.update();
 
       c.manejador.proxima();
-
+      
       println("End ON");
-      c.toSwitch = true;
-      ct.reset();
+      c.toSwitch = true;      
     }
   }
 
