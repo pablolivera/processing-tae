@@ -73,7 +73,7 @@ public class Estrellas implements Escena {
       s=sin(b);
       c=cos(b);
       xx=cx + s*x + c*y; // a bit of trigo
-      yy=cy + c*x - s*y;
+      yy=cy + c*x - s*y + 100; // FIXME PARARLOS A CONTROL
       dd=8000.0/r;
       fill(color(dd, dd, dd*0.9, 32));
       rect(xx-1.5, yy-1.5, 3.0, 3.0);
