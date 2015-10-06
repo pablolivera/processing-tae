@@ -63,7 +63,7 @@ public class ControlFrame extends PApplet {
 
 
     //Control para iniciar escena otono 2.
-   reset = cp5.addToggle("RESET")
+    reset = cp5.addToggle("RESET")
       .setPosition(x+=80, y)
         .setSize(50, 20)
           .setValue(false);
@@ -87,7 +87,7 @@ public class ControlFrame extends PApplet {
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
-   cp5.addSlider("offset")
+    cp5.addSlider("offset")
       .plugTo(parent, "offset")
         .setRange(0, 500)
           .setValue(200)
@@ -111,6 +111,12 @@ public class ControlFrame extends PApplet {
     cp5.addToggle("Debug Body")
       .plugTo(parent, "debugBody")
         .setPosition(x+80, y)
+          .setSize(50, 20)
+            .setValue(false);
+
+    cp5.addToggle("Play Video")
+      .plugTo(parent, "playVideo")
+        .setPosition(x+160, y)
           .setSize(50, 20)
             .setValue(false);
 
@@ -198,7 +204,7 @@ public class ControlFrame extends PApplet {
       c.end = false;
       end.setValue(false);
       end.update();
-      
+
       reset.setValue(false);
       reset.update();
 
@@ -324,9 +330,9 @@ public class ControlFrame extends PApplet {
       galaxia.update();
 
       c.manejador.proxima();
-      
+
       println("End ON");
-      c.toSwitch = true;      
+      c.toSwitch = true;
     }
   }
 

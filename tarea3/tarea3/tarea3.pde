@@ -4,6 +4,7 @@ import SimpleOpenNI.*;
 import java.util.*;
 import controlP5.*;
 import ddf.minim.*;
+import processing.video.*;
 
 //variable para probar el ejemplo sin el kinect.
 boolean kinectConectado = false; 
@@ -60,6 +61,11 @@ Force handDerForce;
 Force mouseForce; 
 boolean mouseAttract = false;
 
+//Para el video
+Movie myMovie;
+boolean play = true;
+boolean playVideo = false;
+
 //no se
 boolean inicializado = false;
 int cant = 0;
@@ -110,6 +116,9 @@ void setup() {
   //controles
   cp5 = new ControlP5(this);
   cf = addControlFrame("Controladores", 520, 500);
+
+  //Video Ewelina :)
+  myMovie = new Movie(this, "Ewelina.mp4");
 }
 
 
@@ -122,70 +131,80 @@ void draw() {
   //fondo negro
   background(0);
 
-  if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
-  else if (stopDraw) background(255);
-
-  // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
-  if (kinectConectado && context.isInit()) {
-    // Actualizamos la kinect si esta presente
-    context.update();
-
-    // draw the skeleton if it's available
-    int[] userList = context.getUsers();
-    if ((userList.length > 0) && context.getCoM(userList[0], com)) {
-      context.convertRealWorldToProjective(com, com2d);
-      cx = com2d.x * (float)fact;
-      cy = com2d.y * (float)fact;
-      // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
-      if (context.isTrackingSkeleton(userList[0]))
-        drawHand(userList[0]);
-      //drawCenterOfMass(userList, 0);
+  if (playVideo) {
+    if (play) {
+      myMovie.play(); 
+      play = false;
     }
+    image(myMovie, 0, 0, width, height);
+  } else {
+    //println(mouseX);
+    background(0);
+    if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
+    else if (stopDraw) background(255);
 
-    int[]   userMap = context.userMap();
-    int[]   depthMap = context.depthMap(); 
+    // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
+    if (kinectConectado && context.isInit()) {
+      // Actualizamos la kinect si esta presente
+      context.update();
+
+      // draw the skeleton if it's available
+      int[] userList = context.getUsers();
+      if ((userList.length > 0) && context.getCoM(userList[0], com)) {
+        context.convertRealWorldToProjective(com, com2d);
+        cx = com2d.x * (float)fact;
+        cy = com2d.y * (float)fact;
+        // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
+        if (context.isTrackingSkeleton(userList[0]))
+          drawHand(userList[0]);
+        //drawCenterOfMass(userList, 0);
+      }
+
+      int[]   userMap = context.userMap();
+      int[]   depthMap = context.depthMap(); 
 
 
-    // El for del kinnect para tapar la silueta¿?
-    int index;
-    for (int xb = 0; xb < context.depthWidth (); xb+=10) {
-      for (int yb = 0; yb < context.depthHeight (); yb+=10) {
-        index = xb + (yb * context.depthWidth());
+      // El for del kinnect para tapar la silueta¿?
+      int index;
+      for (int xb = 0; xb < context.depthWidth (); xb+=10) {
+        for (int yb = 0; yb < context.depthHeight (); yb+=10) {
+          index = xb + (yb * context.depthWidth());
 
-        int d = depthMap[index];
+          int d = depthMap[index];
 
-        if ( d > 0) {
-          int userNr = userMap[index];
+          if ( d > 0) {
+            int userNr = userMap[index];
 
-          if ( userNr > 0) {
+            if ( userNr > 0) {
 
-            //Ver la silueta
-            if (debugBody) {
-              noStroke();
-              fill(178);
-              ellipse(xb*fact, yb*fact, 15, 15);
+              //Ver la silueta
+              if (debugBody) {
+                noStroke();
+                fill(178);
+                ellipse(xb*fact, yb*fact, 15, 15);
+              }
+            } else {
+              //RESTO
+              //println("entro no se que es esto");
+              //inicializado = false;
             }
           } else {
             //RESTO
-            //println("entro no se que es esto");
             //inicializado = false;
+            //println("entro estrellas");
           }
-        } else {
-          //RESTO
-          //inicializado = false;
-          //println("entro estrellas");
         }
       }
+    } else {
+      cx = mouseX;
+      cy = mouseY;
+      convertedRightHand = new PVector();
+      convertedRightHand.x = mouseX;
+      convertedRightHand.y = mouseY;
+      convertedLeftHand = new PVector();
+      convertedLeftHand.x = mouseX;
+      convertedLeftHand.y = mouseY;
     }
-  } else {
-    cx = mouseX;
-    cy = mouseY;
-    convertedRightHand = new PVector();
-    convertedRightHand.x = mouseX;
-    convertedRightHand.y = mouseY;
-    convertedLeftHand = new PVector();
-    convertedLeftHand.x = mouseX;
-    convertedLeftHand.y = mouseY;
   }
 }
 
@@ -261,5 +280,7 @@ void onVisibleUser(SimpleOpenNI curContext, int userId)
   //println("onVisibleUser - userId: " + userId);
 }
 
-
+void movieEvent(Movie m) {
+  m.read();
+}
 
