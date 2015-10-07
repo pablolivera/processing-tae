@@ -7,7 +7,7 @@ import ddf.minim.*;
 import processing.video.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -78,7 +78,8 @@ Minim soundengine;
 AudioSample sonido1;
 
 void setup() {
-
+  
+  //frame.setLocation(1024,0);
   //Manejador Escenas
   manejador = new ManejadorEscenas();
 
@@ -95,6 +96,8 @@ void setup() {
   //controlo que este conectada la camara
   if (kinectConectado) {
     context = new SimpleOpenNI(this);
+    context.setMirror(false);
+    
     if (context.isInit() == false)
     {
       println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
@@ -126,8 +129,8 @@ void setup() {
 
 
 //render
-void draw() {
-
+  void draw() {
+  //frame.setLocation(1366,0);
   //fondo negro
   background(0);
 
@@ -141,7 +144,6 @@ void draw() {
     //println(mouseX);
     background(0);
     if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
-    else if (stopDraw) background(255);
 
     // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
     if (kinectConectado && context.isInit()) {
