@@ -8,7 +8,7 @@ public class ControlFrame extends PApplet {
   controlP5.Toggle estrellas;
   controlP5.Toggle movimiento;
   controlP5.Toggle bigbang;
-  controlP5.Toggle galaxia;
+  controlP5.Toggle imagenes;
   controlP5.Toggle end;
   controlP5.Toggle reset;
 
@@ -31,38 +31,37 @@ public class ControlFrame extends PApplet {
     int x = 20;
     int y = 30;
 
-    //Control para iniciar escena primavera.
+    //Control para iniciar escena estrellas.
     estrellas = cp5.addToggle("ESTRELLAS")
       .setPosition(x, y)
         .setSize(50, 20)
           .setValue(false);
 
-    //Control para iniciar escena otono 1.
-    galaxia = cp5.addToggle("GALAXIA")
+    //Control para iniciar escena imagenes.
+    imagenes = cp5.addToggle("IMAGENES")
       .setPosition(x+=80, y)
         .setSize(50, 20)
           .setValue(false);
 
-    //Control para iniciar escena verano 1.
+    //Control para iniciar escena movimiento.
     movimiento = cp5.addToggle("MOVIMIENTO")
       .setPosition(x+=80, y)
         .setSize(50, 20)
           .setValue(false);
 
-    //Control para iniciar escena otono 2.
+    //Control para iniciar escena singularidad - saturno.
     end = cp5.addToggle("SING")
       .setPosition(x+=80, y)
         .setSize(50, 20)
           .setValue(false);
 
-    //Control para iniciar escena verano 2.
+    //Control para iniciar escena bigbang.
     bigbang = cp5.addToggle("BIGBANG")
       .setPosition(x+=80, y)
         .setSize(50, 20)
           .setValue(false);
 
-
-    //Control para iniciar escena otono 2.
+    //Control para iniciar escena reset.
     reset = cp5.addToggle("RESET")
       .setPosition(x+=80, y)
         .setSize(50, 20)
@@ -72,7 +71,7 @@ public class ControlFrame extends PApplet {
     y+= 50;
     x = 20;
 
-    //tamaño galaxia
+    //tamaño imagenes
     eratio = cp5.addSlider("eratio")
       .plugTo(parent, "eratio")
         .setRange(1, 20)
@@ -80,6 +79,7 @@ public class ControlFrame extends PApplet {
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
+    // grado de giro de la galaxia - escena estrellas
     etwist = cp5.addSlider("etwist")
       .plugTo(parent, "etwist")
         .setRange(-0.5, 0.5)
@@ -87,6 +87,7 @@ public class ControlFrame extends PApplet {
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
+    // distancia desde el centro de masa al centro de la galaxia - escena estrellas
     cp5.addSlider("offset")
       .plugTo(parent, "offset")
         .setRange(0, 500)
@@ -94,19 +95,17 @@ public class ControlFrame extends PApplet {
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
-
     //salto de linea
     y+= 50;
     x = 20;
 
-    //Control para tirar las hojas que queden
+    // control alternativo para ignorar el movimiento de las manos
     warp = cp5.addToggle("Warp (Movimiento)")
       .plugTo(parent, "movimientoWarp")
         .setPosition(x, y)
           .setSize(50, 20)
             .lock()
               .setValue(false);
-
 
     cp5.addToggle("Debug Body")
       .plugTo(parent, "debugBody")
@@ -124,7 +123,6 @@ public class ControlFrame extends PApplet {
     y+=40;
     x+=70;
 
-
     //textos de referencia para el cambio manual de escenas.
     cp5.addTextlabel("label1")
       .setText("ESTRELLAS:    0.00 - 0.34")
@@ -133,7 +131,7 @@ public class ControlFrame extends PApplet {
             .setFont(createFont("Arial", 20))
               ;
     cp5.addTextlabel("label2")
-      .setText("GALAXIA:     0.35 - 1.05")
+      .setText("IMAGENES:     0.35 - 1.05")
         .setPosition(x, y+=30)
           .setColorValue(230)
             .setFont(createFont("Arial", 20))
@@ -183,7 +181,7 @@ public class ControlFrame extends PApplet {
     return cp5;
   }
 
-  //en el inicio de primavera ajusto booleanos de estaciones y desbloqueo la proxima escena.
+  //en el inicio de la escena estrellas se ajustan booleanos y desbloqueo la proxima escena.
   void ESTRELLAS(boolean theFlag) {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
@@ -197,9 +195,9 @@ public class ControlFrame extends PApplet {
       bigbang.setValue(false);
       bigbang.update();
 
-      c.galaxia = false;
-      galaxia.setValue(false);
-      galaxia.update();
+      c.imagenes = false;
+      imagenes.setValue(false);
+      imagenes.update();
 
       c.end = false;
       end.setValue(false);
@@ -216,7 +214,7 @@ public class ControlFrame extends PApplet {
     }
   }
 
-  //en el inicio de verano1 ajusto booleanos de estaciones y desbloqueo la proxima escena.
+  //en el inicio de la escena movimiento se ajustan booleanos y desbloqueo la proxima escena.
   void MOVIMIENTO(boolean theFlag) {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
@@ -234,9 +232,9 @@ public class ControlFrame extends PApplet {
       warp.setValue(false);
       warp.update();
 
-      c.galaxia = false;
-      galaxia.setValue(false);
-      galaxia.update();
+      c.imagenes = false;
+      imagenes.setValue(false);
+      imagenes.update();
 
       c.end = false;
       end.setValue(false);
@@ -249,7 +247,7 @@ public class ControlFrame extends PApplet {
     }
   }
 
-  //en el inicio de verano2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
+  //en el inicio de la escena big bang se ajustan booleanos y desbloqueo la proxima escena.
   void BIGBANG(boolean theFlag) {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
@@ -263,9 +261,9 @@ public class ControlFrame extends PApplet {
       movimiento.setValue(false);
       movimiento.update();
 
-      c.galaxia = false;
-      galaxia.setValue(false);
-      galaxia.update();
+      c.imagenes = false;
+      imagenes.setValue(false);
+      imagenes.update();
 
       c.end = false;
       end.setValue(false);
@@ -278,11 +276,11 @@ public class ControlFrame extends PApplet {
     }
   }
 
-  //en el inicio de otono1 ajusto booleanos de estaciones y desbloqueo la proxima escena.
-  void GALAXIA(boolean theFlag) {
+  //en el inicio de la escena imagenes se ajustan booleanos y desbloqueo la proxima escena.
+  void IMAGENES(boolean theFlag) {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
-      c.galaxia = true;
+      c.imagenes = true;
 
       c.estrellas = false;
       estrellas.setValue(false);
@@ -302,12 +300,12 @@ public class ControlFrame extends PApplet {
 
       c.manejador.proxima();
 
-      println("Galaxia ON");
+      println("Imagenes ON");
       c.toSwitch = true;
     }
   }
 
-  ///en el inicio de otono2 ajusto booleanos de estaciones y desbloqueo la proxima escena.
+  //en el inicio de la escena singularidad se ajustan booleanos y desbloqueo la proxima escena.
   void SING(boolean theFlag) {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
@@ -325,9 +323,9 @@ public class ControlFrame extends PApplet {
       bigbang.setValue(false);
       bigbang.update();
 
-      c.galaxia = false;
-      galaxia.setValue(false);
-      galaxia.update();
+      c.imagenes = false;
+      imagenes.setValue(false);
+      imagenes.update();
 
       c.manejador.proxima();
 
@@ -340,8 +338,6 @@ public class ControlFrame extends PApplet {
     tarea3 c = (tarea3)parent;
     if (theFlag) {
 
-
-
       c.manejador.reset();
 
       println("RESET");
@@ -349,6 +345,7 @@ public class ControlFrame extends PApplet {
     }
   }
 }
+
 ControlFrame addControlFrame(String theName, int theWidth, int theHeight) {
   Frame f = new Frame(theName);
   ControlFrame p = new ControlFrame(this, theWidth, theHeight);

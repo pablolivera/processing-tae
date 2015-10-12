@@ -18,7 +18,7 @@ boolean toSwitch = false;      //indica cambio de escena.
 boolean estrellas = false;
 boolean movimiento = false;
 boolean bigbang = false;
-boolean galaxia = false;
+boolean imagenes = false;
 boolean end = false;
 int offset; // centro de masa x plus
 
@@ -40,9 +40,9 @@ PVector convertedLeftHand;
 float cx; 
 float cy; 
 
-int Rmax=50; // galaxy radius
-float eratio=.85; // ellipse ratio
-float etwist=8.0/Rmax; // twisting factor (orbit axes depend on radius)
+int Rmax=50; // radio maximo de la galaxia - escena estrellas
+float eratio=.85; // radio de la galaxia - escena estrellas
+float etwist=8.0/Rmax; // como se contorsiona la galaxia
 
 //Control Warp escena movimiento
 boolean movimientoWarp;
@@ -66,10 +66,6 @@ Movie myMovie;
 boolean play = true;
 boolean playVideo = false;
 
-//no se
-boolean inicializado = false;
-int cant = 0;
-
 ManejadorEscenas manejador;
 boolean stopDraw = false;
 
@@ -78,8 +74,7 @@ Minim soundengine;
 AudioSample sonido1;
 
 void setup() {
-  
-  //frame.setLocation(1024,0);
+
   //Manejador Escenas
   manejador = new ManejadorEscenas();
 
@@ -97,7 +92,7 @@ void setup() {
   if (kinectConectado) {
     context = new SimpleOpenNI(this);
     context.setMirror(false);
-    
+
     if (context.isInit() == false)
     {
       println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
@@ -125,12 +120,8 @@ void setup() {
 }
 
 
-
-
-
 //render
-  void draw() {
-  //frame.setLocation(1366,0);
+void draw() {
   //fondo negro
   background(0);
 
@@ -141,7 +132,6 @@ void setup() {
     }
     image(myMovie, 0, 0, width, height);
   } else {
-    //println(mouseX);
     background(0);
     if (!stopDraw && manejador.actual!=null) manejador.actual.drawEscena();
 
@@ -159,41 +149,29 @@ void setup() {
         // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
         if (context.isTrackingSkeleton(userList[0]))
           drawHand(userList[0]);
-        //drawCenterOfMass(userList, 0);
       }
 
       int[]   userMap = context.userMap();
       int[]   depthMap = context.depthMap(); 
 
-
-      // El for del kinnect para tapar la silueta¿?
+      // El for del kinnect para tapar la silueta.
       int index;
-      for (int xb = 0; xb < context.depthWidth (); xb+=10) {
-        for (int yb = 0; yb < context.depthHeight (); yb+=10) {
-          index = xb + (yb * context.depthWidth());
+      if (debugBody) {
+        for (int xb = 0; xb < context.depthWidth (); xb+=10) {
+          for (int yb = 0; yb < context.depthHeight (); yb+=10) {
+            index = xb + (yb * context.depthWidth());
 
-          int d = depthMap[index];
+            int d = depthMap[index];
 
-          if ( d > 0) {
-            int userNr = userMap[index];
-
-            if ( userNr > 0) {
-
-              //Ver la silueta
-              if (debugBody) {
+            if ( d > 0) {
+              int userNr = userMap[index];
+              if ( userNr > 0) {
+                //Ver la silueta
                 noStroke();
                 fill(178);
                 ellipse(xb*fact, yb*fact, 15, 15);
               }
-            } else {
-              //RESTO
-              //println("entro no se que es esto");
-              //inicializado = false;
             }
-          } else {
-            //RESTO
-            //inicializado = false;
-            //println("entro estrellas");
           }
         }
       }
@@ -209,31 +187,6 @@ void setup() {
     }
   }
 }
-
-
-void drawCenterOfMass(int[] userList, int i) {
-  //background(255);
-  stroke(100, 255, 0);
-  strokeWeight(1);
-  beginShape(LINES);
-  float posx = com2d.x * (float)fact;
-  float posy = com2d.y * (float)fact;
-  vertex(posx, posy - 5);
-  vertex(posx, posy + 5);
-
-  vertex(posx - 5, posy);
-  vertex(posx + 5, posy);
-  endShape();
-
-  //System.out.println("x: " + com2d.x + " ###  y: " + com2d.y);
-  System.out.println("x: " + posx + " ###  y: " + posy);
-
-  //fill(0, 255, 100);
-  //text(Integer.toString(userList[i]), com2d.x, com2d.y);
-}
-
-
-
 
 // Dibuja las manos, esto usa skeleton tracking.
 void drawHand(int userId) {

@@ -7,17 +7,15 @@ class ManejadorEscenas {
   ManejadorEscenas() {
 
     Escena [] todas = {
-      new Estrellas(true),
-      new Galaxia(),
-      new Movimiento(),
-      new Singularidad(),
+      new Estrellas(true), 
+      new Imagenes(), 
+      new Movimiento(), 
+      new Singularidad(), 
       new Estrellas(false)
       };
 
-    escenas = todas;
+      escenas = todas;
     actual_indx = -1;
-    //escenas[2].setupEscena();
-    //actual = escenas[2];
     actual = null;
   }
 
@@ -45,7 +43,7 @@ class ManejadorEscenas {
     stopDraw = false;
   }
 
-  void reset(){
+  void reset() {
     actual_indx = -1;
     actual = null;
     //musica
@@ -62,3 +60,4 @@ interface Escena
   void cerrarEscena();
   String getNombre();
 }
+
