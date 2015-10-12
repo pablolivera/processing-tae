@@ -12,9 +12,10 @@ class Galaxia implements Escena {
 
   void setupEscena() {
       
-      // Cargo las imagenes en un arra
+      // Cargo las imagenes en un array, las imagenes deben tener como nombre numeros
       for (int imagen = 0; imagen < cantImagenes; imagen++) {
         nombreImagen = imagen + ".jpg";
+        // Cargamos las imagenes 1 vez
         imagenes[imagen] = loadImage(nombreImagen);            
       }
       
@@ -24,8 +25,8 @@ class Galaxia implements Escena {
     
     if (kinectConectado) { // Si no esta conectado no se ve nada 
     
-    background(0);   
-        imagenDeFondo = imagenes[i%cantImagenes];
+      background(0);   
+      imagenDeFondo = imagenes[i % cantImagenes];
     
         rect(0, 0, width, height);
         bImg = obtenerImagenPersona(imagenDeFondo);
@@ -76,6 +77,7 @@ class Galaxia implements Escena {
       {
         index = x + y * context.depthWidth();
         int d = depthMap[index];
+        
         // si no hay usuarios
         // ponemos un pixel transparente
         img.pixels[index] = color(0, 0);
@@ -83,6 +85,7 @@ class Galaxia implements Escena {
           int userNr =userMap[index];
           if ( userNr > 0)
           { 
+            
             img.pixels[index] = imagenDeFondo.pixels[index];
           }
         }
