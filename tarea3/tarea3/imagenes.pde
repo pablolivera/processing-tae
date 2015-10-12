@@ -5,7 +5,7 @@ class Galaxia implements Escena {
   PImage imagenDeFondo;
   String nombreImagen = "";
   PImage [] imagenes = new PImage[6];
-  int cantImagenes = 6;
+  int cantImagenes = 2;
   int i = 0;
 
   public Galaxia() {}
@@ -93,7 +93,7 @@ class Galaxia implements Escena {
     }
     img.updatePixels(); 
     // escalamos las imagenes
-    bigImg.copy(img, 0, 0, 640, 480, 0, 0, width, height);
+    bigImg.copy(img, 0, 0, width, height, 0, 0, width, height);
     return bigImg;
   }
   
