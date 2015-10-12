@@ -4,8 +4,9 @@ class Imagenes implements Escena {
   public PImage bImg;
   PImage imagenDeFondo;
   String nombreImagen = "";
-  PImage [] imagenes = new PImage[6];
-  int cantImagenes = 2;
+  int cantImagenes = 14;
+  PImage [] imagenes = new PImage[cantImagenes];
+
   int i = 0;
 
   public Imagenes() {
