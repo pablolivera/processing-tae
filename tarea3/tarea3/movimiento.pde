@@ -1,11 +1,11 @@
 class Movimiento implements Escena {
 
   ArrayList<PVector> stars = new ArrayList<PVector>();
-  float h2;//=height/2
-  float w2;//=width/2
-  float d2;//=diagonal/2
+  float h2;
+  float w2;
+  float d2;
 
-    Movimiento() {
+  Movimiento() {
   }
 
   void setupEscena() {
@@ -29,7 +29,7 @@ class Movimiento implements Escena {
     rect(0, 0, width, height);
     fill(255);
 
-    for (int i = 0; i<20; i++) {   // star init
+    for (int i = 0; i<20; i++) {   // comienzan las estrellas
       stars.add(new PVector(random(width), random(height), random(1, 3)));
     }
 
@@ -65,7 +65,6 @@ class Movimiento implements Escena {
     }
   }
 }
-
 
 
 

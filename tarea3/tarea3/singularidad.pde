@@ -15,8 +15,6 @@ class Singularidad implements Escena {
   }
 
   void setupEscena() {
-    //println("setup singularidad");
-
     background(0);
 
     particles = new ArrayList();
@@ -29,10 +27,8 @@ class Singularidad implements Escena {
     loadedImg.loadPixels();
     for (int y = 0; y < loadedImg.height; y+= 3) {
       for (int x = 0; x < loadedImg.width; x+= 3) {
-        //println("loaded image singularidad");
         color c = loadedImg.pixels[y*loadedImg.width+x];
         Particle p = new Particle(x, y, c);
-        //p.place((c >> 16 & 0xFF)/255.0*500, (c & 0xFF)/255.0*500);
         particles.add(p);
       }
     }
@@ -54,11 +50,11 @@ class Singularidad implements Escena {
       mouseForce.forceOn = true;
     } else {
       if (convertedRightHand!=null) {
-        handDerForce.pos.set(convertedRightHand.x, convertedRightHand.y,0);
+        handDerForce.pos.set(convertedRightHand.x, convertedRightHand.y, 0);
         handDerForce.forceOn = true;
       }
       if (convertedLeftHand!=null) {
-        handIzqForce.pos.set(convertedLeftHand.x, convertedLeftHand.y,0);
+        handIzqForce.pos.set(convertedLeftHand.x, convertedLeftHand.y, 0);
         handIzqForce.forceOn = true;
       }
     }

@@ -18,7 +18,7 @@ boolean toSwitch = false;      //indica cambio de escena.
 boolean estrellas = false;
 boolean movimiento = false;
 boolean bigbang = false;
-boolean galaxia = false;
+boolean imagenes = false;
 boolean end = false;
 int offset; // centro de masa x plus
 
@@ -78,7 +78,7 @@ Minim soundengine;
 AudioSample sonido1;
 
 void setup() {
-  
+
   //frame.setLocation(1024,0);
   //Manejador Escenas
   manejador = new ManejadorEscenas();
@@ -97,7 +97,7 @@ void setup() {
   if (kinectConectado) {
     context = new SimpleOpenNI(this);
     context.setMirror(false);
-    
+
     if (context.isInit() == false)
     {
       println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
@@ -129,7 +129,7 @@ void setup() {
 
 
 //render
-  void draw() {
+void draw() {
   //frame.setLocation(1366,0);
   //fondo negro
   background(0);
@@ -166,7 +166,7 @@ void setup() {
       int[]   depthMap = context.depthMap(); 
 
 
-      // El for del kinnect para tapar la silueta¿?
+      // El for del kinnect para tapar la silueta.
       int index;
       for (int xb = 0; xb < context.depthWidth (); xb+=10) {
         for (int yb = 0; yb < context.depthHeight (); yb+=10) {
@@ -176,24 +176,14 @@ void setup() {
 
           if ( d > 0) {
             int userNr = userMap[index];
-
             if ( userNr > 0) {
-
               //Ver la silueta
               if (debugBody) {
                 noStroke();
                 fill(178);
                 ellipse(xb*fact, yb*fact, 15, 15);
               }
-            } else {
-              //RESTO
-              //println("entro no se que es esto");
-              //inicializado = false;
             }
-          } else {
-            //RESTO
-            //inicializado = false;
-            //println("entro estrellas");
           }
         }
       }
@@ -212,7 +202,7 @@ void setup() {
 
 
 void drawCenterOfMass(int[] userList, int i) {
-  //background(255);
+
   stroke(100, 255, 0);
   strokeWeight(1);
   beginShape(LINES);
@@ -225,11 +215,8 @@ void drawCenterOfMass(int[] userList, int i) {
   vertex(posx + 5, posy);
   endShape();
 
-  //System.out.println("x: " + com2d.x + " ###  y: " + com2d.y);
   System.out.println("x: " + posx + " ###  y: " + posy);
 
-  //fill(0, 255, 100);
-  //text(Integer.toString(userList[i]), com2d.x, com2d.y);
 }
 
 
