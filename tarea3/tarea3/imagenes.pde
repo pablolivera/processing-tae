@@ -4,8 +4,9 @@ class Imagenes implements Escena {
   public PImage bImg;
   PImage imagenDeFondo;
   String nombreImagen = "";
-  PImage [] imagenes = new PImage[6];
-  int cantImagenes = 6;
+  int cantImagenes = 14;
+  PImage [] imagenes = new PImage[cantImagenes];
+
   int i = 0;
 
   public Imagenes() {
@@ -87,7 +88,7 @@ class Imagenes implements Escena {
     }
     img.updatePixels(); 
     // escalamos las imagenes
-    bigImg.copy(img, 0, 0, 640, 480, 0, 0, width, height);
+    bigImg.copy(img, 0, 0, width, height, 0, 0, width, height);
     return bigImg;
   }
 }
