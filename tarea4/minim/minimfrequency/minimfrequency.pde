@@ -40,6 +40,9 @@ void draw()
   textSize(50); //size of the text
 
   text (frequency-6+" hz", 50, 80);//display the frequency in hertz
+  
+  print("Frame Count: " + frameCount + " Frecuencia: " + frecuency + "\n"); 
+  
   pushStyle();
   fill(c);
   text ("note "+note, 50, 150);//display the note name
