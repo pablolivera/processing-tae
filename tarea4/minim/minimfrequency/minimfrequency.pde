@@ -41,6 +41,9 @@ background(frequency % 255);
 /*  textSize(50); //size of the text
 
   text (frequency-6+" hz", 50, 80);//display the frequency in hertz
+  
+  print("Frame Count: " + frameCount + " Frecuencia: " + frecuency + "\n"); 
+  
   pushStyle();
   fill(c);
   
