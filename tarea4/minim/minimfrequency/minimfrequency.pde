@@ -36,14 +36,16 @@ void draw()
   background(0);//black BG
 
   findNote(); //find note function
+background(frequency % 255);
 
-  textSize(50); //size of the text
+/*  textSize(50); //size of the text
 
   text (frequency-6+" hz", 50, 80);//display the frequency in hertz
   pushStyle();
   fill(c);
+  
   text ("note "+note, 50, 150);//display the note name
-  popStyle();
+  popStyle();*/
 }
 
 void findNote() {
