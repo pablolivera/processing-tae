@@ -34,19 +34,20 @@ void draw()
   {
     // draw the line for frequency band i, scaling it by 4 so we can
     //see it a bit better
-    //line(i, height, i, height - fft.getBand(i)*4);
+    stroke(0);
+    line(i, height, i, height - fft.getBand(i)*4);
     if (fft.getBand(i) > loudestFreqAmp && fft.getBand(i) > 10)
     {
       loudestFreqAmp = fft.getBand(i);
       loudestFreq = i * 4;
       //sine.setFreq(loudestFreq);
-      fill(loudestFreq * 10, 255 - loudestFreq, loudestFreq * 20, 128 );
+      fill(loudestFreq * 10, 255 - loudestFreq, loudestFreq * 20, 200 );
       if (loudestFreq < 25)
       {
         rect(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
       } else
       {
-        ellipse(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
+        ellipse(random(0, width), random(0, height), loudestFreqAmp/random(0, 10), loudestFreqAmp);
       }
       timerCounter = 0;
     }
