@@ -34,7 +34,7 @@ void draw()
   {
     // draw the line for frequency band i, scaling it by 4 so we can
     //see it a bit better
-    stroke(0);
+    //stroke(0);
     line(i, height, i, height - fft.getBand(i)*4);
     if (fft.getBand(i) > loudestFreqAmp && fft.getBand(i) > 10)
     {
@@ -45,13 +45,13 @@ void draw()
       if (loudestFreq < 20)
       {
         rect(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
-      } else if (loudestFreq < 25)
+      } else if (loudestFreq < 23)
       {
         triangle(random(0, width), random(0, height), random(0, width), random(0, height), random(0, width)+loudestFreqAmp, random(0, height)+loudestFreqAmp);
       }      
       else
       {
-        ellipse(random(0, width), random(0, height), loudestFreqAmp/random(0, 10), loudestFreqAmp);
+        ellipse(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
       }
       timerCounter = 0;
     }

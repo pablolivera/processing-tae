@@ -12,6 +12,20 @@ PVector com = new PVector();
 PVector com2d = new PVector();
 
 
+  float h2;
+  float w2;
+  float d2;
+  Minim minim;
+  AudioInput in;
+  FFT fft;
+
+  float loudestFreqAmp = 0;
+  float loudestFreq = 0;
+  int timerCounter = 0;
+  boolean borro = false;
+  float pi = atan(1);
+
+
 //controles
 ControlP5 cp5;
 ControlFrame cf;
