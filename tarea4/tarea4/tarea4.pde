@@ -7,7 +7,7 @@ import ddf.minim.*;
 import processing.video.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -78,73 +78,71 @@ void setup() {
   //controles
   cp5 = new ControlP5(this);
   cf = addControlFrame("Controladores", 520, 500);
-
 }
 
 //render
 void draw() {
-  	//fondo negro
-  	background(0);
+  //fondo negro
+  background(0);
 
-  	if (!stopDraw && manejador.actual!=null) {
-  		manejador.actual.drawEscena();
-  	}
+  if (!stopDraw && manejador.actual!=null) {
+    manejador.actual.drawEscena();
+  }
 
-	// Me fijo si esta conectado el kinect en caso contrario usamos el mouse
-	if (kinectConectado && context.isInit()) {
-      	// Actualizamos la kinect si esta presente
-      	context.update();
+  // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
+  if (kinectConectado && context.isInit()) {
+    // Actualizamos la kinect si esta presente
+    context.update();
 
-      	// draw the skeleton if it's available
-      	int[] userList = context.getUsers();
-      	if ((userList.length > 0) && context.getCoM(userList[0], com)) {
-	        context.convertRealWorldToProjective(com, com2d);
-        	cx = com2d.x * (float)fact;
-        	cy = com2d.y * (float)fact;
-        	// Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
-        	if (context.isTrackingSkeleton(userList[0])) {
-          		drawHand(userList[0]);
-          	}
-      	}
-
-      	int[]   userMap = context.userMap();
-      	int[]   depthMap = context.depthMap(); 
-
-      	// El for del kinnect para tapar la silueta.
-      	int index;
-      	if (debugBody) {
-        	for (int xb = 0; xb < context.depthWidth (); xb+=10) {
-          		for (int yb = 0; yb < context.depthHeight (); yb+=10) {
-            		index = xb + (yb * context.depthWidth());
-
-            		int d = depthMap[index];
-
-            		if ( d > 0) {
-              			int userNr = userMap[index];
-              			if ( userNr > 0) {
-                			//Ver la silueta
-                			noStroke();
-			                fill(178);
-                			ellipse(xb*fact, yb*fact, 15, 15);
-              			}
-            		}
-          		}
-        	}
-      	}
-	} 
-    else { // Si no tenemos el kinect usamos el mouse
-      cx = mouseX;
-      cy = mouseY;
-      convertedRightHand = new PVector();
-      convertedRightHand.x = mouseX;
-      convertedRightHand.y = mouseY;
-      convertedLeftHand = new PVector();
-      convertedLeftHand.x = mouseX;
-      convertedLeftHand.y = mouseY;
+    // draw the skeleton if it's available
+    int[] userList = context.getUsers();
+    if ((userList.length > 0) && context.getCoM(userList[0], com)) {
+      context.convertRealWorldToProjective(com, com2d);
+      cx = com2d.x * (float)fact;
+      cy = com2d.y * (float)fact;
+      // Busca las manos y si las encuentra llama a drawHand para dibujarlas, esto usa skeleton tracking.
+      if (context.isTrackingSkeleton(userList[0])) {
+        drawHand(userList[0]);
+      }
     }
- }
 
- // Dibuja las manos, esto usa skeleton tracking.
+    int[]   userMap = context.userMap();
+    int[]   depthMap = context.depthMap(); 
+
+    // El for del kinnect para tapar la silueta.
+    int index;
+    if (debugBody) {
+      for (int xb = 0; xb < context.depthWidth (); xb+=10) {
+        for (int yb = 0; yb < context.depthHeight (); yb+=10) {
+          index = xb + (yb * context.depthWidth());
+
+          int d = depthMap[index];
+
+          if ( d > 0) {
+            int userNr = userMap[index];
+            if ( userNr > 0) {
+              //Ver la silueta
+              noStroke();
+              fill(178);
+              ellipse(xb*fact, yb*fact, 15, 15);
+            }
+          }
+        }
+      }
+    }
+  } else { // Si no tenemos el kinect usamos el mouse
+    cx = mouseX;
+    cy = mouseY;
+    convertedRightHand = new PVector();
+    convertedRightHand.x = mouseX;
+    convertedRightHand.y = mouseY;
+    convertedLeftHand = new PVector();
+    convertedLeftHand.x = mouseX;
+    convertedLeftHand.y = mouseY;
+  }
+}
+
+// Dibuja las manos, esto usa skeleton tracking.
 void drawHand(int userId) {
 
   PVector rightHand = new PVector(); 
@@ -190,3 +188,4 @@ void onVisibleUser(SimpleOpenNI curContext, int userId)
 {
   //println("onVisibleUser - userId: " + userId);
 }
+

@@ -12,6 +12,7 @@ class EscenaA implements Escena {
     h2= height/2;
     d2 = dist(0, 0, w2, h2);
     noStroke();
+    
   }
 
   void cerrarEscena() {
@@ -22,7 +23,7 @@ class EscenaA implements Escena {
   }
 
   void drawEscena() {
-    
+    background(155);
   }
 
 }

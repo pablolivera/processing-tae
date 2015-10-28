@@ -33,6 +33,11 @@ public class ControlFrame extends PApplet {
     int y = 30;
 
     //Control para iniciar escena ACA
+    cp5.addToggle("Debug Body")
+      .plugTo(parent, "debugBody")
+        .setPosition(x+80, y)
+          .setSize(50, 20)
+            .setValue(false);
     
   }
 

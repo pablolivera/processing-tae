@@ -11,7 +11,7 @@ class ManejadorEscenas {
       };
 
       escenas = todas;
-      actual_indx = -1;
+      actual_indx = 0;
       actual = null;
   }
 
