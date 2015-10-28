@@ -42,10 +42,14 @@ void draw()
       loudestFreq = i * 4;
       //sine.setFreq(loudestFreq);
       fill(loudestFreq * 10, 255 - loudestFreq, loudestFreq * 20, 200 );
-      if (loudestFreq < 25)
+      if (loudestFreq < 20)
       {
         rect(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
-      } else
+      } else if (loudestFreq < 25)
+      {
+        triangle(random(0, width), random(0, height), random(0, width), random(0, height), random(0, width)+loudestFreqAmp, random(0, height)+loudestFreqAmp);
+      }      
+      else
       {
         ellipse(random(0, width), random(0, height), loudestFreqAmp/random(0, 10), loudestFreqAmp);
       }
