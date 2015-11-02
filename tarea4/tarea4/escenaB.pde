@@ -36,7 +36,7 @@ class EscenaB implements Escena {
     // always close Minim audio classes when you are done with them
     in.close();
     minim.stop();
-    super.stop();
+    //super.stop();
   }
 
   String getNombre() {

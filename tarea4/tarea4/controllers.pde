@@ -34,9 +34,13 @@ public class ControlFrame extends PApplet {
     // Control para que aparezca la silueta de la persona
     cp5.addToggle("Debug Body")
       .plugTo(parent, "debugBody")
-        .setPosition(x+80, y)
+        .setPosition(x+=80, y)
           .setSize(50, 20)
             .setValue(false);
+    
+    // Posicion inicial de los controles  
+    x = 20;
+    y += 30;
     
     // Control para iniciar Escena A
     cp5.addToggle("EscenaA")

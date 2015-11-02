@@ -78,6 +78,8 @@ void setup() {
   // Manejador Escenas
   manejador = new ManejadorEscenas();
 
+pg = createGraphics(width, height, JAVA2D);
+
   //fondo inicial negro
   background(0);
 

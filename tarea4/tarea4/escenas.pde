@@ -9,10 +9,12 @@ class ManejadorEscenas {
     Escena [] todas = {
       new EscenaA(),
       new EscenaB(),
+      new EscenaC("MgCoders"),
       };
 
       escenas = todas;
-      actual_indx = 0;
+      //actual_indx = 0;
+      actual_indx = 2;
       actual = escenas[actual_indx];
   }
 
