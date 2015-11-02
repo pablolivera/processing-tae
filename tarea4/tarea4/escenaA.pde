@@ -13,18 +13,11 @@ class EscenaA implements Escena {
     d2 = dist(0, 0, w2, h2);
     noStroke();
 
-
-
-
-    minim = new Minim(this);
-    minim.debugOn();
     background(0);
     strokeWeight (3);
     noFill ();
     smooth();
-    // get a line in from Minim, default bit depth is 16
-    in = minim.getLineIn(Minim.STEREO, 1024);
-    fft = new FFT(in.bufferSize(), in.sampleRate());
+    
   }
 
   void cerrarEscena() {

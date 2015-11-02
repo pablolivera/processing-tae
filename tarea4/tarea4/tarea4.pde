@@ -7,23 +7,23 @@ import ddf.minim.*;
 import processing.video.*;
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
 
-  float h2;
-  float w2;
-  float d2;
-  Minim minim;
-  AudioInput in;
-  FFT fft;
+float h2;
+float w2;
+float d2;
+Minim minim;
+AudioInput in;
+FFT fft;
 
-  float loudestFreqAmp = 0;
-  float loudestFreq = 0;
-  int timerCounter = 0;
-  boolean borro = false;
-  float pi = atan(1);
+float loudestFreqAmp = 0;
+float loudestFreq = 0;
+int timerCounter = 0;
+boolean borro = false;
+float pi = atan(1);
 
 
 //controles
@@ -88,6 +88,12 @@ void setup() {
 
   //bordes anti alias
   smooth();
+
+  minim = new Minim(this);
+  minim.debugOn();
+  // get a line in from Minim, default bit depth is 16
+  in = minim.getLineIn(Minim.STEREO, 1024);
+  fft = new FFT(in.bufferSize(), in.sampleRate());
 
   //controles
   cp5 = new ControlP5(this);
