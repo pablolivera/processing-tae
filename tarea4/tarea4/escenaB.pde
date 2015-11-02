@@ -4,13 +4,7 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.signals.*;
 
-Minim minim;
-AudioInput in;
-FFT fft;
 
-float loudestFreqAmp = 0;
-float loudestFreq = 0;
-int timerCounter = 0;
 
 class EscenaB implements Escena {
 

@@ -68,7 +68,7 @@ public class ControlFrame extends PApplet {
     t.setValue(ct.toString());
     t.draw(this);
     t.setPosition(mouseX, mouseY);
-    tarea4 c = (tarea4)parent;
+    tarea4 t4 = (tarea4)parent;
     
   }
 
@@ -87,17 +87,17 @@ public class ControlFrame extends PApplet {
   
   // En el inicio de la escena A se ajustan booleanos y desbloqueo la proxima escena
   void EscenaA(boolean theFlag) {
-    tarea4 t4 = (tarea4).parent;
+    tarea4 t4 = (tarea4)parent;
     if (theFlag) {
       t4.escenaA = true;
       
       t4.escenaB = false;
-      escenaB.setValue(false);
-      escenaB.update();
+      //escenaB.setValue(false);
+      //escenaB.update();
       
       t4.escenaC = false;
-      escenaC.setValue(false);
-      escenaC.update();
+      //escenaC.setValue(false);
+      //escenaC.update();
       
       t4.manejador.proxima();
       
@@ -110,17 +110,17 @@ public class ControlFrame extends PApplet {
   
   // En el inicio de la escena B se ajustan booleanos y desbloqueo la proxima escena
   void EscenaB(boolean theFlag) {
-    tarea4 t4 = (tarea4).parent;
+    tarea4 t4 = (tarea4)parent;
     if (theFlag) {
       t4.escenaA = false;
-      escenaA.setValue(false);
-      escenaA.update();
+      //escenaA.setValue(false);
+      //escenaA.update();
       
       t4.escenaB = true;
       
       t4.escenaC = false;
-      escenaC.setValue(false);
-      escenaC.update();
+      //escenaC.setValue(false);
+      //escenaC.update();
       
       t4.manejador.proxima();
       
@@ -133,15 +133,15 @@ public class ControlFrame extends PApplet {
   
   // En el inicio de la escena B se ajustan booleanos y desbloqueo la proxima escena
   void EscenaC(boolean theFlag) {
-    tarea4 t4 = (tarea4).parent;
+    tarea4 t4 = (tarea4)parent;
     if (theFlag) {
       t4.escenaA = false;
-      escenaA.setValue(false);
-      escenaA.update();
+      //escenaA.setValue(false);
+      //escenaA.update();
       
       t4.escenaB = false;
-      escenaC.setValue(false);
-      escenaC.update();
+      //escenaC.setValue(false);
+      //escenaC.update();
       
       t4.escenaC = true;
       
