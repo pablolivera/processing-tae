@@ -6,11 +6,20 @@ import controlP5.*;
 import ddf.minim.*;
 import processing.video.*;
 
+//imports Escena C
+color ELLIPSE_COLOR = color(0);
+color LINE_COLOR = color(0, 125);
+color PGRAPHICS_COLOR = color(0); 
+int LINE_LENGTH = 25;
+boolean reverseDrawing = false;
+PGraphics pg;
+PFont font;
+ArrayList<OneChr> chrs = new ArrayList<OneChr>();
+
 //variable para probar el ejemplo sin el kinect.
 boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
-
 
 float h2;
 float w2;
@@ -26,11 +35,19 @@ int fondo = 255;
 boolean borro = false;
 float pi = atan(1);
 
+int sampleRate= 44100;//sapleRate of 44100
+float frequency;//the frequency in hertz
+
 
 //controles
 ControlP5 cp5;
 ControlFrame cf;
 boolean toSwitch = false;      //indica cambio de escena.
+boolean escenaA = false;
+boolean escenaB = false;
+boolean escenaC = false;
+boolean end = false;
+
 
 //kinect
 SimpleOpenNI  context = null;
@@ -160,6 +177,21 @@ void draw() {
     convertedLeftHand = new PVector();
     convertedLeftHand.x = mouseX;
     convertedLeftHand.y = mouseY;
+  }
+}
+
+void findFrequency() {
+
+  float highestAmplitude = 0;
+
+  fft.forward(in.left);
+
+  for (int f=0; f<sampleRate/2; f++) { //analyses the amplitude of each frequency analysed, between 0 and 22050 hertz
+    float amplitude = fft.getFreq(float(f)); //each index is correspondent to a frequency and contains the amplitude value
+    if (amplitude > highestAmplitude) {
+      highestAmplitude = amplitude;
+      frequency = float(f);
+    }
   }
 }
 
