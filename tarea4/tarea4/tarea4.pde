@@ -6,6 +6,16 @@ import controlP5.*;
 import ddf.minim.*;
 import processing.video.*;
 
+//imports Escena C
+color ELLIPSE_COLOR = color(0);
+color LINE_COLOR = color(0, 125);
+color PGRAPHICS_COLOR = color(0); 
+int LINE_LENGTH = 25;
+boolean reverseDrawing = false;
+PGraphics pg;
+PFont font;
+ArrayList<OneChr> chrs = new ArrayList<OneChr>();
+
 //variable para probar el ejemplo sin el kinect.
 boolean kinectConectado = false; 
 PVector com = new PVector();
