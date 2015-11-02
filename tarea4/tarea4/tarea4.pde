@@ -22,6 +22,7 @@ FFT fft;
 float loudestFreqAmp = 0;
 float loudestFreq = 0;
 int timerCounter = 0;
+int fondo = 255;
 boolean borro = false;
 float pi = atan(1);
 
