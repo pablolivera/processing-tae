@@ -17,8 +17,8 @@ class EscenaC implements Escena {
     pg.fill(PGRAPHICS_COLOR);
     float a = random(4);
     float b = a > 2 ? random(a-2) : random(a+2);
-    pg.text("hijo", pg.width/b, pg.height/b);
-    pg.text("viento", pg.width/a, pg.height/a); 
+    pg.text("hijo", pg.width/2, pg.height/2);
+    //pg.text("viento", pg.width/a, pg.height/a); 
     pg.endDraw();
   }
 
