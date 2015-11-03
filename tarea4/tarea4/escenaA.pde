@@ -30,7 +30,7 @@ class EscenaA implements Escena {
   void drawEscena() {
 
     background(fondo);
-    fft.window(FFT.HAMMING);
+    /*fft.window(FFT.HAMMING);
 
     for (int i = 1; i < fft.specSize (); i=i*4)
     {
@@ -46,7 +46,7 @@ class EscenaA implements Escena {
       } else {
         borro = true;
       }
-    }
+    }*/
     translate(width/2, height/2); //CENTRAR
     //float b = a + 0.3;
     /*for (int j = 0; j < 4; j++) {
@@ -73,61 +73,62 @@ class EscenaA implements Escena {
 
     println("rw1: "+rw1+" rw2: "+rw2+" rh1: "+rh1+" rh2: "+rh2);
 
+    float radioW = cx > width ? width : cx;
+    radioW = radioW < 0 ? 0 : radioW;
+    float radioH = frequency > height ? height : frequency;
+
     //float rate = random(-1, 1);
-    for (int j = 0; j < 7; j++) {
+    for (int j = 0; j < 10; j++) {
       //rotate (0.9);
 
-      rotate (0.9);
+      rotate (0.1);
+
 
       if (frameCount%6==0) {
-        stroke(230,1,128, 255); //RojoVioleta
-        ellipse(0, 0, loudestFreqAmp*2, cx*2);
+        stroke(230, 1, 128, 255); //RojoVioleta
+        ellipse(0, 0, radioH, radioW);
 
-        stroke(58,212,0, 255); //AmarilloVerde
-        ellipse(0, 0, loudestFreqAmp, cx);
+        stroke(58, 212, 0, 255); //AmarilloVerde
+        ellipse(0, 0, radioH/2, radioW/2);
       }
       if (frameCount%6==1) {
-        stroke(254,254,0, 255); //Amarillo
-        ellipse(0, 0, loudestFreqAmp*2, cx*2);
+        stroke(254, 254, 0, 255); //Amarillo
+        ellipse(0, 0, radioH, radioW);
 
-        stroke(151,0,132, 255); //Violeta
-        ellipse(0, 0, loudestFreqAmp, cx);
+        stroke(151, 0, 132, 255); //Violeta
+        ellipse(0, 0, radioH/2, radioW/2);
       }
       if (frameCount%6==2) {
-        stroke(255,193,0, 255); //AmarilloNaranja
-        ellipse(0, 0, loudestFreqAmp*2, cx*2);
+        stroke(255, 193, 0, 255); //AmarilloNaranja
+        ellipse(0, 0, radioH, radioW);
 
-        stroke(95,44,145, 255); //AzulVioleta
-        ellipse(0, 0, loudestFreqAmp, cx);
+        stroke(95, 44, 145, 255); //AzulVioleta
+        ellipse(0, 0, radioH/2, radioW/2);
       }
       if (frameCount%6==3) {
-        stroke(255,128,1, 255); //Naranja
-        ellipse(0, 0, loudestFreqAmp*2, cx*2);
+        stroke(255, 128, 1, 255); //Naranja
+        ellipse(0, 0, radioH, radioW);
 
-        stroke(1,69,255, 255); //Azul
-        ellipse(0, 0, loudestFreqAmp, cx);
+        stroke(1, 69, 255, 255); //Azul
+        ellipse(0, 0, radioH/2, radioW/2);
       }
       if (frameCount%6==4) {
-        stroke(255,93,2, 255); //RojoNaranja
-        ellipse(0, 0, loudestFreqAmp*2, cx*2);
+        stroke(255, 93, 2, 255); //RojoNaranja
+        ellipse(0, 0, radioH, radioW);
 
-        stroke(0,133,102, 255); //AzulVerde
-        ellipse(0, 0, loudestFreqAmp, cx);
+        stroke(0, 133, 102, 255); //AzulVerde
+        ellipse(0, 0, radioH/2, radioW/2);
       }
       if (frameCount%6==5) {
-        stroke(255,34,0, 255); //celeste
-        ellipse(0, 0, loudestFreqAmp*2, cx*2);
+        stroke(255, 34, 0, 255); //celeste
+        ellipse(0, 0, radioH, radioW);
 
-        stroke(0,171,33, 255); //rojo
-        ellipse(0, 0, loudestFreqAmp, cx);
+        stroke(0, 171, 33, 255); //rojo
+        ellipse(0, 0, radioH/2, radioW/2);
       }
-
-      
-      
-      
     }      
-    loudestFreqAmp = 0;
-    fft.forward(in.mix);  
+    //loudestFreqAmp = 0;
+    //fft.forward(in.mix);  
 
     timerCounter++;
 
