@@ -12,57 +12,52 @@ class EscenaB implements Escena {
   }
 
   void setupEscena() {
-      frameRate(30);
-
-      minim = new Minim(this);
-      minim.debugOn();
-      background(255);
-      noStroke();
     
-      // get a line in from Minim, default bit depth is 16
-      in = minim.getLineIn(Minim.STEREO, 1024);
-      fft = new FFT(in.bufferSize(), in.sampleRate());
+    frameRate(30);
 
-      w2 = width/2;
-      h2 = height/2;
-      d2 = dist(0, 0, w2, h2);
-      strokeWeight(3);
-      noFill();
-      smooth();
-    
+    minim = new Minim(this);
+    minim.debugOn();
+    background(255);
+    noStroke();
+    // get a line in from Minim, default bit depth is 16
+    in = minim.getLineIn(Minim.STEREO, 1024);
+    fft = new FFT(in.bufferSize(), in.sampleRate());
   }
 
   void cerrarEscena() {
-    // always close Minim audio classes when you are done with them
+    // always close M  inim audio classes when you are done with them
     in.close();
     minim.stop();
     //super.stop();
   }
 
   String getNombre() {
-     return "EscenaB";
+    return "EscenaB";
   }
 
   void drawEscena() {
-    
+
     fft.window(FFT.HAMMING);
-    for (int i = 0; i < fft.specSize (); i++) {
+    for (int i = 0; i < fft.specSize (); i++)
+    {
       // draw the line for frequency band i, scaling it by 4 so we can
       //see it a bit better
       //stroke(0);
       line(i, height, i, height - fft.getBand(i)*4);
-      if (fft.getBand(i) > loudestFreqAmp && fft.getBand(i) > 10) {
+      if (fft.getBand(i) > loudestFreqAmp && fft.getBand(i) > 10)
+      {
         loudestFreqAmp = fft.getBand(i);
         loudestFreq = i * 4;
         //sine.setFreq(loudestFreq);
         fill(loudestFreq * 10, 255 - loudestFreq, loudestFreq * 20, 200 );
-        if (loudestFreq < 20) {
+        if (loudestFreq < 20)
+        {
           rect(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
-        } 
-        else if (loudestFreq < 23) {
+        } else if (loudestFreq < 23)
+        {
           triangle(random(0, width), random(0, height), random(0, width), random(0, height), random(0, width)+loudestFreqAmp, random(0, height)+loudestFreqAmp);
-        }      
-        else {
+        } else
+        {
           ellipse(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
         }
         timerCounter = 0;
@@ -79,10 +74,12 @@ class EscenaB implements Escena {
 
     fft.forward(in.mix);
     timerCounter++;
-    if (timerCounter >= 90) {
+    if (timerCounter >= 90)
+    {
       //println("Clr screen");
       fill(255, 255, 255, (timerCounter - 90) * 2);
       rect(0, 0, width, height);
     }
   }
 }
+

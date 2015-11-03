@@ -14,7 +14,7 @@ class ManejadorEscenas {
 
       escenas = todas;
       //actual_indx = 0;
-      actual_indx = 2;
+      actual_indx = 1;
       actual = escenas[actual_indx];
   }
 
