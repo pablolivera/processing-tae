@@ -20,8 +20,8 @@ class EscenaB implements Escena {
     background(255);
     noStroke();
     // get a line in from Minim, default bit depth is 16
-    in = minim.getLineIn(Minim.STEREO, 1024);
-    fft = new FFT(in.bufferSize(), in.sampleRate());
+    //in = minim.getLineIn(Minim.STEREO, 1024);
+    //fft = new FFT(in.bufferSize(), in.sampleRate());
   }
 
   void cerrarEscena() {
@@ -36,6 +36,8 @@ class EscenaB implements Escena {
   }
 
   void drawEscena() {
+    
+    //background(255);
 
     fft.window(FFT.HAMMING);
     for (int i = 0; i < fft.specSize (); i++)

@@ -17,7 +17,7 @@ PFont font;
 ArrayList<OneChr> chrs = new ArrayList<OneChr>();
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -78,10 +78,10 @@ void setup() {
   // Manejador Escenas
   manejador = new ManejadorEscenas();
 
-pg = createGraphics(width, height, JAVA2D);
+  pg = createGraphics(width, height, JAVA2D);
 
   //fondo inicial negro
-  background(0);
+  background(255);
 
   //resolucion
   size(1024, 768); 
@@ -123,7 +123,7 @@ pg = createGraphics(width, height, JAVA2D);
 //render
 void draw() {
   //fondo negro
-  background(0);
+  //background(0);
 
 findFrequency();
 
