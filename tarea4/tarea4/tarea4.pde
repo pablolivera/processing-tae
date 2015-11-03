@@ -78,13 +78,15 @@ void setup() {
   // Manejador Escenas
   manejador = new ManejadorEscenas();
 
-  pg = createGraphics(width, height, JAVA2D);
+  
 
   //fondo inicial negro
   background(255);
 
   //resolucion
   size(1024, 768); 
+
+  pg = createGraphics(width, height, JAVA2D);
 
   //controlo que este conectada la camara
   if (kinectConectado) {
