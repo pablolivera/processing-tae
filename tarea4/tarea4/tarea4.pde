@@ -78,7 +78,7 @@ void setup() {
   // Manejador Escenas
   manejador = new ManejadorEscenas();
 
-  
+
 
   //fondo inicial negro
   background(255);
@@ -86,7 +86,7 @@ void setup() {
   //resolucion
   size(1024, 768); 
 
-  pg = createGraphics(width, height, JAVA2D);
+  pg = createGraphics(1024, 768, JAVA2D);
 
   //controlo que este conectada la camara
   if (kinectConectado) {
@@ -127,7 +127,7 @@ void draw() {
   //fondo negro
   //background(0);
 
-findFrequency();
+  findFrequency();
 
   if (!stopDraw && manejador.actual!=null) {
     manejador.actual.drawEscena();
