@@ -17,7 +17,7 @@ class EscenaB implements Escena {
 
     minim = new Minim(this);
     minim.debugOn();
-    background(255);
+    background(fondo);
     noStroke();
     // get a line in from Minim, default bit depth is 16
     //in = minim.getLineIn(Minim.STEREO, 1024);
@@ -26,8 +26,8 @@ class EscenaB implements Escena {
 
   void cerrarEscena() {
     // always close M  inim audio classes when you are done with them
-    in.close();
-    minim.stop();
+    //in.close();
+    //minim.stop();
     //super.stop();
   }
 
@@ -38,6 +38,8 @@ class EscenaB implements Escena {
   void drawEscena() {
     
     //background(255);
+
+    noStroke();
 
     fft.window(FFT.HAMMING);
     for (int i = 0; i < fft.specSize (); i++)
@@ -51,15 +53,20 @@ class EscenaB implements Escena {
         loudestFreqAmp = fft.getBand(i);
         loudestFreq = i * 4;
         //sine.setFreq(loudestFreq);
-        fill(loudestFreq * 10, 255 - loudestFreq, loudestFreq * 20, 200 );
-        if (loudestFreq < 20)
-        {
-          rect(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
-        } else if (loudestFreq < 23)
+        fill(255,255,255, random(50,255));
+        if (loudestFreq < 10)
         {
           triangle(random(0, width), random(0, height), random(0, width), random(0, height), random(0, width)+loudestFreqAmp, random(0, height)+loudestFreqAmp);
+          
+        } 
+        else if (loudestFreq < 23)
+        {
+          rect(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
         } else
         {
+          if(loudestFreq < 30){
+            fill(255,0,0, random(50,255));
+          }
           ellipse(random(0, width), random(0, height), loudestFreqAmp, loudestFreqAmp);
         }
         timerCounter = 0;
@@ -76,10 +83,10 @@ class EscenaB implements Escena {
 
     fft.forward(in.mix);
     timerCounter++;
-    if (timerCounter >= 90)
+    if (timerCounter >= 30)
     {
       //println("Clr screen");
-      fill(255, 255, 255, (timerCounter - 90) * 2);
+      fill(fondo, fondo, fondo, (timerCounter - 30) * 2);
       rect(0, 0, width, height);
     }
   }

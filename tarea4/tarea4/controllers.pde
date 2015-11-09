@@ -60,6 +60,20 @@ public class ControlFrame extends PApplet {
         .setSize(50,20)
           .setValue(false);
  
+    cp5.addSlider("fondo")
+        .plugTo(parent, "fondo")
+          .setRange(0, 255)
+            .setValue(0)
+              .setSize(200, 20)
+                .setPosition(x, y+=30);
+                
+      cp5.addSlider("colorEsc2")
+        .plugTo(parent, "colorEsc2")
+          .setRange(1, 6)
+            .setValue(0)
+              .setSize(200, 20)
+                .setPosition(x, y+=90);            
+ 
     //salto de linea
     y+= 50;
     x = 20;         

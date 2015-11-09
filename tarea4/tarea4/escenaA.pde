@@ -14,7 +14,7 @@ class EscenaA implements Escena {
     d2 = dist(0, 0, w2, h2);
     noStroke();
 
-    background(255);
+    background(fondo);
     strokeWeight (3);
     noFill ();
     smooth();
@@ -29,6 +29,7 @@ class EscenaA implements Escena {
 
   void drawEscena() {
 
+    
     background(fondo);
     /*fft.window(FFT.HAMMING);
 
@@ -71,61 +72,66 @@ class EscenaA implements Escena {
     float rh2 = random(hi-30, hs+30);
     //println("wi: "+rwi+" ws: "+rws+" hi: "+rhi+"hs: "+rhs);
 
-    println("rw1: "+rw1+" rw2: "+rw2+" rh1: "+rh1+" rh2: "+rh2);
+    
 
     float radioW = cx > width ? width : cx;
     radioW = radioW < 0 ? 0 : radioW;
     float radioH = frequency > height ? height : frequency;
 
+    //println("radioh: "+radioH/*"rw1: "+rw1+" rw2: "+rw2+" rh1: "+rh1+" rh2: "+rh2*/);
+
     //float rate = random(-1, 1);
-    for (int j = 0; j < 10; j++) {
+    for (int j = 0; j < 5; j++) {
       //rotate (0.9);
 
-      rotate (0.1);
+      rotate (0.6);
 
-
-      if (frameCount%6==0) {
-        stroke(230, 1, 128, 255); //RojoVioleta
+      noFill();
+      if (radioH>10 && radioW>10) {
+        int valor = (int)random(230);
+        strokeWeight(3);
+        stroke(200, 200, 200, valor); //RojoVioleta
         ellipse(0, 0, radioH, radioW);
 
-        stroke(58, 212, 0, 255); //AmarilloVerde
+        strokeWeight(6);
+        stroke(random(100), random(100), random(100), 255-valor); //AmarilloVerde
         ellipse(0, 0, radioH/2, radioW/2);
       }
-      if (frameCount%6==1) {
+      /*if (colorEsc2%6==1) {
         stroke(254, 254, 0, 255); //Amarillo
         ellipse(0, 0, radioH, radioW);
 
         stroke(151, 0, 132, 255); //Violeta
         ellipse(0, 0, radioH/2, radioW/2);
       }
-      if (frameCount%6==2) {
+      if (colorEsc2%6==2) {
         stroke(255, 193, 0, 255); //AmarilloNaranja
         ellipse(0, 0, radioH, radioW);
 
         stroke(95, 44, 145, 255); //AzulVioleta
         ellipse(0, 0, radioH/2, radioW/2);
       }
-      if (frameCount%6==3) {
+      if (colorEsc2%6==3) {
         stroke(255, 128, 1, 255); //Naranja
         ellipse(0, 0, radioH, radioW);
 
         stroke(1, 69, 255, 255); //Azul
         ellipse(0, 0, radioH/2, radioW/2);
       }
-      if (frameCount%6==4) {
+      if (colorEsc2%6==4) {
         stroke(255, 93, 2, 255); //RojoNaranja
         ellipse(0, 0, radioH, radioW);
 
         stroke(0, 133, 102, 255); //AzulVerde
         ellipse(0, 0, radioH/2, radioW/2);
       }
-      if (frameCount%6==5) {
+      if (colorEsc2%6==5) {
         stroke(255, 34, 0, 255); //celeste
         ellipse(0, 0, radioH, radioW);
 
         stroke(0, 171, 33, 255); //rojo
         ellipse(0, 0, radioH/2, radioW/2);
-      }
+      }*/
     }      
     //loudestFreqAmp = 0;
     //fft.forward(in.mix);  

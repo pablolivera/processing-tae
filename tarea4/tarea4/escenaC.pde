@@ -8,7 +8,7 @@ class EscenaC implements Escena {
 
   void setupEscena() {
     //size(1100, 400, JAVA2D);
-    background(240);
+    background(fondo);
     smooth();
     //pg = createGraphics(width, height, JAVA2D);
     pg.beginDraw();
@@ -30,11 +30,25 @@ class EscenaC implements Escena {
   }
 
   void drawEscena() {
-    fill(255);
+    background(fondo);
+    fill(fondo);
     stroke(0);
+    
+    if (frameCount %50 == 0) {     
+      pg.beginDraw();
+      pg.textSize(140);
+      pg.textAlign(CENTER, CENTER);
+      pg.fill(PGRAPHICS_COLOR);
+      float a = random(4);
+      float b = a > 2 ? random(a-2) : random(a+2);
+      pg.text(palabras[(int)random(2.99)], random(100, width-100), random(40,height-50));
+      //pg.text("viento", pg.width/a, pg.height/a); 
+      pg.endDraw();
+    }
+
     textAlign(CENTER, CENTER);
 
-    if (chrs.size() < 2000) {
+    if (chrs.size() < 4000) {
       for (int i=0; i<60; i++) {
         //Aca va cx
         float x = random(width);
@@ -65,7 +79,7 @@ class OneChr {
     y = _y;
     glowSpeed = gS;
     myBrightness = 0;
-    glowOffs = random(40) * -1;
+    glowOffs = random(5) * -1;
     int radi = floor(random(4));
     myRotate = ( HALF_PI * radi);
     float sizeFactor = random(2);
@@ -75,7 +89,7 @@ class OneChr {
 
   void updateMe() {
     noStroke();
-    fill(0, max( myBrightness + glowOffs , 0));
+    fill(255-fondo, max( myBrightness + glowOffs, 0));
     pushMatrix();
     translate(x, y);
     int radi = floor(random(4));
@@ -87,5 +101,4 @@ class OneChr {
     myBrightness = min(myBrightness, (255+ (-1 * glowOffs)) );
   }
 }
-
 

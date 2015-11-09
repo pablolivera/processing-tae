@@ -16,8 +16,16 @@ PGraphics pg;
 PFont font;
 ArrayList<OneChr> chrs = new ArrayList<OneChr>();
 
+int colorEsc2 = 0;
+
+String [] palabras = {
+  "hijo", 
+  "viento", 
+  "Hip Hop",
+};
+
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -31,7 +39,7 @@ FFT fft;
 float loudestFreqAmp = 0;
 float loudestFreq = 0;
 int timerCounter = 0;
-int fondo = 255;
+int fondo = 0;
 boolean borro = false;
 float pi = atan(1);
 
@@ -78,10 +86,10 @@ void setup() {
   // Manejador Escenas
   manejador = new ManejadorEscenas();
 
-  
+
 
   //fondo inicial negro
-  background(255);
+  background(fondo);
 
   //resolucion
   size(1024, 768); 
@@ -127,11 +135,23 @@ void draw() {
   //fondo negro
   //background(0);
 
-findFrequency();
-
+  if (frameCount%30 == 0) {
+    findFrequency();
+  }
   if (!stopDraw && manejador.actual!=null) {
     manejador.actual.drawEscena();
   }
+
+  if ((frequency > 5000) && (manejador.actual== null)) {
+    manejador.actual_indx = 0;
+    manejador.actual = manejador.escenas[manejador.actual_indx];
+  }
+
+  //println(frameCount);
+  println(frequency);
+  /*if(frameCount%1000 == 0){
+   manejador.proxima();
+   }*/
 
   // Me fijo si esta conectado el kinect en caso contrario usamos el mouse
   if (kinectConectado && context.isInit()) {

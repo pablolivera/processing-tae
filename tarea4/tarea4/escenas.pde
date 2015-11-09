@@ -7,15 +7,15 @@ class ManejadorEscenas {
   ManejadorEscenas() {
 
     Escena [] todas = {
-      new EscenaA(),
       new EscenaB(),
+      new EscenaA(),
       new EscenaC("MgCoders"),
       };
 
       escenas = todas;
       //actual_indx = 0;
-      actual_indx = 1;
-      actual = escenas[actual_indx];
+      actual_indx = -1;
+      actual = null;
   }
 
   void proxima() {
