@@ -16,9 +16,6 @@ PGraphics pg;
 PFont font;
 ArrayList<OneChr> chrs = new ArrayList<OneChr>();
 
-int colorEsc2 = 0;
-
-
 //variable para probar el ejemplo sin el kinect.
 boolean kinectConectado = false; 
 PVector com = new PVector();
