@@ -97,41 +97,7 @@ class EscenaA implements Escena {
         stroke(random(100), random(100), random(100), 255-valor); //AmarilloVerde
         ellipse(0, 0, radioH/2, radioW/2);
       }
-      /*if (colorEsc2%6==1) {
-        stroke(254, 254, 0, 255); //Amarillo
-        ellipse(0, 0, radioH, radioW);
-
-        stroke(151, 0, 132, 255); //Violeta
-        ellipse(0, 0, radioH/2, radioW/2);
-      }
-      if (colorEsc2%6==2) {
-        stroke(255, 193, 0, 255); //AmarilloNaranja
-        ellipse(0, 0, radioH, radioW);
-
-        stroke(95, 44, 145, 255); //AzulVioleta
-        ellipse(0, 0, radioH/2, radioW/2);
-      }
-      if (colorEsc2%6==3) {
-        stroke(255, 128, 1, 255); //Naranja
-        ellipse(0, 0, radioH, radioW);
-
-        stroke(1, 69, 255, 255); //Azul
-        ellipse(0, 0, radioH/2, radioW/2);
-      }
-      if (colorEsc2%6==4) {
-        stroke(255, 93, 2, 255); //RojoNaranja
-        ellipse(0, 0, radioH, radioW);
-
-        stroke(0, 133, 102, 255); //AzulVerde
-        ellipse(0, 0, radioH/2, radioW/2);
-      }
-      if (colorEsc2%6==5) {
-        stroke(255, 34, 0, 255); //celeste
-        ellipse(0, 0, radioH, radioW);
-
-        stroke(0, 171, 33, 255); //rojo
-        ellipse(0, 0, radioH/2, radioW/2);
-      }*/
+      
     }      
     //loudestFreqAmp = 0;
     //fft.forward(in.mix);  

@@ -40,7 +40,7 @@ public class ControlFrame extends PApplet {
     
     // Posicion inicial de los controles  
     x = 20;
-    y += 30;
+    y += 50;
     
     // Control para iniciar Escena A
     cp5.addToggle("EscenaA")
@@ -65,14 +65,14 @@ public class ControlFrame extends PApplet {
           .setRange(0, 255)
             .setValue(0)
               .setSize(200, 20)
-                .setPosition(x, y+=30);
+                .setPosition(100, y+=50);
                 
       cp5.addSlider("colorEsc2")
         .plugTo(parent, "colorEsc2")
           .setRange(1, 6)
             .setValue(0)
               .setSize(200, 20)
-                .setPosition(x, y+=90);            
+                .setPosition(100, y+=50);            
  
     //salto de linea
     y+= 50;

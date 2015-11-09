@@ -53,8 +53,8 @@ class EscenaB implements Escena {
         loudestFreqAmp = fft.getBand(i);
         loudestFreq = i * 4;
         //sine.setFreq(loudestFreq);
-        fill(255,255,255, random(50,255));
-        if (loudestFreq < 10)
+        fill(255-fondo,255-fondo,255-fondo, random(50,255));
+        if (loudestFreq < 5)
         {
           triangle(random(0, width), random(0, height), random(0, width), random(0, height), random(0, width)+loudestFreqAmp, random(0, height)+loudestFreqAmp);
           

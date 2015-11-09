@@ -9,7 +9,7 @@ class ManejadorEscenas {
     Escena [] todas = {
       new EscenaB(),
       new EscenaA(),
-      new EscenaC("MgCoders"),
+      new EscenaC(),
       };
 
       escenas = todas;

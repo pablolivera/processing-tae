@@ -18,14 +18,9 @@ ArrayList<OneChr> chrs = new ArrayList<OneChr>();
 
 int colorEsc2 = 0;
 
-String [] palabras = {
-  "hijo", 
-  "viento", 
-  "Hip Hop",
-};
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -92,7 +87,7 @@ void setup() {
   background(fondo);
 
   //resolucion
-  size(1024, 768); 
+  size(1366, 768); 
 
   pg = createGraphics(width, height, JAVA2D);
 
@@ -135,7 +130,7 @@ void draw() {
   //fondo negro
   //background(0);
 
-  if (frameCount%30 == 0) {
+  if (frameCount%20 == 0) {
     findFrequency();
   }
   if (!stopDraw && manejador.actual!=null) {
