@@ -11,7 +11,7 @@ class EscenaC implements Escena {
   }
 
   void setupEscena() {
-    background(240);
+    background(fondo);
     smooth();
     for (int i=0; i<palabras.length; i++) {
       pg.beginDraw();
@@ -36,7 +36,7 @@ class EscenaC implements Escena {
   }
 
   void drawEscena() {
-    fill(255);
+    fill(fondo);
     stroke(0);
     textAlign(CENTER, CENTER);
 
