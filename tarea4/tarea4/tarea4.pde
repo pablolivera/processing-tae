@@ -17,7 +17,7 @@ PFont font;
 ArrayList<OneChr> chrs = new ArrayList<OneChr>();
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = false; 
+boolean kinectConectado = true; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -168,6 +168,7 @@ void draw() {
     // El for del kinnect para tapar la silueta.
     int index;
     if (debugBody) {
+          background(0);
       for (int xb = 0; xb < context.depthWidth (); xb+=10) {
         for (int yb = 0; yb < context.depthHeight (); yb+=10) {
           index = xb + (yb * context.depthWidth());
@@ -233,6 +234,7 @@ void drawHand(int userId) {
   convertedLeftHand.y = convertedLeftHand.y * fact;
 
   if (debugBody) {
+
     fill(255, 0, 30);
     ellipse( convertedRightHand.x, convertedRightHand.y, 40, 40);
     fill(0, 255, 30);
