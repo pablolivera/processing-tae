@@ -17,7 +17,7 @@ PFont font;
 ArrayList<OneChr> chrs = new ArrayList<OneChr>();
 
 //variable para probar el ejemplo sin el kinect.
-boolean kinectConectado = true; 
+boolean kinectConectado = false; 
 PVector com = new PVector();
 PVector com2d = new PVector();
 
@@ -84,7 +84,7 @@ void setup() {
   background(fondo);
 
   //resolucion
-  size(1366, 768); 
+  size(1024, 768); 
 
   pg = createGraphics(width, height, JAVA2D);
 

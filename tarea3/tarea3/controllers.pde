@@ -91,7 +91,7 @@ public class ControlFrame extends PApplet {
     cp5.addSlider("offset")
       .plugTo(parent, "offset")
         .setRange(0, 500)
-          .setValue(200)
+          .setValue(322)
             .setSize(200, 20)
               .setPosition(x, y+=30);
 
